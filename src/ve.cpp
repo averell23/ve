@@ -9,12 +9,14 @@
 #include "dummysource.h"
 #include "videocanvas.h"
 #include "stopwatch.h"
+#include "dummyoverlay.h"
 
 using namespace std;
 
 
 Stopwatch *timer;
 VideoCanvas *mainVideo;
+DummyOverlay *overlay;
 
 
 int main(int argc, char *argv[])
@@ -24,6 +26,7 @@ int main(int argc, char *argv[])
   DummySource *left = new DummySource();
   std::cout << "Drawing cycle" << std::endl;
   mainVideo = new VideoCanvas(left, right);
+  overlay = new DummyOverlay();
   timer = new Stopwatch();
   
   glutDisplayFunc     ( glDraw );
@@ -42,6 +45,7 @@ int main(int argc, char *argv[])
 void shutdown() {
     timer->stop();
     free(mainVideo);
+    free(overlay);
     cout << "Elapsed time was " << timer->getSeconds() 
 	<< " seconds and " << timer->getMilis() 
 	<< " millis with " << timer->getCount() << " frames. "
@@ -51,6 +55,8 @@ void shutdown() {
 
 void glDraw(void) {
     mainVideo->draw();
+    overlay->draw();
     timer->count();
+    glutSwapBuffers();
 }
 

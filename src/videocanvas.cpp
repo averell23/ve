@@ -121,7 +121,6 @@ void VideoCanvas::draw() {
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );		
     glPopMatrix();
-    glutSwapBuffers();
 }
 
 VideoCanvas::~VideoCanvas()
