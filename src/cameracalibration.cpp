@@ -54,6 +54,7 @@ void CameraCalibration::setFilename(string filename) {
 }
 
 bool CameraCalibration::takeSnapshot() {
+    bool retVal = false;
     LOG4CPLUS_DEBUG(logger, "Taking calibration snapshot");
     if (input == NULL) { 		// Basic sanity check
         LOG4CPLUS_ERROR(logger, "Could not take snapshot, video source is NULL.");
@@ -99,10 +100,11 @@ bool CameraCalibration::takeSnapshot() {
         images.push_back(grayTmp);
         guessedCorners.push_back(corners);
         LOG4CPLUS_DEBUG(logger, "Snapshot taken.");
+        retVal = true;
     } else {
         LOG4CPLUS_DEBUG(logger, "Snapshot not taken, not all corners found.");
     }
-    return true;
+    return retVal;
 }
 
 void CameraCalibration::recalibrate() {
@@ -484,10 +486,10 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
 void CameraCalibration::popSnapshot() {
     int lastI = images.size() - 1; 
     if (lastI >= 0) {
-	cvReleaseImage(&images[lastI]);
-	delete guessedCorners[lastI];
-	images.pop_back();
-	guessedCorners.pop_back();
+	    cvReleaseImage(&images[lastI]);
+	    delete guessedCorners[lastI];
+	    images.pop_back();
+	    guessedCorners.pop_back();
     }
 }
 

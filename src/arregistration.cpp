@@ -91,12 +91,12 @@ void ARRegistration::reRegister() {
         gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
         gsl_matrix_view sub_bottom = gsl_matrix_submatrix(params, (i*3)+2, 0, 1, 12);
         LOG4CPLUS_TRACE(logger, "Submatrices selected.");
-	if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
-	    cout << "Top submatrix:" << endl;
-	    printMatrix(&sub_top.matrix);
-	    cout << "Bottom submatrix:" << endl;
-	    printMatrix(&sub_bottom.matrix);
-	}
+	    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	        cout << "Top submatrix:" << endl;
+	        printMatrix(&sub_top.matrix);
+	        cout << "Bottom submatrix:" << endl;
+	        printMatrix(&sub_bottom.matrix);
+	    }
         // Compute the parameter values: c_1 * x_1, c_3 * x_1
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
         LOG4CPLUS_TRACE(logger, "First submatrix multiplication.");

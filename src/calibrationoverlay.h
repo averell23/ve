@@ -79,10 +79,8 @@ private:
     GLuint textures[2];
     /** The texture size used by this overlay. */
     int textureSize;    
-    /// Draws the right quad of the display
-    void drawRightQuad();
-    /// Draws the left quad of the display
-    void drawLeftQuad();
+    /// Draws the quad for the PiP display
+    void drawQuad();
     /** Size Factors to scale the image to screen */
     double widthFactor, heightFactor;
     /** The width and height of the image to be displayed */

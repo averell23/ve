@@ -39,9 +39,9 @@ void GLMacros::revertMatrices() {
     // Remove text textures
     glBindTexture(GL_TEXTURE_2D, 0);
     // Restore Matrices
-    glMatrixMode( GL_PROJECTION );
-    glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
+    glMatrixMode( GL_PROJECTION );
     glPopMatrix();
 }
 

@@ -24,7 +24,6 @@
 #ifndef STEREOCALIBRATION_H
 #define STEREOCALIBRATION_H
 
-#include "ve.h"
 #include "cameracalibration.h"
 
 // Forward declarations
@@ -112,6 +111,12 @@ private:
        @int size Number of translation vectors/rotation matrices
     */
     gsl_matrix* getExtMatrix(CvMatr32f trans, CvMatr32f rot, int size);
+    
+    /// Prints the contents of a matrix to stdout
+    void printMatrix(gsl_matrix* mat);
+
+    /// Prints the contents of a vector to stdout
+    void printVector(gsl_vector* vec);
 };
 
 #endif

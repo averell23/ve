@@ -10,6 +10,7 @@ Stopwatch* Ve::timer;
 VideoCanvas* Ve::mainVideo;
 VideoSource* Ve::rightEye;
 VideoSource* Ve::leftEye;
+StereoCalibration* Ve::stereoCal;
 /// The overlays that will be displayed
 vector<Overlay*> Ve::overlays;
 

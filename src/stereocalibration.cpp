@@ -45,9 +45,9 @@ bool StereoCalibration::takeSnapshot() {
     bool rightOK = right->takeSnapshot();
     
     if (!leftOK) {
-	if (rightOK) right->popSnapshot();
+	    if (rightOK) right->popSnapshot();
     } else {
-	if (!rightOK) left->popSnapshot();
+	    if (!rightOK) left->popSnapshot();
     }
     
     return leftOK && rightOK;
@@ -65,8 +65,8 @@ int StereoCalibration::getSnapshotCount() {
 void StereoCalibration::recalibrate() {
     int size = left->getSnapshotCount();
     if (size != right->getSnapshotCount()) {
-	LOG4CPLUS_ERROR(logger, "Could not recalibration: Different number of snapshots for left and right");
-	return;
+	    LOG4CPLUS_ERROR(logger, "Could not recalibration: Different number of snapshots for left and right");
+	    return;
     }
     left->recalibrate();
     right->recalibrate();
@@ -76,16 +76,34 @@ void StereoCalibration::recalibrate() {
     CvMatr32f rightRotate = right->getRotations();
     LOG4CPLUS_DEBUG(logger, "Intrinsic calibration complete, starting stereo calibration.");
     gsl_vector* observ = getExtVector(leftTranslate, leftRotate, size);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	    cout << "Observation vector:" << endl;
+	    printVector(observ);
+	}
     gsl_matrix* params = getExtMatrix(rightTranslate, rightRotate, size);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	    cout << "Parameter matrix:" << endl;
+        printMatrix(params);
+    }
     gsl_vector* result = gsl_vector_alloc(16);
     gsl_matrix* cov = gsl_matrix_alloc(16,16);
-    gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(size*4, 16);
+    gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(size*16, 16);
     double chisq;
     LOG4CPLUS_DEBUG(logger, "Data structures initialized, now trying least-square fit");
     gsl_multifit_linear(params, observ, result, cov, &chisq, work);
     LOG4CPLUS_DEBUG(logger, "Least squares fit done, chi squared is " << chisq);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        cout << "Covariance matrix:" << endl;
+        printMatrix(cov);
+	    cout << "Result vector:" << endl;
+        printVector(result);
+    }
     gsl_matrix_view result_mat = gsl_matrix_view_vector(result, 4, 4);
     gsl_matrix_memcpy(transMatrix, &result_mat.matrix);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	    cout << "New translation matrix:" << endl;
+        printMatrix(transMatrix);
+    }
     gsl_multifit_linear_free(work);
     gsl_matrix_free(cov);
     gsl_vector_free(result);
@@ -131,4 +149,19 @@ gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int 
     gsl_matrix_free(extMat);
     LOG4CPLUS_DEBUG(logger, "External matrix created as parameter matrix");
     return retVal;
+}
+
+void StereoCalibration::printMatrix(gsl_matrix* mat) {
+	for (int i=0 ; i<mat->size1 ; i++) {
+		for (int j=0 ; j<mat->size2 ; j++) {
+			cout << gsl_matrix_get(mat, i, j) << "	";
+		}
+		cout << endl;
+	}
+}
+
+void StereoCalibration::printVector(gsl_vector* vec) {
+	for (int i=0 ; i<vec->size ; i++) {
+		cout << gsl_vector_get(vec, i) << endl;
+	}
 }
