@@ -66,7 +66,7 @@ bool CameraCalibration::takeSnapshot() {
     input->lockImage();
     IplImage* capt = input->getImage();
 
-    if (blackOffset != NULL) {
+    if (blackOffset) {
         CvSize size;
         size.height = capt->height;
         size.width = capt->width;
@@ -96,7 +96,7 @@ bool CameraCalibration::takeSnapshot() {
     LOG4CPLUS_TRACE(logger, "New internal snapshot created.");
 
     CvPoint2D32f* corners = guessCorners(grayTmp);
-    if (corners != NULL) {
+    if (corners) {
         images.push_back(grayTmp);
         guessedCorners.push_back(corners);
         LOG4CPLUS_DEBUG(logger, "Snapshot taken.");
@@ -219,8 +219,8 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
     CvPoint3D32f* objPoints = new CvPoint3D32f[images.size() * patternDimension.width * patternDimension.height];
     int pointPosition = 0; // Position in the point list
     for (int imgNum = 0 ; imgNum < images.size() ; imgNum++) { // count through images
-        for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
-            for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
+        for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
+            for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
                 objPoints[pointPosition].y = heightPos * chessSize.height;
                 objPoints[pointPosition].x = widthPos * chessSize.width;
                 objPoints[pointPosition].z = 0;
@@ -238,6 +238,9 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     LOG4CPLUS_DEBUG(logger, "Guessing corners");
     int pointCount = patternDimension.width * patternDimension.height;
     CvPoint2D32f* tempPoints = new CvPoint2D32f[pointCount + 1];
+    if (lastCorners) delete lastCorners; // tempPoints from last round deleted here!
+    lastCorners = tempPoints;
+
     IplImage* threshTmp; // Temp Image for corner detection
     int cornerNum; // Number of corners found
     threshTmp = cvCreateImage(cvSize(image->width, image->height), IPL_DEPTH_8U, 1);
@@ -249,8 +252,6 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
                 tempPoints,
                 &cornerNum);
 
-    if (lastCorners) delete lastCorners; // tempPoints from last round deleted here!
-    lastCorners = tempPoints;
     lastCornerCount = (cornerNum > 0)?cornerNum:(-cornerNum);
 
     if (found != 0) {
