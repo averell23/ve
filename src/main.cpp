@@ -49,7 +49,6 @@ int main(int argc, char *argv[]) {
     Ve::initGL(argc, argv);
     CORBAController corba = CORBAController::getInstance();
     corba.init(argc, argv);
-	corba.start();
 
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
@@ -123,6 +122,12 @@ int main(int argc, char *argv[]) {
     }
 
     Ve::init(left, right);
+	CameraCalibration* calTmp = Ve::getLeftSource()->getCalibration();
+	calTmp->setPatternDimension(cvSize(6,8));
+	calTmp->setChessSize(cvSize(28,28));
+	calTmp = Ve::getRightSource()->getCalibration();
+	calTmp->setPatternDimension(cvSize(6,8));
+	calTmp->setChessSize(cvSize(28,28));
 
     LOG4CPLUS_DEBUG(logger, "Adding overlays");
     // Create overlays

@@ -72,7 +72,7 @@ IplImage* EpixSource::getImage() {
     size.height = height;
     size.width = width;
 
-    image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
+    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
     if (! tMutex.tryEnterMutex()) {
         LOG4CPLUS_TRACE(logger, "Returning null image, currently waiting for image.");
         return image;
@@ -100,7 +100,7 @@ IplImage* EpixSource::waitAndGetImage() {
     size.height = height;
     size.width = width;
 
-    image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
+    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
     uchar* buffer = NULL;
     tMutex.enterMutex();
     while (buffer == NULL) {

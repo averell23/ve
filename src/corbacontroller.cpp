@@ -26,7 +26,7 @@
 Logger CORBAController::logger = Logger::getInstance("Ve.CORBAController");
 CORBAController CORBAController::myInstance;
 
-CORBAController::CORBAController() : Thread() {
+CORBAController::CORBAController() {
     positionSource = new PositionConnector_Impl();
 }
 
@@ -64,7 +64,7 @@ void CORBAController::addPositionEventListener(VeEventListener* listener) {
 }
 
 CORBAController::~CORBAController() {
-    positionSource->_remove_ref();
-    orb->destroy();
+    // positionSource->_remove_ref(); // FIXME: No controlled ORB shutdown
+    // orb->destroy();
 }
 

@@ -49,9 +49,12 @@ bool CameraCalibration::takeSnapshot() {
         LOG4CPLUS_ERROR(logger, "Could not take snapshot, video source is NULL.");
         return false;
     }
+	LOG4CPLUS_DEBUG(logger, "Trying to get snapshot");
     IplImage* capt = input->waitAndGetImage();
     IplImage* grayTmp = cvCreateImage(cvSize( capt->width, capt->height ), IPL_DEPTH_8U, 1);
+	LOG4CPLUS_TRACE(logger, "Got image");
     cvCvtColor(capt, grayTmp, CV_BGR2GRAY);
+	LOG4CPLUS_TRACE(logger, "Convertedimage");
     delete capt->imageData;
     cvReleaseImageHeader(&capt);
     CvPoint2D32f* corners = guessCorners(grayTmp);
@@ -176,6 +179,7 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
 }
 
 CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
+	LOG4CPLUS_DEBUG(logger, "Guessing corners");
     int pointCount = patternDimension.width * patternDimension.height;
     CvPoint2D32f* tempPoints = new CvPoint2D32f[pointCount + 1];
     IplImage* threshTmp; // Temp Image for corner detection
