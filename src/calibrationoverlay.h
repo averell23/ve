@@ -89,6 +89,8 @@ private:
     double widthFactor, heightFactor;
     /** The width and height of the image to be displayed */
     int imageWidth, imageHeight;
+    /// Sets picture-in-picture coordinates
+    void setPiPCoordinates();
 
 
 };

@@ -87,8 +87,11 @@ void CalibrationOverlay::drawOverlay() {
 
 void CalibrationOverlay::drawOtherEye() {
     glLoadIdentity();
-    glScalef(0.5f, 0.5f, 1.0f);
-    glColor3f(1.0f, 1.0f, 1.0f);
+
+    // Set Picture in Picture coordinates and transparency
+    setPiPCoordinates();
+    glColor4f(1.0f, 1.0f, 1.0f, 0.8f); 
+
     IplImage* img = cCalibrationObject->lastSnapshot;
     if (img) {
         glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -114,6 +117,10 @@ void CalibrationOverlay::drawOtherEye() {
     glBindTexture(GL_TEXTURE_2D, 0);
     // Now draw the found corners
     GLMacros::initVirtualCoords();
+    // Back to Pip coordinates, red markers
+    setPiPCoordinates();
+    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+
     CvPoint vCoords = Ve::getVirtualSize();
     float xFac = vCoords.x / (float) imageWidth;
     float yFac = - vCoords.y / (float) imageHeight;
@@ -138,6 +145,11 @@ void CalibrationOverlay::drawOneEye() {
     glTranslatef(0.05f, 0.6f, 0.0f);
     font->Render(text[0]);
 
+}
+
+void CalibrationOverlay::setPiPCoordinates() {
+    glTranslatef(0.6f, 0.6f, 0.0f);
+    glScalef(0.35f, 0.35f, 1.0f);
 }
 
 void CalibrationOverlay::recieveEvent(VeEvent &e) {
