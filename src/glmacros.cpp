@@ -46,10 +46,10 @@ void GLMacros::revertMatrices() {
 }
 
 
-void GLMacros::drawCrosshairs(int x, int y) {
+void GLMacros::drawCrosshairs(int x, int y, float width) {
     int xsize = Ve::getVirtualSize().x;
     int ysize = Ve::getVirtualSize().y;
-    glLineWidth(2.0f);
+    glLineWidth(width);
     glBegin(GL_LINES);
     // vertical line
     glVertex3i(x, -ysize, 0);
@@ -68,10 +68,10 @@ void GLMacros::drawCrosshairs(int x, int y) {
     glVertex3i(x+10, y+10, 0);
     glEnd();
 }
-void GLMacros::drawMarker(int x, int y) {
+void GLMacros::drawMarker(int x, int y, float width) {
     int xsize = Ve::getVirtualSize().x;
     int ysize = Ve::getVirtualSize().y;
-    glLineWidth(2.0f);
+    glLineWidth(width);
     glBegin(GL_LINES);
     //  box
     glVertex3i(x-10, y-10, 0);
@@ -85,6 +85,13 @@ void GLMacros::drawMarker(int x, int y) {
     glEnd();
 }
 
+void GLMacros::drawLine(int x1, int y1, int x2, int y2, float width) {
+    glLineWidth(width);
+    glBegin(GL_LINES);
+    glVertex3i(x1,y1,0);
+    glVertex3i(x2,y2,0);
+    glEnd();
+}
 
 void GLMacros::drawText(int x, int y, char* text, int fontSize) {
     if (fontSize < 2) return; // Sanity check
@@ -147,4 +154,16 @@ int GLMacros::checkTextureSize() {
     }
 
     return textureSize;
+}
+
+void GLMacros::rotateImage() {
+    if (Ve::mainVideo->xRot) {
+	    glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+    }
+    if (Ve::mainVideo->yRot) {
+	    glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
+    if (Ve::mainVideo->zRot) {
+	    glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+	}
 }

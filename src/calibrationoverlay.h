@@ -73,6 +73,8 @@ private:
 	into the current camera picture.
     */
     void drawPiP();
+    /// Draws the markers into the calibration picture
+    void drawMarkers(CameraCalibration* calObj);
     /// Current calibration object
     StereoCalibration* cCalibrationObject;
     /** Texture for OpenGL */

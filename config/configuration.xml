@@ -5,12 +5,12 @@
 	<parameter name="initB">../config/caminit.txt</parameter>
 	<parameter name="artthreshold">255</parameter>
 	<parameter name="tracking">audio</parameter>
-	<parameter name="leftBright">30</parameter>
-	<parameter name="rightBright">30</parameter>
+	<parameter name="leftBright">0</parameter>
+	<parameter name="rightBright">0</parameter>
 	<option name="swap" value="false" />
 	<option name="rotX" value="false" />
-	<option name="rotY" value="true" />
-	<option name="rotZ" value="true" />
+	<option name="rotY" value="false" />
+	<option name="rotZ" value="false" />
 	<option name="statusoverlay" value="true" />
 	<option name="textoverlay" value="false" />
 	<option name="trackingoverlay" value="true" />

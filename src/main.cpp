@@ -193,7 +193,9 @@ int main(int argc, char *argv[]) {
 
     int leftBrightness = 50;
     int rightBrightness = 50;
-    bool xRot, yRot, zRot;
+    bool xRot = false;
+    bool yRot = false; 
+    bool zRot = false;
     bool swap;
 
     param = parser.getParamValue("leftBright");

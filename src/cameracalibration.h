@@ -264,6 +264,9 @@ private:
     /// Logger for this class
     static Logger logger;
 
+    /// Set internal image to undistorted version of last snapshot
+    void setUndistortSnap();
+
 };
 
 #endif

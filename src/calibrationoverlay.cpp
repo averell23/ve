@@ -85,12 +85,13 @@ void CalibrationOverlay::drawOverlay() {
 
 void CalibrationOverlay::drawPiP() {
     for (int i=0 ; i<2 ; i++) {
-        glColor4f(1.0f, 1.0f, 1.0f, 0.8f); 
+        glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
         glLoadIdentity();
         if (0 == i) {
 	       glTranslatef(-1.0f, 0.0f, 0.0f);
-	    } 
+	    }
         setPiPCoordinates();
+        GLMacros::rotateImage();
 	    CameraCalibration* calObj;
 	    if (0 == i) {
 	        calObj = cCalibrationObject->getLeftCalibration();
@@ -105,42 +106,51 @@ void CalibrationOverlay::drawPiP() {
 	    } else {
 	        glBindTexture(GL_TEXTURE_2D, 0);
 	    }
-	    if (Ve::mainVideo->xRot) {
-	        glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
-	    }
-	    if (Ve::mainVideo->yRot) {
-	        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-	    }
-	    if (Ve::mainVideo->zRot) {
-	        glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-	    }
 	    drawQuad();
 	    glBindTexture(GL_TEXTURE_2D, 0);
-	    // Now draw the found corners
 	    GLMacros::initVirtualCoords();
         if (0 == i) {
-	       glTranslatef(-1.0f, 0.0f, 0.0f);
+	        glTranslatef(-1.0f, 0.0f, 0.0f);
 	    }
-	    // Back to Pip coordinates, set marker color
-	    setPiPCoordinates();
-        if (foundCorners) {
-            glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        } else {
-	        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-        }
-
-	    CvPoint vCoords = Ve::getVirtualSize();
-	    float xFac = vCoords.x / (float) imageWidth;
-	    float yFac = - vCoords.y / (float) imageHeight;
-	    int yOff = Ve::getVirtualSize().y;
-	    int count = calObj->lastCornerCount;
-	    for (int i=0 ; i<calObj->lastCornerCount ; i++) {
-	        int x = (int) (calObj->lastCorners[i].x * xFac);
-	        int y = (int) ((calObj->lastCorners[i].y * yFac * 2) + yOff);
-	        GLMacros::drawMarker(x, y);
-	    } 
-        GLMacros::revertMatrices();
+        drawMarkers(calObj);
     } // Both eyes for loop
+}
+
+void CalibrationOverlay::drawMarkers(CameraCalibration* calObj) {
+	// Back to Pip coordinates, set marker color
+	setPiPCoordinates();
+    GLMacros::rotateImage();
+    glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+    float redDefault = 0.0f;
+    float greenDefault = 0.0f;
+    float blueDefault = 0.0f;
+    if (foundCorners) {
+        greenDefault = 1.0f;
+    } else {
+        redDefault = 1.0f;
+    }
+
+	CvPoint vCoords = Ve::getVirtualSize();
+	float xFac = vCoords.x / (float) imageWidth;
+	float yFac = - vCoords.y / (float) imageHeight;
+	int yOff = Ve::getVirtualSize().y;
+	int count = calObj->lastCornerCount;
+    int xOld, yOld;
+    double colorInc = 1.0f / (double) calObj->lastCornerCount;
+	for (int k=0 ; k<calObj->lastCornerCount ; k++) {
+        glColor4f(redDefault, greenDefault, 1.0f - (colorInc * (float) k), 1.0f);
+	    int x = (int) (calObj->lastCorners[k].x * xFac);
+	    int y = (int) ((calObj->lastCorners[k].y * yFac * 2) + yOff);
+        if (k>0) {
+            GLMacros::drawLine(xOld, yOld, x, y, 1.0f);
+        } else {
+            glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+        }
+	    GLMacros::drawMarker(x, y, 1.0f);
+        xOld = x;
+        yOld = y;
+	} 
+    GLMacros::revertMatrices();
 }
 
 void CalibrationOverlay::drawOneEye() {
@@ -194,6 +204,10 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
         Ve::getLeftSource()->getCalibration()->save();
         Ve::getRightSource()->getCalibration()->save();
         break;
+    case 'b':
+    case 'B':
+        Ve::getLeftSource()->getCalibration()->popSnapshot();
+        Ve::getRightSource()->getCalibration()->popSnapshot();
     }
 
 }

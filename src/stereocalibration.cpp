@@ -123,13 +123,14 @@ void StereoCalibration::recalibrate() {
     LOG4CPLUS_DEBUG(logger, "Stereo calibration complete");
 }
 
+
 gsl_vector* StereoCalibration::getExtVector(CvMatr32f trans, CvMatr32f rot, int size) {
     gsl_vector* retVal = gsl_vector_alloc(size*16);
     for (int i = 0 ; i<size ; i++) {
 	for (int j=0 ; j<3 ; j++) {
-	    gsl_vector_set(retVal, (i*16) + (j*4), rot[(i*9) + j]);
-	    gsl_vector_set(retVal, (i*16) + (j*4) + 1, rot[(i*9) + (j+3)]);
-	    gsl_vector_set(retVal, (i*16) + (j*4) + 2, rot[(i*9) + (j+6)]);
+	    gsl_vector_set(retVal, (i*16) + (j*4), rot[(i*9) + (j*3)]);
+	    gsl_vector_set(retVal, (i*16) + (j*4) + 1, rot[(i*9) + (j*3) + 1]);
+	    gsl_vector_set(retVal, (i*16) + (j*4) + 2, rot[(i*9) + (j*3) + 2]);
 	    gsl_vector_set(retVal, (i*16) + (j*4) + 3, 0);
 	}
 	for (int j=0 ; j<3 ; j++) {
@@ -146,22 +147,68 @@ gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int 
     gsl_matrix* extMat = gsl_matrix_calloc(4, 4);
     gsl_matrix_set(extMat, 3, 3, 1);
     for (int i=0 ; i<size ; i++) {
-	for (int n=0 ; n<3 ; n++) {
-	    for (int j=0 ; j<3 ; j++) {
-		gsl_matrix_set(extMat, n, j, rot[(i*9) + (n*3) + j]);
+	    for (int n=0 ; n<3 ; n++) {
+	        for (int j=0 ; j<3 ; j++) {
+		        gsl_matrix_set(extMat, j, n, rot[(i*9) + (n*3) + j]);
+	        }
+	        gsl_matrix_set(extMat, n, 3, trans[(i*3) + n]);
 	    }
-	    gsl_matrix_set(extMat, n, 3, trans[(i*3) + n]);
-	}
-	if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
-	    cout << "External submatrix:" << endl;
-	    MatrixUtils::printMatrix(extMat);
-	}	
-	for (int n=0 ; n<4 ; n++) {
-	    gsl_matrix_view submat = gsl_matrix_submatrix(retVal, (16*i) + (4*n), 4*n, 4, 4);
-	    gsl_matrix_memcpy(&submat.matrix, extMat);
-	}
+	    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	        cout << "External submatrix:" << endl;
+	        MatrixUtils::printMatrix(extMat);
+	    }	
+	    for (int n=0 ; n<4 ; n++) {
+	        gsl_matrix_view submat = gsl_matrix_submatrix(retVal, (16*i) + (4*n), 4*n, 4, 4);
+	        gsl_matrix_memcpy(&submat.matrix, extMat);
+	    }
     }
     gsl_matrix_free(extMat);
     LOG4CPLUS_DEBUG(logger, "External matrix created as parameter matrix");
     return retVal;
 }
+
+/** Original version
+
+gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int size) {
+    gsl_matrix* retVal = gsl_matrix_calloc(16*size, 16);
+    gsl_matrix* extMat = gsl_matrix_calloc(4, 4);
+    gsl_matrix_set(extMat, 3, 3, 1);
+    for (int i=0 ; i<size ; i++) {
+	    for (int n=0 ; n<3 ; n++) {
+	        for (int j=0 ; j<3 ; j++) {
+		    gsl_matrix_set(extMat, n, j, rot[(i*9) + (n*3) + j]);
+	        }
+	        gsl_matrix_set(extMat, n, 3, trans[(i*3) + n]);
+	    }
+	    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	        cout << "External submatrix:" << endl;
+	        MatrixUtils::printMatrix(extMat);
+	    }	
+	    for (int n=0 ; n<4 ; n++) {
+	        gsl_matrix_view submat = gsl_matrix_submatrix(retVal, (16*i) + (4*n), 4*n, 4, 4);
+	        gsl_matrix_memcpy(&submat.matrix, extMat);
+	    }
+    }
+    gsl_matrix_free(extMat);
+    LOG4CPLUS_DEBUG(logger, "External matrix created as parameter matrix");
+    return retVal;
+}
+
+gsl_vector* StereoCalibration::getExtVector(CvMatr32f trans, CvMatr32f rot, int size) {
+    gsl_vector* retVal = gsl_vector_alloc(size*16);
+    for (int i = 0 ; i<size ; i++) {
+	    for (int j=0 ; j<3 ; j++) {
+	        gsl_vector_set(retVal, (i*16) + (j*4), rot[(i*9) + j]);
+	        gsl_vector_set(retVal, (i*16) + (j*4) + 1, rot[(i*9) + (j+3)]);
+	        gsl_vector_set(retVal, (i*16) + (j*4) + 2, rot[(i*9) + (j+6)]);
+	        gsl_vector_set(retVal, (i*16) + (j*4) + 3, 0);
+	    }
+	    for (int j=0 ; j<3 ; j++) {
+	        gsl_vector_set(retVal, (i*16) + 12 + j, trans[(i*3) + j]);
+	    }
+	    gsl_vector_set(retVal, (i*16) + 15, 1);
+    }
+    LOG4CPLUS_DEBUG(logger, "External matrix created as vector.");
+    return retVal;
+}
+*/

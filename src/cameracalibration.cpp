@@ -151,6 +151,7 @@ void CameraCalibration::recalibrate() {
                       useIntrisincGuess);
     LOG4CPLUS_DEBUG(logger, "Calibration routine complete");
 
+    setUndistortSnap();
 
     delete imagePoints;
     delete objectPoints;
@@ -168,6 +169,25 @@ void CameraCalibration::recalibrate() {
                    << distortions[1] << " "
                    << distortions[2] << " "
                    << distortions[3]);
+}
+
+
+void CameraCalibration::setUndistortSnap() {
+    if (lastSnapshot) {
+        CvSize size;
+        size.height = lastSnapshot->height;
+        size.width = lastSnapshot->width;
+        IplImage* temp = cvCreateImageHeader(size, lastSnapshot->depth, lastSnapshot->nChannels);
+        int lastSnapSize =  lastSnapshot->height * lastSnapshot->width 
+                            * lastSnapshot->depth * lastSnapshot->nChannels;
+        temp->imageData = new char[lastSnapSize];
+        cvUnDistortOnce(lastSnapshot, temp, calibrationMatrix, distortions);
+        delete lastSnapshot->imageData;
+        cvReleaseImageHeader(&lastSnapshot);
+        lastSnapshot = temp;
+        lastCornerCount = 0;
+        LOG4CPLUS_DEBUG(logger, "Set undistorted snapshot");
+    }
 }
 
 
@@ -199,10 +219,10 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
     CvPoint3D32f* objPoints = new CvPoint3D32f[images.size() * patternDimension.width * patternDimension.height];
     int pointPosition = 0; // Position in the point list
     for (int imgNum = 0 ; imgNum < images.size() ; imgNum++) { // count through images
-        for (int heightPos = patternDimension.height - 1 ; heightPos >= 0 ; heightPos--) { // count through height
+        for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
             for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
-                objPoints[pointPosition].x = heightPos * chessSize.height;
-                objPoints[pointPosition].y = widthPos * chessSize.width;
+                objPoints[pointPosition].y = heightPos * chessSize.height;
+                objPoints[pointPosition].x = widthPos * chessSize.width;
                 objPoints[pointPosition].z = 0;
                 pointPosition++; // absolute count
             } // for width

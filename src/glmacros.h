@@ -58,12 +58,17 @@ public:
     /**
       Draws crosshairs at the given virtual coordinates.
     */
-    static void drawCrosshairs(int x, int y);
+    static void drawCrosshairs(int x, int y, float width=2.0f);
 
     /**
       Draws a small rectangular marker at the given virtual coordinates.
     */
-    static void drawMarker(int x, int y);
+    static void drawMarker(int x, int y, float width=2.0f);
+
+    /**
+        Draws a line from the first to the second point.
+    */
+    static void drawLine(int x1, int y1, int x2, int y2, float width=2.0f);
 
     /**
       Draws the text at the given virtual coordinates.
@@ -92,6 +97,12 @@ public:
       all existing elements. 
     */
     static void blankRightEye();
+
+    /**
+        Rotates the image the same way as the video image has
+        been rotated (xRot, yRot, zRot from the configuration).
+    */
+    static void rotateImage();
 
 private:
     /// Logger for this class
