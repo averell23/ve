@@ -89,6 +89,19 @@ public:
 	Stopwatch* getTimer() { return timer; }
     
     VideoSource();
+    
+    /**
+      Set the source's brightness. The behaviour of this method will
+      depend on the underlying video source: Brightness may be changed
+      through image manipulations, gain control, exposure time changes
+      etc. 
+      
+      It is also possible that this method has no effect at all for some
+      video sources, or has a different granularity for different sources.
+      
+      @param brightness The brightness in percent of the brightness range.
+    */
+    virtual void setBrightness(int brightness) { }
 
     virtual ~VideoSource();
 
