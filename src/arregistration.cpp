@@ -63,6 +63,14 @@ void ARRegistration::reRegister() {
     gsl_matrix* c = getCalibrationMatrix();
     gsl_matrix* c_1 = submatrixCopy(c, 0, 0, 2, 3); // Top part
     gsl_matrix* c_3 = submatrixCopy(c, 2, 0, 1, 3); // Bottom part
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        cout << "Calibration matrix: " << endl;
+        printMatrix(c);
+        cout << "c_1 part: " << endl;
+        printMatrix(c_1);
+        cout << "c_3 part: " << endl;
+        printMatrix(c_3);
+    }
     // Create the "master" parameter matrix
     gsl_matrix* params = gsl_matrix_alloc(sensorPoints.size()*3, 12);
     // Fill the parameter matrix
@@ -74,7 +82,11 @@ void ARRegistration::reRegister() {
 	        gsl_matrix_set(x_1, j, (j*4)+2, sensorPoints[i].z);
 	        gsl_matrix_set(x_1, j, (j*4)+3, 1);
         } // for rows
-        LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
+        LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.");
+        if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+            cout << "Sensor matrix: " << endl;
+            printMatrix(x_1);
+        }
         // Select the region of the parameter matrix to write into
         gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
         gsl_matrix_view sub_bottom = gsl_matrix_submatrix(params, (i*3)+2, 0, 1, 12);
@@ -165,7 +177,7 @@ void ARRegistration::printMatrix(gsl_matrix* mat) {
 	}
 }
 
-void ARRegistrion::printVector(gsl_vector* vec) {
+void ARRegistration::printVector(gsl_vector* vec) {
 	for (int i=0 ; i<vec->size ; i++) {
 		cout << gsl_vector_get(vec, i) << endl;
 	}
