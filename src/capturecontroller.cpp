@@ -134,8 +134,8 @@ void CaptureController::readBuffer(int i) {
 }
 
 void CaptureController::startLiveCapture() {
-    readThread = new CaptureReadThread(buffer_a, buffer_b, info, mutex);
-    writeThread = new CaptureWriteThread(buffer_a, buffer_b, info, mutex);
+    readThread = new CaptureReadThread(buffer_a, buffer_b, &info, mutex);
+    writeThread = new CaptureWriteThread(buffer_a, buffer_b, &info, mutex);
     readThread->start();
     writeThread->start();
     LOG4CPLUS_INFO(logger, "Started reader and writer threads.");
@@ -145,10 +145,20 @@ void CaptureController::stopLiveCapture() {
     if (writeThread != NULL) {
 	writeThread->quit();
 	writeThread->join();
+	info.writeTimer.stop();
 	delete writeThread;
     }
     if (readThread != NULL) {
-	delete readThread;
+		info.readTimer.stop();
+		delete readThread;
     }
     LOG4CPLUS_INFO(logger, "Reader and writer thread shut down.");
+	LOG4CPLUS_INFO(logger, "Read thread read " << info.readTimer.getCount()
+		<< " images in " << info.readTimer.getSeconds() << "s" 
+		<< info.readTimer.getMilis() << "ms. Frame rate was " 
+		<< info.readTimer.getFramerate());
+	LOG4CPLUS_INFO(logger, "Write thread wrote " << info.writeTimer.getCount()
+		<< " images in " << info.writeTimer.getSeconds() << "s" 
+		<< info.writeTimer.getMilis() << "ms. Frame rate was " 
+		<< info.writeTimer.getFramerate());
 }

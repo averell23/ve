@@ -24,6 +24,8 @@
 #ifndef CAPTUREINFO_H
 #define CAPTUREINFO_H
 
+#include "stopwatch.h"
+
 /**
 Contains meta-information that is used by the capture classes.
 
@@ -49,7 +51,10 @@ public:
 	char* filePrefix;
 	/// Name of the color model (for the XCLIB functions)
 	char* colorName;
-
+	/// Timer for reading (in continous mode) FIXME: kludge
+	Stopwatch readTimer;
+	/// Timer for writing (in continous mode) FIXME: kludge
+	Stopwatch writeTimer;
 };
 
 #endif

@@ -54,7 +54,7 @@ public:
       @param buffer_b Buffers to store images from card b
       @param info Meta-Information for capturing
     */
-    CaptureReadThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo info, Mutex* mutex);
+    CaptureReadThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex* mutex);
     
     ~CaptureReadThread();
     
@@ -70,9 +70,11 @@ public:
    */
    void readBuffer(char* buf_a, char* buf_b);
 
+   int getCounter() { return counter; }
+
 private:
     /// Meta information for capture
-    CaptureInfo info;
+    CaptureInfo* info;
     /// Buffers to store images
     CaptureBuffer *buffer_a, *buffer_b;
     /// Logger for this class
@@ -81,6 +83,8 @@ private:
     Mutex* mutex;
     /// Indicates if the thread is running
     bool running;
+	/// Image counter
+	int counter;
 };
 
 #endif

@@ -25,7 +25,7 @@
 
 Logger EpixSource::logger = Logger::getInstance("Ve.EpixSource");
 
-EpixSource::EpixSource(int unit, int cameraModel, string configfile)
+EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adjust)
 : VideoSource() {
     int result;
     if (!XCLIBController::isOpen()) {
@@ -39,7 +39,7 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile)
     switch (cameraModel) {
     case CAMERA_1280F:
         LOG4CPLUS_INFO(logger, "Trying to set up controller for SF1280 camera.");
-        controller = new SF1280Controller(unit);
+        controller = new SF1280Controller(unit,adjust);
         break;
     case CAMERA_DEFAULT:
         LOG4CPLUS_INFO(logger, "Trying to set up default (dummy) camera controller.");

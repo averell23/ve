@@ -25,20 +25,29 @@
 
 Logger CaptureWriteThread::logger = Logger::getInstance("Ve.CaptureWriteThread");
 
-CaptureWriteThread::CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo info, Mutex* mutex) {
+
+CaptureWriteThread::CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex* mutex) {
     this->buffer_a = buffer_a;
     this->buffer_b = buffer_b;
-    this->info = info;
     this->mutex = mutex;
+	this->info = info;
     counter = 0;
     running = false;
+	info->writeTimer.reset();
 }
 
 void CaptureWriteThread::run() {
     running = true;
+	info->writeTimer.start();
     while (running) {
-	writeImages();
+		writeImages();
+		counter++;
+		if ((counter % 100) == 0) {
+			LOG4CPLUS_INFO(logger, "Wrote: " << counter << " images.");
+		}
+		info->writeTimer.count();
     }
+	info->writeTimer.stop();
 }
 
 void CaptureWriteThread::writeImages() {
@@ -53,20 +62,19 @@ void CaptureWriteThread::writeImages() {
 	if (buf_b == NULL) buf_b = buffer_b->getQueueFirst();
 	mutex->leaveMutex();
     }
-    
     // Names for the image files
     char name1[256], name2[256];
     // File handles
     FILE *file1, *file2;
-    sprintf(name1,"%s_a_%d.img",info.filePrefix, counter);
-    sprintf(name2,"%s_b_%d.img",info.filePrefix, counter);
+    sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
+    sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
     // write to files
     file1 = fopen(name1, "wb");
-    if (fwrite(buf_a, info.pixBytes, info.imgSize, file1) != info.imgSize)
+    if (fwrite(buf_a, info->pixBytes, info->imgSize, file1) != info->imgSize)
 	LOG4CPLUS_ERROR(logger, "Error writing file for cam a");
     fclose(file1);
     file2 = fopen(name2, "wb");
-    if (fwrite(buf_b, info.pixBytes, info.imgSize, file2) != info.imgSize)
+    if (fwrite(buf_b, info->pixBytes, info->imgSize, file2) != info->imgSize)
 	LOG4CPLUS_ERROR(logger, "Error writing file for cam b");
     fclose(file2);
     
@@ -75,7 +83,6 @@ void CaptureWriteThread::writeImages() {
     buffer_a->removeQueueFirst();
     buffer_b->removeQueueFirst();
     mutex->leaveMutex();
-    counter++;
 }
 
 void CaptureWriteThread::quit() {

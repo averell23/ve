@@ -50,7 +50,8 @@ public:
       @param configfile Name of an XCAP Video configuration file.
     @param cameraModel Model code of the camera connected to this source
     */
-    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
+    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "",
+		       string adjust = "") ; //FIXME: Config file handling is stoopid
 
     virtual IplImage *getImage();
 

@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
     parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");
-    bool result = parser.parseCommandLine(argc, argv);
+    
+	bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
         cout << endl;
         parser.printUsage();
@@ -102,6 +103,8 @@ int main(int argc, char *argv[]) {
     VideoSource *left,*right;
 
     param = parser.getParamValue("source");
+
+
     if (param == "dummy") {
         LOG4CPLUS_INFO(logger, "Using dummy video source");
         right = new DummySource();
@@ -112,8 +115,8 @@ int main(int argc, char *argv[]) {
         param = parser.getParamValue("epixconf");
         LOG4CPLUS_INFO(logger, "Using epix video source");
         if (param == "")
-            LOG4CPLUS_DEBUG(logger, "No epix config file given");
-        right = new EpixSource(1, EpixSource::CAMERA_1280F, param);
+           LOG4CPLUS_DEBUG(logger, "No epix config file given");
+	    right = new EpixSource(1, EpixSource::CAMERA_1280F, param);
         LOG4CPLUS_DEBUG(logger, "Right video source created");
         left = new EpixSource(0, EpixSource::CAMERA_1280F, param);
         LOG4CPLUS_DEBUG(logger, "Left video source created");
@@ -122,6 +125,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+	
     Ve::init(left, right);
 	CameraCalibration* calTmp = Ve::getLeftSource()->getCalibration();
 	calTmp->setPatternDimension(cvSize(6,8));

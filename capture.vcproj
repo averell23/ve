@@ -125,7 +125,16 @@
 				RelativePath=".\src\capture_main.cpp">
 			</File>
 			<File
+				RelativePath=".\src\capturebuffer.cpp">
+			</File>
+			<File
 				RelativePath=".\src\capturecontroller.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturereadthread.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturewritethread.cpp">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.cpp">
@@ -175,7 +184,19 @@
 				RelativePath=".\src\cameracalibration.h">
 			</File>
 			<File
+				RelativePath=".\src\capturebuffer.h">
+			</File>
+			<File
 				RelativePath=".\src\capturecontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\captureinfo.h">
+			</File>
+			<File
+				RelativePath=".\src\capturereadthread.h">
+			</File>
+			<File
+				RelativePath=".\src\capturewritethread.h">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.h">

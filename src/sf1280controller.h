@@ -41,13 +41,17 @@ public:
 
     bool setGain(int gain);
 
-    SF1280Controller(int unit);
+    SF1280Controller(int unit, string initFile = "");
 
     ~SF1280Controller();
 
 private:
     /// Logger for this class
     static Logger logger;
+
+	string initFile_cam;
+
+	int specific;
 
 };
 

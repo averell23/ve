@@ -35,6 +35,7 @@ extern "C" {
 }
 #include "xclibcontroller.h"
 #include "capturecontroller.h"
+#include "sf1280controller.h"
 
 #include "commandlineparser.h"
 
@@ -55,7 +56,9 @@ int main(int argc, char *argv[])
 	parser.setupParameter("colors", true, "Color model (bayer|rgb|gray)");
 	parser.setupParameter("prefix", false, "File prefix, includeing path");
 	parser.setupParameter("size", true, "Buffer size in images (per imaging board)");
-	parser.setupOption("direct", "Write directly to disk (continous capture)");
+	parser.setupParameter("adjust1", false, "camara order txt-file1");
+    parser.setupParameter("adjust2", false, "camara order txt-file2");
+	parser.setupOption("direct", "Write directly to disk (continous capture, q quits)");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
         cout << endl;
@@ -112,6 +115,26 @@ int main(int argc, char *argv[])
 		}
 	}
 
+    string param1 = parser.getParamValue("adjust1");
+	string param2 = parser.getParamValue("adjust2");
+
+	if (param1 != "" && param2 != ""){
+        EpixCameraController* cont0 = new SF1280Controller(0,param1);
+        LOG4CPLUS_DEBUG(logger, "Right video source created");
+        EpixCameraController* cont1 = new SF1280Controller(1,param2);
+        LOG4CPLUS_DEBUG(logger, "Left video source created");
+		cont0->initCamera();
+		cont1->initCamera();
+}
+	else {
+		EpixCameraController* cont0 = new SF1280Controller(0);
+        LOG4CPLUS_DEBUG(logger, "Right video source created");
+        EpixCameraController* cont1 = new SF1280Controller(1);
+        LOG4CPLUS_DEBUG(logger, "Left video source created");	
+		cont0->initCamera();
+		cont1->initCamera();
+	}
+
 	if ((height < 1) || (height > pxd_imageYdim()))  {
 		LOG4CPLUS_WARN(logger, "Illegal value for image height " << height << ", setting to " << pxd_imageYdim());
 		height = pxd_imageYdim();
@@ -127,6 +150,11 @@ int main(int argc, char *argv[])
 
 	if (parser.getOptionValue("direct")) {
 	    controller.startLiveCapture();
+		char key = 0;
+		while (key != 'q') {
+			 scanf("%c", &key);
+		}
+		controller.stopLiveCapture();
 	} else {
 	    controller.captureToBuffers();
 	    controller.writeBuffers();

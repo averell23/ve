@@ -53,7 +53,7 @@ public:
       @param buffer_b Buffers to read card b images from
       @param info Meta-Information for capturing
     */
-    CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo info, Mutex *mutex);
+    CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex *mutex);
     
     
     /**
@@ -69,10 +69,12 @@ public:
     ~CaptureWriteThread();
     
     void run();
+
+	int getCounter() { return counter; }
     
 private:
     /// Meta information for capture
-    CaptureInfo info;
+    CaptureInfo* info;
     /// Buffers to store images
     CaptureBuffer *buffer_a, *buffer_b;
     /// Logger for this class
