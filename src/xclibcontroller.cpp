@@ -68,7 +68,7 @@ bool XCLIBController::isOpen() {
 }
 
 int XCLIBController::goLive(int unit) {
-    int result = pxd_goSnap(1<<unit, 1);
+    int result = pxd_goLive(1<<unit, 1);
 		if (result == 0) {
 		cout << "Gone live successfully, state is " << pxd_goneLive(1<<unit, 0) << endl;
 	} else {

@@ -5,6 +5,8 @@ EpixReaderThread::EpixReaderThread(int unit) : Thread() {
     tMutex = new Mutex();
     running = false;
     EpixReaderThread::unit = unit;
+	timer = new Stopwatch();
+	stale = false;
 }
 
 EpixReaderThread::~EpixReaderThread() {
@@ -25,33 +27,39 @@ void EpixReaderThread::run() {
     buffer = new uchar[bufsize];
     tmpBuffer = new uchar[bufsize];
     
-    cout << "Starting reader thread now on unit " << unit << endl;
+    cout << "Starting reader thread on unit " << unit << endl;
     
     running = true;
+	timer->start();
     while (running) {
-	readResult = pxd_readuchar(1<<unit, 1, 0, 0, width, height, tmpBuffer, bufsize, "RGB");
-	if (readResult == bufsize) {
-	    tMutex->enterMutex(); // swap the buffers
-	    swapBuffer = buffer;
-	    buffer = tmpBuffer;
-	    tmpBuffer = swapBuffer;
-	    tMutex->leaveMutex();
-	} else {
-	    cout << "Buffer read error: ";
-	    XCLIBController::printPXDMessage(readResult);
-	    cout << endl;
-	}
-    }
+		readResult = pxd_readuchar(1<<unit, 1, 0, 0, width, height, tmpBuffer, bufsize, "RGB");
+		if (readResult == bufsize) {
+			tMutex->enterMutex(); // swap the buffers
+			swapBuffer = buffer;
+			buffer = tmpBuffer;
+			tmpBuffer = swapBuffer;
+			tMutex->leaveMutex();
+			stale = false;
+		} else {
+			cout << "Buffer read error: ";
+			XCLIBController::printPXDMessage(readResult);
+			cout << endl;
+		}
+		timer->count();
+		Thread::sleep(20);
+    } 
+	timer->stop();
 }
 
 
 uchar* EpixReaderThread::getBuffer() {
-    if (!running) return NULL;
-    
+	if (stale) return NULL; // don't return a stale buffer
+
     uchar* retVal;
     tMutex->enterMutex();
     retVal = buffer;
     buffer = new uchar[bufsize];
+	stale = true;
     tMutex->leaveMutex();
     
     return retVal;

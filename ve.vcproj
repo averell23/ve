@@ -17,14 +17,15 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
-				PreprocessorDefinitions="WIN32"/>
+				AdditionalIncludeDirectories="&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
+				PreprocessorDefinitions="WIN32"
+				RuntimeLibrary="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cv.lib XCLIBWNT.lib"
-				AdditionalLibraryDirectories="C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
+				AdditionalDependencies="cv.lib XCLIBWNT.lib ccgnu2.lib"
+				AdditionalLibraryDirectories="&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -73,6 +74,9 @@
 				RelativePath=".\src\dummysource.cpp">
 			</File>
 			<File
+				RelativePath=".\src\epixreaderthread.cpp">
+			</File>
+			<File
 				RelativePath=".\src\epixsource.cpp">
 			</File>
 			<File
@@ -106,6 +110,9 @@
 			</File>
 			<File
 				RelativePath=".\src\dummysource.h">
+			</File>
+			<File
+				RelativePath=".\src\epixreaderthread.h">
 			</File>
 			<File
 				RelativePath=".\src\epixsource.h">

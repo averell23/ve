@@ -27,6 +27,7 @@
 #include "videosource.h"
 #include "xclibcontroller.h"
 #include "epixreaderthread.h"
+#include "stopwatch.h"
 #include <iostream>
 
 using namespace std;
@@ -49,6 +50,8 @@ public:
     virtual IplImage *getImage();
 	
     ~EpixSource();
+
+	Stopwatch* getReaderTimer() { return readerThread->timer; }
 
 private:
     /// Unit number from which this source reads

@@ -94,10 +94,12 @@ void VideoCanvas::draw() {
 
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-	IplImage* leftImage = leftEye->getImage();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
-	delete leftImage->imageData;
+	IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
+	if (!leftImage->imageData == NULL) {
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
+			GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
+		delete leftImage->imageData;
+	} else cout << "Warning, got empty image for left eye" << endl;
 	cvReleaseImageHeader(&leftImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
@@ -113,9 +115,11 @@ void VideoCanvas::draw() {
     // Right Quad
     glBindTexture(GL_TEXTURE_2D, textures[1]);
 	IplImage* rightImage = rightEye->getImage();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
+	if (!rightImage->imageData == NULL) {
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 		    GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
-	delete rightImage->imageData;
+		delete rightImage->imageData;
+	} else cout << "Warning, got empty image for right eye" << endl;
 	cvReleaseImageHeader(&rightImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);

@@ -55,36 +55,101 @@
     <h1>Windows Build Instructions</h1>
     The build process has been tested with Visual Studio .NET (VS 7.1), and
     project files are provided for that version of Visual Studio (won't work
-    with earlier versions).
+    with earlier versions). Building on windows may require you to build some
+    of the libraries from source, a process that may not work as smooth as
+    desired.
+    <p>
+    Some of the settings mentioned below may already be included in the .NET 
+    project. They are still mentioned for a complete reference. 
+    </p>
     <h2>GLUT library</h2>
     A pre-compiled GLUT library for Windows can be downloaded from 
     <a
 href="http://www.xmission.com/~nate/glut.html">http://www.xmission.com/~nate/glut.html</a>.
     <p>
-    Extract the glut32.dll library to your system directory (e.g.
-    <span class="code">C:\Windows\system32</span>) or another directory in your 
-    search path. The header
-    files must be in a <span class="code">GL\</span> subdirectory in the 
-    compiler's header search
-    path (e.g. <span class="code">[...]\Microsoft&nbsp;Visual&nbsp;Studio&nbsp;.NET 2003\Vc7\include\</span>).
+    To use the GLUT library you need to
     </p>
+    <div class="steps">
+		<li>
+			Put the <span class="code">glut32.dll</span> into the dll search path. 
+			(Usually <span class="code">C:\Windows\System32</span> or similiar).
+		</li>
+		<li>
+			Put the GL\ header files directory into include path.
+		</li>
+    </div>
     <h2>OpenCV library</h2>
     A Windows installer for OpenCV can be downloaded from the OpenCV homepage
     at <a
 href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/projects/opencvlibrary/</a>.
     <p>
-    Simply run the installer, and set the path to the OpenCV includes in Visual
-    Studio:
-    <div class="listing">Project -> Properties -> C/C++ -> General 
-    -> Additional Include
-    Directories</div> You also need to set the path to the libraries under: 
-    <div class="listing">Project
-    -> Properties -> Linker -> General -> Additional Library Directories</div>
+    Simply run the installer and do the following:
     </p>
+    <div class="steps">
+		<li>
+			Put the OpenCV <span class="code">include</span> directory into the 
+			include search path.
+		</li>
+		<li>
+			Put the OpenCV <span class="code">lib</span> directory into the
+			library search path
+		</li>
+		<li>
+			Link against <span class="code">cv.lib</span>
+		</li>
+    </div>
     <h2>Epix XCLIB</h2>
+    <p>
+    Install the XCLIB files with the installer. Additionally, you need to:
+    </p>
+    <div class="steps">
+		<li>
+			Put the XCLIB directory into the include search path.
+		</li>
+		<li>
+			Put the XCLIB directory into the library search path.
+		</li>
+		<li>
+			Link against <span class="code">XCLIBWNT.lib</span> or 
+			<span class="code">XCLIBW95.lib</span>, depending on your
+			architecture.
+		</li>
+    </div>
+    <h2>Gnu Common C++ library</h2>
+    <p>
+    The Common C++ source distribution can be downloaded from 
+    <a href="http://ftp.gnu.org/pub/gnu/commonc++/">http://ftp.gnu.org/pub/gnu/commonc++/</a>.
+    A Visual Studio project file may be included in the distribution. You may 
+    also want 
+    to install the XML library from 
+    <a href="http://xmlsoft.org">http://xmlsoft.org</a> (a Windows binary
+    is available from
+    <a href="http://www.zlatkovic.com/projects/libxml/binaries.html">http://www.zlatkovic.com/projects/libxml/binaries.html</a>)
+    and the OpenSSL library (a windows binary should be available from the same 
+    location, otherwise get the sources from
+    <a href="http://www.openssl.org">http://www.openssl.org</a>.
+    </p>
+    <p>
+    At the moment you may try to configure the Common C++ libraries to compile
+    without XML support, but it may be needed for future versions of ve.
+    </p>
+    <div class="steps">
+		<li>
+			Put the Common CC++ <span class="code">include</span> directory
+			into the include search path.
+		</li>
+		<li>
+			Put the directory containing the <span class="code">*.lib</span>
+			files into the library search path.
+		</li>
+		<li>
+			Put the <span class="code">*.dll</span> files into the system search
+			path.
+		</li>
+		<li>
+			Link against <span class="code">ccgnu2.lib</span>
+		</li>
+    </div>
     <h2>Visual Studio Settings</h2>
-    You need to link against <b>cv.lib</b>, so add it to
-    <div class="listing">Project -> Properties -> Linker -> Input -> Additional 
-    Dependencies</div>
   </body>
 </html>
