@@ -133,6 +133,11 @@ void ARRegistration::reRegister() {
     gsl_matrix_memcpy(&T_sub_vw.matrix, &T_vec_vw.matrix);
     // calculate the final transformation matrix
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
+    /* FIXME: Numerical Stability kludge
+    gsl_matrix_set(Trans, 2, 0, 0);
+    gsl_matrix_set(Trans, 2, 1, 0);
+    gsl_matrix_set(Trans, 2, 2, 0);
+     FIXME: Kludge Ends */
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	cout << "Registration matrix is now: " << endl;
 	    printMatrix(Trans);
