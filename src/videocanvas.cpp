@@ -72,22 +72,15 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 	printf("widthFactor = 1.0 - (%d / %d) = %f\n", imageWidth, textureSize, widthFactor);
 	printf("heightFactor = 1.0 - (%d / %d) = %f\n", imageHeight, textureSize, heightFactor);
     }
-    
-    GLfloat Matrix_YCbCr2RGB[16] = {
-    1, 1, 1, 0,
-    0, -0.344136, 1.773, 0,
-    1.402, -0.714136, 0, 0,
-    0, 0, 0, 0
-    }; 
-    glMatrixMode(GL_COLOR);
-    glLoadMatrixf(Matrix_YCbCr2RGB); 
-    glMatrixMode( GL_MODELVIEW );
      
     std::cerr << "Video Canvas created." << std::endl;
 }
 
 
 void VideoCanvas::draw() {
+    if (leftEye == NULL || rightEye == NULL) { 	// Sanity check
+	return;
+    }
     
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
@@ -100,14 +93,8 @@ void VideoCanvas::draw() {
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     
-    IplImage *tmpImage;
-    IplImage *tmpImage2 = cvCreateImage(cvSize( imageWidth, imageHeight ), IPL_DEPTH_8U, 3);
-    
-    tmpImage = leftEye->getImage();
-    // cvCvtColor( tmpImage, tmpImage2, CV_RGB2YCrCb);
-    
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, tmpImage->imageData);
+		    GL_RGB, GL_UNSIGNED_BYTE, leftEye->getImage()->imageData);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
 	glVertex3i(-1, -1, 1);
@@ -119,14 +106,10 @@ void VideoCanvas::draw() {
 	glVertex3i(-1, 1, 1);
     glEnd();
     
-    
-    tmpImage = leftEye->getImage();
-    // cvCvtColor( tmpImage, tmpImage2, CV_RGB2YCrCb);
-    
     // Right Quad
     glBindTexture(GL_TEXTURE_2D, textures[1]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, tmpImage->imageData);
+		    GL_RGB, GL_UNSIGNED_BYTE, rightEye->getImage()->imageData);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);
 	glVertex3i(0, -1, 1);
@@ -144,8 +127,6 @@ void VideoCanvas::draw() {
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );		
     glPopMatrix();
-    
-    cvReleaseImage( &tmpImage2 );
 }
 
 VideoCanvas::~VideoCanvas()

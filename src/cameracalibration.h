@@ -28,26 +28,41 @@
 #include <cv.hpp>		// OpenCV headers
 #include "videosource.h"
 #include <cstdlib>		// STL string class
+#include <vector>
 #include <iostream>
 
 using namespace std;
 
 /**
-This contains all calibration data for a camera. The data is acquired either by calibrating the camera using OpenCV, or by loading the data from disk.
+This contains all calibration data for a camera. The camera can be calibrated 
+by using pictures of a simple chessboard pattern. 
+The data is acquired either by calibrating the camera using OpenCV, 
+or by loading the data from disk. 
 
 @author Daniel Hahn,,,
+@see OpenCV documentation for more infos
 */
 class CameraCalibration{
 public:
     /** Create a new calibration object.
-       @param input The video source that will be calibrated
+       @param input The video source that will be calibrated. 
        @param filename Name of a file from which to read the initial calibration
+                       Defaults to empty string.
+       @param patternDimension Number of the inner corners in the chessboard field.
+                       Defaults to height=8, width=6.
+       @param chessSize Size of on chessboard field. Defaults to (2,2).
+       @see setPatternDimension
+       @see setChessSize
     */
-    CameraCalibration(VideoSource *input, string filename = "");
+    CameraCalibration(VideoSource *input, 
+		      string filename = "", 
+		      CvSize patternDimension = cvSize(6,8),
+		      CvSize chessSize = cvSize(2,2));
     
     /**
-      Take a snapshot from the video source. All snapshots will
-      be used for calibration.
+      Take a snapshot from the video source. The snapshots are
+      stored internally as greyscale images and are used for 
+      the calibration.
       
       @return true if the snapshot is successfully taken.
       */
@@ -60,7 +75,7 @@ public:
     
      /**string
        Recalibrate the camera from the internal snapshots.
-       <cstdlib>
+       
        @return true if the calibration was successful.
      */
     bool recalibrate();
@@ -95,6 +110,20 @@ public:
     */
     bool load(string filename = "");
     
+    /**
+      Sets the number of inner corners of the chessboard pattern. The larger number
+      of the dimension is automatically assumed to be the height (number of rows).
+      
+      @param dimesion Size of the the chessboard in rows/columns.
+    */
+    void setPatternDimension(CvSize dimension);
+    
+    /**
+      Sets the size of one chessboard field. The unit used for the size
+      will also be the unit for the calibration parameters (e.g. focal length).
+    */
+    void setChessSize(CvSize size);
+    
     ~CameraCalibration();
     
 private:
@@ -102,6 +131,43 @@ private:
     VideoSource *input;
     /** "Current" filename */
     string filename;
+    /** Vector with pointers to the stored calibration images. */
+    vector<IplImage*> images;
+    /** Calibration Matrix */
+    CvMatr32f calibrationMatrix;
+    /** Distortion Coefficients */
+    CvVect32f distortions;
+    /** Translation vectors for pattern positons. @see OpenCV documentation */
+    CvMatr32f translationVects;
+    /** Rotation matrices for pattern positions. @see OpenCV documentation */
+    CvMatr32f rotationMatrices;
+    /** Size of the chessboard pattern */
+    CvSize patternDimension;
+    /** Size of one chessboard field */
+    CvSize chessSize;
+    /** If an intrisinc guess is used for the calibration. @see OpenCV documentation */
+    bool useIntrisincGuess;
+    
+    /**
+      Creates a pattern that describes the (3D) positions of the chessboard
+      corners. This will use the internal size for the chessboard fields, 
+      and creates a set of points for each images that has already been 
+      captured. (This means the pattern has to be re-generated if the number
+      of pictures changes for some reason).
+      
+      @return Pointer to the pattern point positions. 
+    */
+    CvPoint3D32f* generatePattern();
+    
+    /**
+      Tries to guess the positions of the chessboard corners in the captured
+      images. (If a full chessboard could not be found in the picture, points
+      may still be created. This inherits the behaviour of 
+      FindChessBoardCornerGuesses from the OpenCV, and is thus undefined for us.)
+      
+      @return Pointer to the corner positions found.
+    */
+    CvPoint2D32f* guessCorners();
     
 };
 
