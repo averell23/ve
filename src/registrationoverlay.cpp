@@ -182,9 +182,9 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
     }
     if (e.getType() == VeEvent::KEYBOARD_EVENT) {
 	gsl_matrix* tMat = Ve::getStereoCalibration()->getCameraTransformation(); // FIXME: Stereo viewing kludge
-        float alpha = 180.0; // FIXME: This is evil. Fix it.
+        float alpha = 0.0; // FIXME: This is evil. Fix it.
         float beta = 0.0;
-        float gamma = 180.0;
+        float gamma = 0.0;
         double xTrans = 0; // Fixme: Evil kludge
         switch (e.getCode()) {
         case 'q':

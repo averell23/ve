@@ -165,9 +165,9 @@ void ARRegistration::reRegister() {
 void ARRegistration::resetCalibration() {
     gsl_matrix* c = getCalibrationMatrix();
     gsl_matrix_set_identity(T_orig);
-    float alpha = 180.0; // Fixme: This is evil. Fix it.
+    float alpha = 0.0; // Fixme: This is evil. Fix it.
     float beta = 0.0;
-    float gamma = 180.0;
+    float gamma = 0.0;
     /* if (Ve::mainVideo->xRot) {
 	    alpha = 180.0;
     }

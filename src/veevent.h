@@ -52,6 +52,16 @@ public:
     */
     int getType();
 
+    /**
+        Sets the priority of the event.
+    */
+    void setPriority(int priority) { VeEvent::priority = priority; }
+
+    /**
+        Gets the priority of the event.
+    */
+    int getPriority() { return priority; }
+
     /// Pre-defined event types
     static const int MISC_EVENT = 0;
     static const int KEYBOARD_EVENT = 1;
@@ -65,6 +75,8 @@ protected:
     long code;
     /// Determines the event type
     int type;
+    /// Determines the priority of the event
+    int priority;
 };
 
 #endif
