@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;&quot;D:\sources\gsl-1.0\include&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;&quot;D:\sources\gsl-1.4+-win\include&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -27,15 +27,15 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ftgl_static_MT_d.lib freetype206MT.lib xerces-c_2.lib XCLIBWNT.lib log4cplusd.lib glew32.lib ccgnu2d.lib cv.lib libgsl.lib libgslcblas.lib"
+				AdditionalDependencies="ftgl_dynamic_MTD.lib freetype206MT.lib xerces-c_2.lib XCLIBWNT.lib log4cplus.lib glew32.lib ccgnu2.lib cv.lib gsl.lib gslcblas.lib"
 				OutputFile="$(OutDir)/benchmark.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\lib&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\freetype-2.0.9\objs&quot;;&quot;D:\sources\gsl-1.0\lib&quot;;C:\Programme\OpenCV\lib;&quot;D:\sources\commoncpp2-1.0.13\win32\Debug&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;C:\Programme\XCLIB"
+				AdditionalLibraryDirectories="&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\lib&quot;;&quot;D:\sources\gsl-1.4+-win\lib&quot;;C:\Programme\OpenCV\lib;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Release&quot;;C:\Programme\XCLIB"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/benchmark.pdb"
 				SubSystem="1"
@@ -63,28 +63,35 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="4"
-				UsePrecompiledHeader="3"
+				Optimization="2"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="3"
+				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;&quot;D:\sources\gsl-1.4+-win\include&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ftgl_dynamic_MTD.lib freetype206MT.lib xerces-c_2.lib XCLIBWNT.lib log4cplus.lib glew32.lib ccgnu2.lib cv.lib gsl.lib gslcblas.lib"
 				OutputFile="$(OutDir)/benchmark.exe"
-				LinkIncremental="1"
-				GenerateDebugInformation="TRUE"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\lib&quot;;&quot;D:\sources\gsl-1.4+-win\lib&quot;;C:\Programme\OpenCV\lib;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Release&quot;;C:\Programme\XCLIB"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile="$(OutDir)/benchmark.pdb"
 				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -193,6 +200,9 @@
 			<File
 				RelativePath=".\src\xclibcontroller.cpp">
 			</File>
+			<File
+				RelativePath=".\src\xmlmacros.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -272,6 +282,9 @@
 			</File>
 			<File
 				RelativePath=".\src\xclibcontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\xmlmacros.h">
 			</File>
 		</Filter>
 		<Filter

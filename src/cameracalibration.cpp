@@ -253,12 +253,12 @@ CvPoint2D32f CameraCalibration::distortPoint(CvPoint2D32f point) {
     double coeff_a = 0;
     double coeff_b = 1.0f / a;
     double coeff_c = - (point.y / a);
-    double *x1, *x2, *x3;
-    int result = gsl_poly_solve_cubic(coeff_a, coeff_b, coeff_c, x1, x2, x3);
+    double x1, x2, x3;
+    int result = gsl_poly_solve_cubic(coeff_a, coeff_b, coeff_c, &x1, &x2, &x3);
     if (result == 1) {
-        retPoint.y = *x1;
+        retPoint.y = x1;
     } else if (result == 3) {
-        retPoint.y = *x2; // Should be the "middle" according to GSL docu
+        retPoint.y = x2; // Should be the "middle" according to GSL docu
     }
     retPoint.x = (point.x / point.y) * retPoint.y;
 

@@ -65,7 +65,9 @@ const XMLCh* XMLMacros::getAttributeByName(xercesc::DOMNode* node, XMLCh* name) 
         }
     } else {
         LOG4CPLUS_WARN(logger, "No attributes found when getting by name.");
+       
     }
+    return NULL;
 }
 
 const XMLCh* XMLMacros::getTextChild(xercesc::DOMNode* node) {

@@ -1,10 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 <html>
-  <head>
-    <title>Ve Readme</title>
-  <style type="text/css">
-  <!--
+	<head>
+		<title>Ve Readme</title>
+		<style type="text/css">
+			<!--
   .code { 
       font-family:monospace;
       font-weight:bold;
@@ -39,264 +38,431 @@
       font-family:sans-serif;
       padding-left:1ex;
   }
-  -->
-  </style>
-  </head>
-  <body>
-    <h1>Requirements</h1>
-    To build the Ve classes and application you need:
-    <ul>
-        <li>A working OpenGL library</li>
-        <li>The GLUT library</li>
-        <li>The OpenCV computer vision library.</li>
-        <li>The Epix XCLIB frame grabber library. (If you plan to use an Epix
-            frame grabber board)</li>
-        <li>The Gnu Common C++ library</li>
-        <li>The FreeType 2 and FTGL font management libraries</li>
-        <li>The GLEW GL Extension Wrangler library</li>
-        <li>The OmniORB4 CORBA ORB</li>
-    </ul>
-    <h1>Windows Build Instructions</h1>
-    The build process has been tested with Visual Studio .NET (VS 7.1), and
-    project files are provided for that version of Visual Studio (won't work
-    with earlier versions). Building on windows may require you to build some
-    of the libraries from source, a process that may not work as smooth as
-    desired.
-    <p>
-    Some of the settings mentioned below may already be included in the .NET 
-    project. They are still mentioned for a complete reference. 
-    </p>
-    <h2>GLUT library</h2>
-    A pre-compiled GLUT library for Windows can be downloaded from 
-    <a
-href="http://www.xmission.com/~nate/glut.html">http://www.xmission.com/~nate/glut.html</a>.
-    <p>
-    To use the GLUT library you need to
-    </p>
-    <div class="steps">
-		<li>
-			Put the <span class="code">glut32.dll</span> into the dll search path. 
-			(Usually <span class="code">C:\Windows\System32</span> or similiar).
-		</li>
-		<li>
-			Put the GL\ header files directory into include path.
-		</li>
-    </div>
-    <h2>OpenCV library</h2>
-    A Windows installer for OpenCV can be downloaded from the OpenCV homepage
-    at <a
-href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/projects/opencvlibrary/</a>.
-    <p>
-    Simply run the installer and do the following:
-    </p>
-    <div class="steps">
-		<li>
-			Put the OpenCV <span class="code">include</span> directory into the 
-			include search path.
-		</li>
-		<li>
-			Put the OpenCV <span class="code">lib</span> directory into the
-			library search path
-		</li>
-		<li>
-			Link against <span class="code">cv.lib</span>
-		</li>
-    </div>
-    <h2>Epix XCLIB</h2>
-    <p>
-    Install the XCLIB files with the installer. Additionally, you need to:
-    </p>
-    <div class="steps">
-		<li>
-			Put the XCLIB directory into the include search path.
-		</li>
-		<li>
-			Put the XCLIB directory into the library search path.
-		</li>
-		<li>
-			Link against <span class="code">XCLIBWNT.lib</span> or 
-			<span class="code">XCLIBW95.lib</span>, depending on your
-			architecture.
-		</li>
-    </div>
-    <h2>Gnu Common C++ library</h2>
-    <p>
-    The Common C++ source distribution can be downloaded from 
-    <a href="http://ftp.gnu.org/pub/gnu/commonc++/">http://ftp.gnu.org/pub/gnu/commonc++/</a>.
-    A Visual Studio project file may be included in the distribution. You may 
-    also want 
-    to install the XML library from 
-    <a href="http://xmlsoft.org">http://xmlsoft.org</a> (a Windows binary
-    is available from
-    <a href="http://www.zlatkovic.com/projects/libxml/binaries.html">http://www.zlatkovic.com/projects/libxml/binaries.html</a>)
-    and the OpenSSL library (a windows binary should be available from the same 
-    location, otherwise get the sources from
-    <a href="http://www.openssl.org">http://www.openssl.org</a>.
-    </p>
-    <p>
-    At the moment you may try to configure the Common C++ libraries to compile
-    without XML support, but it may be needed for future versions of ve.
-    </p>
-    <div class="steps">
-		<li>
-			Put the Common CC++ <span class="code">include</span> directory
-			into the include search path.
-		</li>
-		<li>
-			Put the directory containing the <span class="code">*.lib</span>
-			files into the library search path.
-		</li>
-		<li>
-			Put the <span class="code">*.dll</span> files into the system search
-			path.
-		</li>
-		<li>
-			Link against <span class="code">ccgnu2.lib</span>
-		</li>
-    </div>
-    <h2>FTGL/Freetype library</h2>
-    <p>
-    Ve uses the FTGL library to render text to the screen, which in turn uses the Freetype2
-    font library.
-    </p>
-    <p>
-    Freetype2 is available from
-    <a href="http://www.freetype.org/download.html#stable">http://www.freetype.org/download.html#stable</a>. You
-    should build the multi-threaded FTGL version, using the VisualStudio project file provided by the distribution. 
-    </p>
-    <p></p>
-    FTGL is available from
-    <a href="http://homepages.paradise.net.nz/henryj/code/index.html#FTGL">http://homepages.paradise.net.nz/henryj/code/index.html#FTGL</a>.
-    You should build the multithreaded version of the library, using the VisualStudio project file provided by the 
-    distribution.
-    </p>
-    <div class="steps">
-		<li>
-			Put the freetype2 <span class="code">include</span> directory
-			into the include search path.
-		</li>
-		<li>
-			Put the FTGL <span class="code">include</span> directory into the
-			include search path.
-		</li>
-		<li>
-			Put the freetype2 <span class="code">objs</span> directory into
-			the library search path.
-		</li>
-		<li>
-			Put the FTGL <span class="code">win32_vcpp/build</span> directory
-			into the library search path.
-		</li>
-		<li>
-			Put the FTGL <span class="code">win32_vcpp/build</span> directory
-			into the DLL search path (PATH).
-		</li>
-		<li>
-			Link against <span class="code">ftgl_static_MT_d.lib</span> and
-			<span class="code">freetype206MT.lib</span>.
-		</li>
-    </div>
-    <h2>GLEW extension handler</h2>
-    <p>
-    The GLEW OpenGL extension handler library can be downloaded from 
-    <a href="http://glew.sourceforge.net/#Download">http://glew.sourceforge.net/#Download</a>
-    as a binary distribution that just needs to be unzipped.
-    </p>
-    <div class="steps">
-		<li>
-			Add the GLEW <span class="code">include</span> directory to your 
-			include search path.
-		</li>
-		<li>
-			Add the GLEW <span class="code">lib</span> directory to your library
-			search path.
-		</li>
-		<li>
-			Add the GLEW <span class="code">lib</span> directory to your DLL
-			search path (PATH).
-		</li>
-		<li>
-			Link against <span class="code">glew32.lib</span>
-		</li>
-    </div>
-    <h2>OmniORB4</h2>
-    <p>
-    You can download a copy of the OmniORB4 at 
-    <a href="http://omniorb.sourceforge.net/download.html">http://omniorb.sourceforge.net/download.html</a>,
-    a Windows binary distribution should be available.
-    </p>
-    <div class="steps">
-		<li>
-			Add the OmniORB <span class="code">include</span> directory to your
-			include search path.
-		</li>
-		<li>
-			Add the OmniORB <span class="code">lib/x86_win32</span> directory
-			to your library search path.
-		</li>
-		<li>
-			You must set the following preprocessor definitions:
-			<span class="code">__WIN32__,__x86__,_WIN32_WINNT=0x0400</span>
-		</li>
-		<li>
-			Link against <span class="code">omniORB4.lib</span>, 
-			<span class="code">omnithread.lib</span>,
-			<span class="code">msvcstub.lib</span> and 
-			<span class="code">WS2_32.LIB</span>
-		</li>
-    </div>
-    <h2>Gnu Scientific Library</h2>
-    <p>
-    As of the writing of this documentation, a prebuilt package of the current version
-    of the GSL (1.4) is not readily available. It is possible to obtain a commercial CD 
-    version, or try to build the library from the CVS sources. These can be found on the
-    GSL homepage at <a href="http://sources.redhat.com/gsl/">http://sources.redhat.com/gsl/</a>
-    </p>
-    <p>
-    However, a pre-built package of version 1.0 of the library is available at 
-    <a href="http://prdownloads.sourceforge.net/gnuwin32/">http://prdownloads.sourceforge.net/gnuwin32/</a>,
-    and the application should run with this as well. The following instructions are valid for that version
-    of the library.
-    </p>
-    <div class="steps">
-		<li>
-			Add the GSL <span class="code">include/</span> directory to your
-			include search path.
-		</li>
-		<li>
-			Add the GSL <span class="code">lib/</span> directory to your library search path.
-		</li>
-		<li>
-			Link against <span class="code">libgsl.lib</span> and <span class="code">libgslcblas.lib</span>.
-		</li>
-		<li>
-			Copy <span class="code">libgsl.dll</span> and <span class="code">libgscblas.dll</span> to
-			the system search path.
-		</li>
-    </div>
-    <h2>Xerces XML Parser library</h2>
-    <p>
-    The XERCES-C XML parser packages is available from the 
-    <a href="http://xml.apache.org/xerces/">Apache XML site</a>. Download the library and extract the
-    binaries onto the hard disk.
-    </p>
-    <div class="steps">
-		<li>
-			Add the xerces-c <span class="code">include/</span> directory to your include search
-			path.
-		</li>
-		<li>
-			Add the xerces-c <span class="code">lib/</span> directory to your library search path.
-		</li>
-		<li>
-			Link against <span class="code">xerces-c_2.lib</span>
-		</li>
-		<li>
-			Copy <span class="code">xerces-c_2_5_0.dll</span> (or the version which you have) to
-			the system search path.
-		</li>
-    </div>
-    </p>
-    <h2>Visual Studio Settings</h2>
-  </body>
+  --></style>
+	</head>
+	<body>
+		<h1>Requirements</h1>
+		To build the Ve classes and application you need:
+		<ul>
+			<li>
+				A working OpenGL library</li>
+			<li>
+				The GLUT library</li>
+			<li>
+				The OpenCV computer vision library.</li>
+			<li>
+				The Epix XCLIB frame grabber library. (If you plan to use an Epix frame grabber 
+				board)</li>
+			<li>
+				The Gnu Common C++ library</li>
+			<li>
+				The FreeType 2 and FTGL font management libraries</li>
+			<li>
+				The GLEW GL Extension Wrangler library</li>
+			<li>
+				The OmniORB4 CORBA ORB</li>
+		</ul>
+		<h1>Windows Build Instructions</h1>
+		The build process has been tested with Visual Studio .NET (VS 7.1), and project 
+		files are provided for that version of Visual Studio (won't work with earlier 
+		versions). Building on windows may require you to build some of the libraries 
+		from source, a process that may not work as smooth as desired. Also note that many
+		libraries can be built as "Debug" or "Release" version; their names may change
+		depending on the version you have and there may be options for single-threaded
+		and multi-threaded libraries. In general, you should <b>always</b> use the 
+		multi-threaded version if available. You are free to choose between "Debug" and
+		"Release".
+		<p>
+			Some of the settings mentioned below may already be included in the .NET 
+			project. They are still mentioned for a complete reference.
+		</p>
+		<h2>GLUT library</h2>
+		A pre-compiled GLUT library for Windows can be downloaded from <a href="http://www.xmission.com/~nate/glut.html">
+			http://www.xmission.com/~nate/glut.html</a>.
+		<p>
+			To use the GLUT library you need to
+		</p>
+		<div class="steps">
+			<li>
+				Put the
+				<span class="code">glut32.dll</span>
+				into the dll search path. (Usually
+				<span class="code">C:\Windows\System32</span>
+				or similiar).
+			</li>
+			<li>
+				Put the GL\ header files directory into include path.
+			</li>
+		</div>
+		<h2>OpenCV library</h2>
+		A Windows installer for OpenCV can be downloaded from the OpenCV homepage at <a href="http://sourceforge.net/projects/opencvlibrary/">
+			http://sourceforge.net/projects/opencvlibrary/</a>.
+		<p>
+			Simply run the installer and do the following:
+		</p>
+		<div class="steps">
+			<li>
+				Put the OpenCV
+				<span class="code">include</span>
+				directory into the include search path.
+			</li>
+			<li>
+				Put the OpenCV
+				<span class="code">lib</span>
+				directory into the library search path
+			</li>
+			<li>
+				Link against
+				<span class="code">cv.lib</span>
+			</li>
+		</div>
+		<h2>Epix XCLIB</h2>
+		<p>
+			Install the XCLIB files with the installer. Additionally, you need to:
+		</p>
+		<div class="steps">
+			<li>
+				Put the XCLIB directory into the include search path.
+			</li>
+			<li>
+				Put the XCLIB directory into the library search path.
+			</li>
+			<li>
+				Link against
+				<span class="code">XCLIBWNT.lib</span>
+				or
+				<span class="code">XCLIBW95.lib</span>, depending on your architecture.
+			</li>
+		</div>
+		<h2>Gnu Common C++ library</h2>
+		<p>
+			The Common C++ source distribution can be downloaded from <a href="http://ftp.gnu.org/pub/gnu/commonc++/">
+				http://ftp.gnu.org/pub/gnu/commonc++/</a>. A Visual Studio project file may 
+			be included in the distribution. You may also want to install the XML library 
+			from <a href="http://xmlsoft.org">http://xmlsoft.org</a> (a Windows binary is 
+			available from <a href="http://www.zlatkovic.com/projects/libxml/binaries.html">http://www.zlatkovic.com/projects/libxml/binaries.html</a>) 
+			and the OpenSSL library (a windows binary should be available from the same 
+			location, otherwise get the sources from <a href="http://www.openssl.org">http://www.openssl.org</a>.
+		</p>
+		<p>
+			At the moment you may try to configure the Common C++ libraries to compile 
+			without XML support, but it may be needed for future versions of ve.
+		</p>
+		<div class="steps">
+			<li>
+				Put the Common CC++
+				<span class="code">include</span>
+				directory into the include search path.
+			</li>
+			<li>
+				Put the directory containing the
+				<span class="code">*.lib</span>
+				files into the library search path.
+			</li>
+			<li>
+				Put the
+				<span class="code">*.dll</span>
+				files into the system search path.
+			</li>
+			<li>
+				Link against
+				<span class="code">ccgnu2.lib</span>
+			</li>
+		</div>
+		<h2>FTGL/Freetype library</h2>
+		<p>
+			Ve uses the FTGL library to render text to the screen, which in turn uses the 
+			Freetype2 font library.
+		</p>
+		<p>
+			Freetype2 is available from <a href="http://www.freetype.org/download.html#stable">http://www.freetype.org/download.html#stable</a>. 
+			You should build the multi-threaded FTGL version, using the VisualStudio 
+			project file provided by the distribution.
+		</p>
+		<p></p>
+		FTGL is available from <a href="http://homepages.paradise.net.nz/henryj/code/index.html#FTGL">
+			http://homepages.paradise.net.nz/henryj/code/index.html#FTGL</a>. You 
+		should build the multithreaded version of the library, using the VisualStudio 
+		project file provided by the distribution. You must edit the project files to 
+		match your freetype installation! Don't worry about the unit tests and demo 
+		applications, you don't need them to build Ve. </p>
+		<div class="steps">
+			<li>
+				Put the freetype2
+				<span class="code">include</span>
+				directory into the include search path.
+			</li>
+			<li>
+				Put the FTGL
+				<span class="code">include</span>
+				directory into the include search path.
+			</li>
+			<li>
+				Put the freetype2
+				<span class="code">objs</span>
+				directory into the library search path.
+			</li>
+			<li>
+				Put the FTGL
+				<span class="code">win32_vcpp/build</span>
+				directory into the library search path.
+			</li>
+			<li>
+				Put the FTGL
+				<span class="code">win32_vcpp/build</span>
+				directory into the DLL search path (PATH).
+			</li>
+			<li>
+				Link against
+				<span class="code">ftgl_dynamic_MT_d.lib</span>
+				and
+				<span class="code">freetype206MT.lib</span>.
+			</li>
+		</div>
+		<h2>GLEW extension handler</h2>
+		<p>
+			The GLEW OpenGL extension handler library can be downloaded from <a href="http://glew.sourceforge.net/#Download">
+				http://glew.sourceforge.net/#Download</a> as a binary distribution that 
+			just needs to be unzipped.
+		</p>
+		<div class="steps">
+			<li>
+				Add the GLEW
+				<span class="code">include</span>
+				directory to your include search path.
+			</li>
+			<li>
+				Add the GLEW
+				<span class="code">lib</span>
+				directory to your library search path.
+			</li>
+			<li>
+				Add the GLEW
+				<span class="code">lib</span>
+				directory to your DLL search path (PATH).
+			</li>
+			<li>
+				Link against
+				<span class="code">glew32.lib</span>
+			</li>
+		</div>
+		<h2>OmniORB4</h2>
+		<p>
+			You can download a copy of the OmniORB4 at <a href="http://omniorb.sourceforge.net/download.html">
+				http://omniorb.sourceforge.net/download.html</a>, a Windows binary 
+			distribution should be available.
+		</p>
+		<div class="steps">
+			<li>
+				Add the OmniORB
+				<span class="code">include</span>
+				directory to your include search path.
+			</li>
+			<li>
+				Add the OmniORB
+				<span class="code">lib/x86_win32</span>
+				directory to your library search path.
+			</li>
+			<li>
+				You must set the following preprocessor definitions:
+				<span class="code">__WIN32__,__x86__,_WIN32_WINNT=0x0400</span>
+			</li>
+			<li>
+				Link against
+				<span class="code">omniORB4.lib</span>,
+				<span class="code">omnithread.lib</span>,
+				<span class="code">msvcstub.lib</span>
+				and
+				<span class="code">WS2_32.LIB</span>
+			</li>
+		</div>
+		<h2>Gnu Scientific Library</h2>
+		<p>
+			As of the writing of this documentation, there are no pre-built binaries for
+			the current GSL version (1.4), neither does the distribution include Visual
+			Studio project files or win32 build instructions. Win32 binaries are only 
+			distributed on CD, through a commercial vendor, details can be found on the
+			GSL home page at 
+			<a href="http://sources.redhat.com/gsl/">http://sources.redhat.com/gsl/</a>.
+		</p>
+		<p>
+			A pre-built package of version 1.0 of the library is available at 
+			<a href="http://prdownloads.sourceforge.net/gnuwin32/">
+			http://prdownloads.sourceforge.net/gnuwin32/</a>. Although this version of
+			the library should be sufficient to compile and run Ve, it showed a major
+			bug during Ve development. (The implementation of 
+			<span class="code">gsl_matrix_submatrix</span> overwrote the stack pointer.)
+		</p>
+		<p>
+		For this reason it may be necessary to build the windows library from the current 
+		CVS version of the GSL. The procedure for checking out the CVS sources is 
+		explained on the GSL homepage; you may also use the stable 1.4 version and check
+		out only the additional files that are neccessary to build the windows binaries.
+		The build process is briefly explained in the HACKING file, but here are some
+		more comprehensive instructions:
+		</p>
+		<div class="steps">
+			<li>
+				<b>The first steps need to take place on a UNIX machine, or under the
+				cygwin environment for windows!</b>
+			</li>
+			<li>
+				Run <span class="code">./autogen.sh</span> to create the necessary
+				configure scripts.
+			</li>
+			<li>
+				Run <span class="code">./configure</span>. It will check if you've
+				met all prerequisites for building the library. 
+			</li>
+			<li>
+				Run <span class="code">make</span>
+			</li>
+			<li>
+				Run <span class="code">make check log 2>&amp;1</span>, and check the
+				log file for any errors.
+			</li>
+			<li>
+				Make the HTML documentation with the following commands:
+				<ul>
+					<li><span class="code">cd doc ; mkdir html ; cd html</span></li>
+					<li><span class="code">../texi2html -verbose -split_chapter -expandinfo ~/gsl/doc/gsl-ref.texi</span></li>
+					<li><span class="code">cd .. ; tar cvfz gsl-ref-html.tar.gz</span></li>
+				</ul>
+			</li>
+			<li>
+				Run <span class="code">make dist</span> to build the UNIX distribution
+				file. This produced a faulty tar file during development (with cygwin).
+				In this case, you can <span class="code">make distdir</span> and
+				build the tar file manually.
+			</li>
+			<li>
+				Copy <span class="code">libgsl.a</span> and <span class="code">libgslcblas.a</span>
+				to <span class="code">msvc/usr/lib</span>
+			</li>
+			<li>
+				Run <span class="code">make update</span> in <span class="code">msvc/</span> 
+				to update the exports file.
+			</li>
+			<li>
+				Use the script, <span class="code">./script/windists.sh gsl-VERSION.tar.gz</span>
+				to create a corresponding zip file.
+			</li>
+			<li>
+				<b>Now you can move to your Windows machine</b> and unzip your file there.
+			</li>
+			<li>
+				Build the Visual Studio workspaces on the Windows machine. Note that there may
+				be problems with unresolved symbols, due to wrong decorations in the exports
+				files. If you recieve a lot of <span class="code">LNK2001 unresolved symbol</span>
+				errors, try to remove all leading underscores from the declarations in 
+				<span class="code">gsl.def</span> and <span class="code">gslcblas.def</span>. If
+				you still encouter a few unresolved symbols, try to remove those from the def
+				file.
+			</li>
+			<li>
+				If everything compiled o.k., you may also want to run the tests, to see if everything
+				works correctly.
+			</li>
+			<li>
+				In the directory <span class="code">doc/html</span> run the Microsoft HTML Help Compiler
+				on the file <span class="mode">gsl-ref.hhp</span> to create 
+				<span class="mode">gsl-ref.chm</span>. The command for this 
+				is <span class="code">hcc gsl-ref.hpp</span>. You may need to download the help compiler
+				from the Microsoft homepage.
+			</li>
+			<li>
+				Use <a href="http://www.jrsoftware.org/isinfo.php">Inno setup</a> to create a windows
+				installer from the file <span class="code">setup.iss</span>
+			</li>
+		</div>
+		<p>
+			If you have trouble during the build process, check the INSTALL and HACKING files from the
+			GSL distribution. To use the library in Ve:
+		</p>
+		<div class="steps">
+			<li>
+				Add the GSL
+				<span class="code">include/</span>
+				directory to your include search path.
+			</li>
+			<li>
+				Add the GSL
+				<span class="code">lib/</span>
+				directory to your library search path.
+			</li>
+			<li>
+				Link against
+				<span class="code">gsl.lib</span>
+				and
+				<span class="code">gslcblas.lib</span>.
+			</li>
+			<li>
+				Copy
+				<span class="code">gsl.dll</span>
+				and
+				<span class="code">gslcblas.dll</span>
+				to the system search path, or add the
+				<span class="code">lib</span> directory that contains them
+				to the search path.
+			</li>
+		</div>
+		<h2>Xerces XML Parser library</h2>
+		<p>
+			The XERCES-C XML parser packages is available from the <a href="http://xml.apache.org/xerces/">
+				Apache XML site</a>. Download the library and extract the binaries onto the 
+			hard disk.
+		</p>
+		<div class="steps">
+			<li>
+				Add the xerces-c
+				<span class="code">include/</span>
+				directory to your include search path.
+			</li>
+			<li>
+				Add the xerces-c
+				<span class="code">lib/</span>
+				directory to your library search path.
+			</li>
+			<li>
+				Link against
+				<span class="code">xerces-c_2.lib</span>
+			</li>
+			<li>
+				Copy
+				<span class="code">xerces-c_2_5_0.dll</span>
+				(or the version which you have) to the system search path.
+			</li>
+		</div>
+		</p>
+		<h2>log4cplus Logger</h2>
+		<p>
+		Log4cplus provides a logger API that is used for all error and debuggin output in Ve. 
+		See the documentation on how to customize the logging process through configuration 
+		files. Log4cplus is available from 
+		<a href="http://log4cplus.sourceforge.net/">http://log4cplus.sourceforge.net/</a>, Visual
+		Studio project files are included.
+		<div class="steps">
+			<li>
+				Add the log4cplus <span class="code">include</span> directory to your include
+				search path.
+			</li>
+			<li>
+				Add the log4cplus <span class="code">msvc6/Debug</span> or 
+				<span class="code">msvc6/Release</span> directory into your library search
+				path.
+			</li>
+			<li>
+				Link against <span class="code">log4cplus.lib</span> (or 
+				<span class="code">log4cplusd.lib</span>).
+			</li>
+			<li>
+				Add the log4cplus <span class="code">msvc6/Debug</span> or 
+				<span class="code>msvc6/Release</span> directory into your system search
+				path.
+			</li>
+			</li>
+		</div>
+		</p>
+		<h2>Visual Studio Settings</h2>
+	</body>
 </html>

@@ -51,8 +51,8 @@ int main(int argc, char *argv[]) {
         parser.printUsage();
         exit(1);
     }
-    bool option = parser.getOptionValue("help");
-    if (option) {
+    int option = parser.getOptionValue("help");
+    if (option == CommandLineParser::OPTION_SET) {
         cout << endl;
         parser.printUsage();
         exit(0);
