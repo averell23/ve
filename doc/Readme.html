@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Ve Readme</title>
+  <style type="text/css">
+  <!--
+  .code { 
+      font-family:monospace;
+      font-weight:bold;
+  }
+  .listing {
+      font-family:monospace;
+      font-weight:bold;
+      margin-left:5ex;
+      margin-right:10ex;
+      margin-top:1ex;
+      margin-bottom:2ex;
+      padding:2ex;
+      background-color:beige;
+      width:auto;
+  }
+  .steps {
+      margin-left:5ex;
+      margin-bottom:2ex;
+      background-color:beige;
+      padding:2ex;
+  }
+  .directory { 
+      font-family:monospace;
+      font-weight:bold;
+      margin-left:5ex;
+      margin-right:5ex;
+      padding:2ex;
+      background-color:lavender; 
+  }
+  .dirdesc { 
+      font-weight:normal;
+      font-family:sans-serif;
+      padding-left:1ex;
+  }
+  -->
+  </style>
+  </head>
+  <body>
+    <h1>Requirements</h1>
+    To build the Ve classes and application you need:
+    <ul>
+        <li>A working OpenGL library</li>
+        <li>The GLUT library</li>
+        <li>The OpenCV computer vision library.</li>
+        <li>The Epix XCLIB frame grabber library. (If you plan to use an Epix
+            frame grabber board.</li>
+    </ul>
+    <h1>Windows Build Instructions</h1>
+    The build process has been tested with Visual Studio .NET (VS 7.1), and
+    project files are provided for that version of Visual Studio (won't work
+    with earlier versions).
+    <h2>GLUT library</h2>
+    A pre-compiled GLUT library for Windows can be downloaded from 
+    <a
+href="http://www.xmission.com/~nate/glut.html">http://www.xmission.com/~nate/glut.html</a>.
+    <p>
+    Extract the glut32.dll library to your system directory (e.g.
+    <span class="code">C:\Windows\system32</span>) or another directory in your 
+    search path. The header
+    files must be in a <span class="code">GL\</span> subdirectory in the 
+    compiler's header search
+    path (e.g. <span class="code">[...]\Microsoft&nbsp;Visual&nbsp;Studio&nbsp;.NET 2003\Vc7\include\</span>).
+    </p>
+    <h2>OpenCV library</h2>
+    A Windows installer for OpenCV can be downloaded from the OpenCV homepage
+    at <a
+href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/projects/opencvlibrary/</a>.
+    <p>
+    Simply run the installer, and set the path to the OpenCV includes in Visual
+    Studio:
+    <div class="listing">Project -> Properties -> C/C++ -> General 
+    -> Additional Include
+    Directories</div> You also need to set the path to the libraries under: 
+    <div class="listing">Project
+    -> Properties -> Linker -> General -> Additional Library Directories</div>
+    </p>
+    <h2>Epix XCLIB</h2>
+    <h2>Visual Studio Settings</h2>
+    You need to link against <b>cv.lib</b>, so add it to
+    <div class="listing">Project -> Properties -> Linker -> Input -> Additional 
+    Dependencies</div>
+  </body>
+</html>

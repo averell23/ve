@@ -24,7 +24,7 @@
 #ifndef IMAGEREADERSOURCE_H
 #define IMAGEREADERSOURCE_H
 
-#include <videosource.h>
+#include "videosource.h"
 
 /**
 Reads the images from files on disc. If multiple images are loaded into the source they will be supplied in a circular fashion.

@@ -79,6 +79,9 @@
 				RelativePath=".\src\glutCallbacks.cpp">
 			</File>
 			<File
+				RelativePath=".\src\imagereadersource.cpp">
+			</File>
+			<File
 				RelativePath=".\src\stopwatch.cpp">
 			</File>
 			<File
@@ -103,6 +106,9 @@
 			</File>
 			<File
 				RelativePath=".\src\glutCallbacks.h">
+			</File>
+			<File
+				RelativePath=".\src\imagereadersource.h">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.h">
