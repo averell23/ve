@@ -21,35 +21,16 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
+#include "fonttesteroverlay.h"
 
-#ifndef GLUTCALLBACKS_H
-#define GLUTCALLBACKS_H
+FontTesterOverlay::FontTesterOverlay()
+{
+    font = new FTGLPixmapFont( "Fonts:Arial");
+}
 
-#ifdef WIN32
-#include <windows.h>
-#endif
 
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include <stdlib.h>
-#include "stopwatch.h"
+FontTesterOverlay::~FontTesterOverlay()
+{
+}
 
-/** Reshape (viewport) callback */
-void reshape ( int w, int h );
 
-/** Keyboard callback */
-void keyboard ( unsigned char key, int x, int y );
-
-/** Arrow key callback */
-void arrow_keys ( int a_keys, int x, int y );
-
-/** Shutdown function for the program (to be defined in ve.cpp) */
-void shutdown();
-
-/** Drawing function (to be defined in ve.cpp */
-void glDraw();
-
-/** OpenGL initilization */
-void initGL( int argc, char** argv );
-
-#endif

@@ -21,44 +21,15 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "epixsource.h"
+#include "overlay.h"
 
-EpixSource::EpixSource(int unit, string configfile)
- : VideoSource()
+Overlay::Overlay()
 {
-    int result;
-    if (!XCLIBController::isOpen()) 
-	result = XCLIBController::openLib(configfile);
-    if (XCLIBController::isOpen()) {
-	    height = pxd_imageYdim();
-	    width = pxd_imageXdim();
-    }
-    EpixSource::unit = unit;
-    XCLIBController::goLive(unit);
-    readerThread = new EpixReaderThread(unit);
-    readerThread->start();
 }
 
 
-EpixSource::~EpixSource()
+Overlay::~Overlay()
 {
-    readerThread->stop();
-    XCLIBController::goUnLive(unit);
 }
 
 
-IplImage* EpixSource::getImage() {
-    IplImage* image;
-    CvSize size;
-    size.height = height;
-    size.width = width;
-    
-    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    uchar* buffer = readerThread->getBuffer();
-    if (buffer != NULL) {
-	image->imageData = (char*) buffer;
-	timer->count();
-    }
-
-    return image;
-}

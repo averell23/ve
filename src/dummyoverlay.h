@@ -27,14 +27,14 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-
+#include "overlay.h"
 #include <GL/gl.h>
 #include <math.h>
 
 /**
 @author Daniel Hahn,,,
 */
-class DummyOverlay{
+class DummyOverlay : Overlay {
 public:
     DummyOverlay();
 

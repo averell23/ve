@@ -45,11 +45,6 @@ public:
       Requests the reader to stop after the current iteration.
     */
     void stop();
-
-	/**
-		Internal frame count for performance measurements.
-	*/
-	Stopwatch* timer;
     
 private:
     /// Picture buffer
@@ -64,8 +59,8 @@ private:
     int bufsize;
     /// indicates whether the thread is inside the main loop
     bool running;
-	// indicates wether the current buffer is stale
-	bool stale;
+    // indicates wether the current buffer is stale
+    bool stale;
 };
 
 #endif

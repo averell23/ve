@@ -25,11 +25,14 @@
 
 VideoSource::VideoSource()
 {
+    timer = new Stopwatch();
+   timer->start();
 }
 
 
 VideoSource::~VideoSource()
 {
+    delete timer;
 }
 
 int VideoSource::getWidth() {
@@ -42,4 +45,9 @@ int VideoSource::getHeight() {
 
 IplImage* VideoSource::getImage() {
     return NULL;
+}
+
+Stopwatch* VideoSource::getAndStopTimer() {
+    timer->stop();
+    return timer;
 }

@@ -5,7 +5,6 @@ EpixReaderThread::EpixReaderThread(int unit) : Thread() {
     tMutex = new Mutex();
     running = false;
     EpixReaderThread::unit = unit;
-	timer = new Stopwatch();
 	stale = false;
 }
 
@@ -30,7 +29,6 @@ void EpixReaderThread::run() {
     cout << "Starting reader thread on unit " << unit << endl;
     
     running = true;
-	timer->start();
     while (running) {
 		readResult = pxd_readuchar(1<<unit, 1, 0, 0, width, height, tmpBuffer, bufsize, "RGB");
 		if (readResult == bufsize) {
@@ -45,10 +43,8 @@ void EpixReaderThread::run() {
 			XCLIBController::printPXDMessage(readResult);
 			cout << endl;
 		}
-		timer->count();
 		Thread::sleep(20);
     } 
-	timer->stop();
 }
 
 

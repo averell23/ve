@@ -21,44 +21,76 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
+#ifndef VE_H
+#define VE_H
+
+#include <iostream>
+#include <cstdlib>
+#ifdef WIN32
+#include <windows.h>
+#endif
+#include <GL/gl.h>
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <vector>
+#include "stopwatch.h"
 #include "epixsource.h"
+#include "dummysource.h"
+#include "videocanvas.h"
+#include "stopwatch.h"
+#include "dummyoverlay.h"
 
-EpixSource::EpixSource(int unit, string configfile)
- : VideoSource()
-{
-    int result;
-    if (!XCLIBController::isOpen()) 
-	result = XCLIBController::openLib(configfile);
-    if (XCLIBController::isOpen()) {
-	    height = pxd_imageYdim();
-	    width = pxd_imageXdim();
-    }
-    EpixSource::unit = unit;
-    XCLIBController::goLive(unit);
-    readerThread = new EpixReaderThread(unit);
-    readerThread->start();
-}
-
-
-EpixSource::~EpixSource()
-{
-    readerThread->stop();
-    XCLIBController::goUnLive(unit);
-}
-
-
-IplImage* EpixSource::getImage() {
-    IplImage* image;
-    CvSize size;
-    size.height = height;
-    size.width = width;
+/** 
+  This is the program's main class that includes all the "global" methods,
+  as well as the global program logic.
+*/
+class Ve {
+public:
+    /**
+      Adds an overlay to the internal overlay list. All overlays will
+      be called in the order in which they were added.
+     */
+    static void addOverlay(Overlay* ol);
     
-    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    uchar* buffer = readerThread->getBuffer();
-    if (buffer != NULL) {
-	image->imageData = (char*) buffer;
-	timer->count();
-    }
+    /**
+      Intializes the Ve application and data structures. This
+      should be called after initGL().
+      
+      @param rightEye/leftEye The sources for the two video 
+                              images.
+    */
+    static void init(VideoSource* left, VideoSource* right);
 
-    return image;
-}
+    /*
+      Start video display and processing.
+    */
+    static void start();
+    
+    /** OpenGL initilization */
+    static void initGL( int argc, char** argv );
+    
+    /** Reshape (viewport) callback */
+    static void reshape ( int w, int h );
+
+    /** Keyboard callback */
+    static void keyboard ( unsigned char key, int x, int y );
+
+    /** Arrow key callback */
+    static void arrow_keys ( int a_keys, int x, int y );
+
+    /** Shutdown function for the program  */
+    static void shutdown();
+
+    /** Drawing function */
+    static void glDraw();
+    
+    static Stopwatch *timer;
+    static VideoCanvas *mainVideo;
+    static DummyOverlay *overlay;
+    static VideoSource *rightEye;
+    static VideoSource *leftEye;
+    /// The overlays that will be displayed
+    static vector<Overlay*> overlays;
+};
+
+#endif

@@ -51,8 +51,8 @@ public:
 	
     ~EpixSource();
 
-	Stopwatch* getReaderTimer() { return readerThread->timer; }
-
+    bool timerSupported() { return true; };
+    
 private:
     /// Unit number from which this source reads
     int unit;

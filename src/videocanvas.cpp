@@ -25,6 +25,10 @@
 
 VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 {
+    if (left == NULL || right == NULL) {
+	cout << "Missing video source: Could not create canvas." << endl;
+	return;
+    }
     leftEye = left;
     rightEye = right;
     imageHeight = leftEye->getHeight();

@@ -26,20 +26,45 @@
 
 #include <stdio.h>
 #include <cv.hpp>
+#include "stopwatch.h"
 
 /**
-Wrapper class for a source of video images. 
+Wrapper class for a source of video images.
 
 @author Daniel Hahn,,,
 */
 class VideoSource{
 public:
-    /** Retrieve the next image for this video source. */
+    /** 
+        Retrieve the next image for this video source. The class should
+	expect the IplImage to be consumed (read: deleted) by the 
+        subsequent processing, so it should not be expected to exist
+	after getImage() was called.
+	
+	This should return NULL if no new image was created/acquired 
+	since the last getImage() call, in order to avoid unecessary
+	display updates.
+	
+	Child methods should update the internal timer whenever a 
+	none-NULL image is returned.
+    */
     virtual IplImage *getImage();
     /** Gets the image width for this video source */
     int getWidth();
     /** Gets the image height for this video source */
     int getHeight();
+    /** Indicates whether the child class correctly updates the
+        internal timer. */
+    virtual bool timerSupported() { return false; };
+    
+    /**
+      Gets an handle to the internal timer. The timer will be stopped,
+      so measurements taken after this called are no longer accurate.
+      
+      It's up to the child classes to actually start and update 
+      the internal timer
+    */
+    Stopwatch* getAndStopTimer();
     
     VideoSource();
 
@@ -48,7 +73,8 @@ public:
 protected:
     /** Width and height of this video source */
     int width, height;
-
+    /// Internal timer for performance measures.
+    Stopwatch* timer;
 };
 
 #endif
