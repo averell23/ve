@@ -30,7 +30,7 @@
 #include <cv.hpp>
 #include <log4cplus/logger.h>
 
-#define NUM_IMAGES 1
+#define NUM_IMAGES 10
 
 using namespace std;
 using namespace log4cplus;

@@ -28,9 +28,11 @@
 #include <cv.hpp>
 #include "stopwatch.h"
 #include "cameracalibration.h"
+#include "arregistration.h"
 
 // Forward declaration
 class CameraCalibration;
+class ARRegistration;
 
 /**
 Wrapper class for a source of video images.
@@ -121,7 +123,12 @@ public:
     CameraCalibration* getCalibration() {
         return calibrationObject;
     }
-
+    
+    /**
+      Returns the sensor registration object connected to this source.
+    */
+    ARRegistration* getRegistration() { return registrationObject; }
+    
     /**
     	Returns the current brightness setting.
 
@@ -142,6 +149,8 @@ protected:
     int brightness;
     /// Internal calibration Object
     CameraCalibration* calibrationObject;
+    /// Internal registration Object
+    ARRegistration* registrationObject;
 };
 
 #endif

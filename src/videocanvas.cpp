@@ -52,6 +52,11 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
                 accomodated = true;
             LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
         }
+	
+	if (textureSize > maxTexSize) {
+	    LOG4CPLUS_FATAL(logger, "Can not accomodate texture, shutting down.");
+	    exit(1);
+	}
 
         LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
         glGenTextures(2, textures);   /* create the texture names */
@@ -91,8 +96,13 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     VideoCanvas::xRot = xRot;
     VideoCanvas::yRot = yRot;
     VideoCanvas::zRot = zRot;
-
-    LOG4CPLUS_INFO(logger, "Video Canvas created.");
+    
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) {
+	LOG4CPLUS_WARN(logger, "GL error encountered while creating video canvas. " << Ve::getGLError(error));
+    } else {
+	LOG4CPLUS_INFO(logger, "Video Canvas successfully created.");
+    }
 }
 
 
@@ -101,14 +111,13 @@ void VideoCanvas::draw() {
         return;
     }
 
-    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    glColor3f(1.0f, 1.0f, 1.0f);		// Set normal color 
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glLoadIdentity();				// ...and load the Identity Matrix instead
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
-
 
     if (xRot) {
         glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
@@ -119,12 +128,12 @@ void VideoCanvas::draw() {
     if (zRot) {
         glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
     }
-
+    
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
     if (!leftImage->imageData == NULL) {
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                         GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
         delete leftImage->imageData;
     } else {
@@ -174,6 +183,7 @@ void VideoCanvas::draw() {
 
 }
 
+
 void VideoCanvas::recieveEvent(VeEvent &e) {
     LOG4CPLUS_DEBUG(logger, "Event encountered.");
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 49)) {
@@ -198,7 +208,7 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
 	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'a'))  {
 		char name1[256], name2[256];
 		sprintf(name1,"quicksaved_left_%d.raw", imagesSaved);
-        sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
+		sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
 		IplImage* image2 = rightEye->waitAndGetImage();
 		IplImage* image1 = leftEye->waitAndGetImage();
 		CaptureImagePair imgPair(0);

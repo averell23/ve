@@ -66,13 +66,37 @@ void Ve::shutdown() {
     }
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
-        LOG4CPLUS_WARN(logger, "Some openGL error has occured during runtime." );
+        LOG4CPLUS_WARN(logger, "Open GL Error encountered on during runtime." << getGLError(error));
     }
     timer->stop();
     delete mainVideo;
     for (int i=0 ; i < overlays.size() ; i++) {
         delete overlays[i];
     }
+}
+
+const char* Ve::getGLError(GLenum error) {
+    char* retVal;
+    	if (error == GL_INVALID_ENUM) {
+	    retVal = "OpenGL Error was: GL_INVALID_ENUM (Unacceptable value for enumerated argument)";
+	} else if (error == GL_INVALID_VALUE) {
+	    retVal = "OpenGL Error was: GL_INVALID_VALUE (Numeric value out of range)";
+	} else if (error == GL_INVALID_OPERATION) {
+	    retVal = "OpenGL Error was: GL_INVALID_OPERATION (Operation called in an illegal state)";
+	} else if (error == GL_STACK_OVERFLOW) {
+	    retVal = "OpenGL Error was: GL_STACK_OVERFLOW (Stack overflow)";
+	} else if (error == GL_STACK_UNDERFLOW) {
+	    retVal = "OpenGL Error was: GL_STACK_UNDERFLOW (Stack underflow)";
+	} else if (error == GL_OUT_OF_MEMORY) {
+	    retVal = "OpenGL Error was: GL_OUT_OF_MEMORY";
+	} else if (error == GL_TABLE_TOO_LARGE) {
+	    retVal = "OpenGL Error was: GL_TABLE_TOO_LARGE (Table size exceeded)";
+	} else if (error == GL_NO_ERROR) {
+	    retVal = "OpenGL reported GL_NO_ERROR";
+	} else {
+	    LOG4CPLUS_WARN(logger, "OpenGL Error code is unknown.");
+	}
+	return retVal;
 }
 
 void Ve::addListener(VeEventListener* listener) {

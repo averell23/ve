@@ -33,7 +33,7 @@
 #include <iostream>
 #include <log4cplus/logger.h>
 #include <math.h>
-// FIXME #include <gsl/gsl_poly.h>
+#include <gsl/gsl_poly.h>
 
 using namespace std;
 using namespace log4cplus;
@@ -92,7 +92,7 @@ public:
       
       @return The calibration matrix in OpenCV format
     */
-    CvMatr32f getCalibrationMatrix();
+    CvMatr32f getCalibrationMatrix() { return calibrationMatrix; }
 
     /**
       Returns the distortion coefficients.
@@ -166,6 +166,14 @@ public:
     */
     CvPoint2D32f unDistortPoint(CvPoint2D32f point);
 
+    /**
+      Stores a black offset image. The contents of the black
+      offset image will be deduced from all captured images
+      to correct them.
+    */
+    void takeBlackOffset();
+    
+    
     ~CameraCalibration();
 
 private:
@@ -213,6 +221,8 @@ private:
     */
     CvPoint2D32f* guessCorners(IplImage* image);
     
+    /// Black offset image
+    IplImage* blackOffset;
     /// Logger for this class
     static Logger logger;
 };

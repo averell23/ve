@@ -44,6 +44,9 @@
 
 using namespace log4cplus;
 
+// Forward declarations
+class VideoCanvas;
+
 /**
   This is the program's main class that includes the basic application framework.
 */
@@ -114,6 +117,9 @@ public:
     /** Drawing function */
     static void glDraw();
 
+    /** Print OpenGL error code */
+    static const char* getGLError(GLenum error);
+    
     static Stopwatch *timer;
     static VideoCanvas *mainVideo;
     static VideoSource *rightEye;

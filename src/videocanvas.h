@@ -41,9 +41,13 @@
 #include "captureinfo.h"
 #include "captureimagepair.h"
 #include "capturecontroller.h"
+#include "ve.h"
 
 using namespace std;
 using namespace log4cplus;
+
+// Forward declarations
+class Ve;
 
 /**
 A canvas for displaying a stereo video feed. This retrieves a picture for the

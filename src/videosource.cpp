@@ -25,6 +25,7 @@
 
 VideoSource::VideoSource() {
     calibrationObject = new CameraCalibration(this);
+    registrationObject = new ARRegistration(this);
     timer = new Stopwatch();
     timer->start();
 }

@@ -42,6 +42,7 @@ CameraCalibration::CameraCalibration(VideoSource *input,
     calibrationMatrix = new float[3*3];
     rotationMatrices = NULL;
     translationVects = NULL;
+    blackOffset = NULL;
 }
 
 bool CameraCalibration::takeSnapshot() {
@@ -51,6 +52,18 @@ bool CameraCalibration::takeSnapshot() {
     }
 	LOG4CPLUS_DEBUG(logger, "Trying to get snapshot");
     IplImage* capt = input->waitAndGetImage();
+    if (blackOffset != NULL) {
+	CvSize size;
+	size.height = capt->height;
+	size.width = capt->width;
+	IplImage* temp = cvCreateImageHeader(size, capt->depth, capt->nChannels);
+	temp->imageData = new char[capt->height * capt->width * capt->depth * capt->nChannels];
+	cvSub(capt, blackOffset, temp);
+	delete capt->imageData;
+	cvReleaseImageHeader(&capt);
+	capt = temp;
+	LOG4CPLUS_DEBUG(logger, "Subtracted black offset image.");
+    }
     IplImage* grayTmp = cvCreateImage(cvSize( capt->width, capt->height ), IPL_DEPTH_8U, 1);
 	LOG4CPLUS_TRACE(logger, "Got image");
     cvCvtColor(capt, grayTmp, CV_BGR2GRAY);
@@ -207,8 +220,21 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     return tempPoints;
 }
 
+void CameraCalibration::takeBlackOffset() {
+    if (blackOffset != NULL) {
+	delete blackOffset->imageData;
+	cvReleaseImageHeader(&blackOffset);
+    }
+    blackOffset = input->waitAndGetImage();
+    LOG4CPLUS_DEBUG(logger, "Took offset image");
+}
+
 CameraCalibration::~CameraCalibration() {
     deleteSnapshots();
+    if (blackOffset != NULL) {
+	delete blackOffset->imageData;
+    }
+    cvReleaseImageHeader(&blackOffset);
 }
 
 CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {
@@ -222,7 +248,6 @@ CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {
 }
 
 
-
 CvPoint2D32f CameraCalibration::distortPoint(CvPoint2D32f point) {
     CvPoint2D32f retPoint;
     double a = (((double) pow(point.x,2) / (double) pow(point.y,2)) + 1.0f) * distortions[0];
@@ -230,7 +255,7 @@ CvPoint2D32f CameraCalibration::distortPoint(CvPoint2D32f point) {
     double coeff_b = 1.0f / a;
     double coeff_c = - (point.y / a);
     double *x1, *x2, *x3;
-    int result = 0; // FIXME gsl_poly_solve_cubic(coeff_a, coeff_b, coeff_c, x1, x2, x3);
+    int result = gsl_poly_solve_cubic(coeff_a, coeff_b, coeff_c, x1, x2, x3);
     if (result == 1) {
 	retPoint.y = *x1;
     } else if (result == 3) {

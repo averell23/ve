@@ -32,6 +32,7 @@
       <runarguments>
         <ve/>
         <corbatest/>
+        <capture/>
       </runarguments>
     </run>
     <configurations>

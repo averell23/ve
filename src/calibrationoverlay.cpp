@@ -144,6 +144,10 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
     case 'M':
         cCalibrationObject->recalibrate();
         break;
+    case 'a':
+    case 'A':
+	cCalibrationObject->takeBlackOffset();
+	break;
     }
 
 }

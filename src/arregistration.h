@@ -27,8 +27,18 @@
 #include <cv.hpp>
 #include <cstdlib>
 #include <vector>
+#include <log4cplus/logger.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_multifit.h>
+#include "videosource.h"
+#include "cameracalibration.h"
 
 using namespace std;
+using namespace log4cplus;
+
+class VideoSource;
 
 /**
 Contains the routines and data to register a sensor coordinate system to the user's view. 
@@ -38,12 +48,19 @@ Contains the routines and data to register a sensor coordinate system to the use
 class ARRegistration{
 public:
 
-
+    /**
+      Create a new Registration object and connect it to the given
+      VideoSource.
+    */
+    ARRegistration(VideoSource* source);
+    
     ~ARRegistration();
     
     /**
       Adds a image plane/sensor coordinate pair of points to the
       internal calibration data.
+      
+      @param imagePlane 
     */
     void addCalibrationPair(CvPoint2D32f imagePlane, CvPoint3D32f sensor);
     
@@ -64,16 +81,23 @@ public:
     */
     CvPoint2D32f transformSensorToImage(CvPoint3D32f sensor);
     
-    /**
-      Transforms a point from (ideal) image plane coordinates to sensor coordinates.
-    */
-    CvPoint3D32f transformImageToSensor(CvPoint2D32f image);
 
 private:
     /// Vector for the image plane calibration points
     vector<CvPoint2D32f> imagePoints;
     /// Vector for the sensor coordinate calibration points
     vector<CvPoint3D32f> sensorPoints;
+    /// Logger for this class
+    static Logger logger;
+    /// Pointer to the transformation matrix
+    gsl_matrix* Trans;
+    /// The video source connected to this registration object
+    VideoSource* source;
+    /**
+      Retrieve the calibration matrix and copy it into a GSL 
+      matrix struct.
+    */
+    gsl_matrix* getCalibrationMatrix();
 };
 
 #endif

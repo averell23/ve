@@ -33,6 +33,7 @@
 #include "registrationoverlay.h"
 #include "commandlineparser.h"
 #include "corbacontroller.h"
+#include "arregistration.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 
@@ -153,8 +154,11 @@ int main(int argc, char *argv[]) {
     CalibrationOverlay* calibration = new CalibrationOverlay(false);
     Ve::addOverlay(calibration);
     Ve::addListener(calibration);
-    RegistrationOverlay* registration = new RegistrationOverlay(true);
-    // Ve::addOverlay(registration);
+    RegistrationOverlay* registration = new RegistrationOverlay(false);
+    CORBAController corba = CORBAController::getInstance();
+    corba.addPositionEventListener(registration);
+    Ve::addListener(registration);
+    Ve::addOverlay(registration);
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();

@@ -28,7 +28,9 @@
 #include "veeventlistener.h"
 #include "vepositionevent.h"
 #include "position.h"
-// FIXME #include "registration.h"
+#include "arregistration.h"
+#include "ve.h"
+#include "fontmanager.h"
 #include <log4cplus/logger.h>
 #include <cv.hpp>
 #include <cc++/thread.h>
@@ -48,6 +50,10 @@ public:
     /// Indicates calibration for the right eye is in progress
     static const int RIGHT_EYE = 1;
     
+    /**
+      Creates a new registration overlay.
+      @param registration The registration object used by this overlay
+    */
     RegistrationOverlay(bool display);
     
     ~RegistrationOverlay();
@@ -81,8 +87,22 @@ private:
     int measureSize;
     /// Number of sensor updates recieved since the measurement has started
     int measureCount;
+    /// Indicates calibration mode (LEFT_EYE or RIGHT_EYE)
+    int mode;
+    /// Blanks the unused eye
+    void blankOtherEye();
     /// Mutex to protect measurent updates
     Mutex mutex;
+    /// The registration object used by this overlay
+    ARRegistration* registration;
+    /// Calibration points
+    CvPoint* calibPoints;
+    /// Number of calibration points
+    int calibPointNum;
+    /// Position in the calibration point list
+    int calibPointPos;
+    /// Buffers for text rendering
+    char* text[1];
 };
 
 #endif
