@@ -165,6 +165,9 @@
 				RelativePath=".\src\glmacros.cpp">
 			</File>
 			<File
+				RelativePath=".\src\matrixutils.cpp">
+			</File>
+			<File
 				RelativePath=".\src\overlay.cpp">
 			</File>
 			<File
@@ -252,6 +255,9 @@
 			</File>
 			<File
 				RelativePath=".\src\glmacros.h">
+			</File>
+			<File
+				RelativePath=".\src\matrixutils.h">
 			</File>
 			<File
 				RelativePath=".\src\overlay.h">

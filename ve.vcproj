@@ -172,6 +172,9 @@
 				RelativePath=".\src\markerpositiontracker.cpp">
 			</File>
 			<File
+				RelativePath=".\src\matrixutils.cpp">
+			</File>
+			<File
 				RelativePath=".\src\offsetoverlay.cpp">
 			</File>
 			<File
@@ -314,6 +317,9 @@
 			</File>
 			<File
 				RelativePath=".\src\markerpositiontracker.h">
+			</File>
+			<File
+				RelativePath=".\src\matrixutils.h">
 			</File>
 			<File
 				RelativePath=".\src\offsetoverlay.h">

@@ -234,10 +234,10 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     lastCornerCount = (cornerNum > 0)?cornerNum:(-cornerNum);
 
     if (found != 0) {
-        cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
+        /* cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
 			   searchWindow, cvSize(-1, -1),
 			   cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
-        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found);
+        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found); */
     } else {
         LOG4CPLUS_WARN(logger, "Corner find unsuccessful, corner count: " << cornerNum);
         tempPoints = NULL;
