@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(calibration);
     Ve::addListener(calibration);
     RegistrationOverlay* registration = new RegistrationOverlay(true);
-    Ve::addOverlay(registration);
+    // Ve::addOverlay(registration);
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();
