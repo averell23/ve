@@ -25,8 +25,17 @@
 
 FontTesterOverlay::FontTesterOverlay()
 {
-    font = new FTGLPixmapFont( "Fonts:Arial");
-    font->FaceSize(72);
+    cout << "Creating font" << endl;
+    font = new FTGLPolygonFont( "/usr/share/fonts/truetype/ttf-bitstream-vera/VeraIt.ttf");
+    cout << "Yup." << font << endl;
+    if (font->Error()) {
+	cout << "Duh!" << endl;
+	delete font;
+	font = NULL;
+    } else {
+	font->FaceSize(100);
+    }
+    cout << "Font tester created" << endl;
 }
 
 
@@ -35,5 +44,23 @@ FontTesterOverlay::~FontTesterOverlay()
 }
 
 void FontTesterOverlay::draw() {
-    font->Render("Hello World");
+    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
+    glPushMatrix();				// ...push the Matrix for backup...
+    glOrtho(-1000, 1000, -1000, 1000, 0, 1);	// ...and load the Identity Matrix instead
+    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
+    glPushMatrix();
+    glLoadIdentity();
+    
+    glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+    glTranslatef(-0.5f, 0.0f, 0.0f);
+    
+    if (font != NULL) {
+	font->Render("Hello World");
+    }
+    
+    // Restore Matrices
+    glPopMatrix();
+    glMatrixMode( GL_MODELVIEW );		
+    glPopMatrix();
 }

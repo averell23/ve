@@ -26,18 +26,17 @@
 #include <iostream>
 #ifdef WIN32
 #include <windows.h>
+#endif
 extern "C" {
     #include "xcliball.h"
 }
-#else
-#include "xcliball.h"
-#endif
+
 
 using namespace std;
 
 /**
   Controls the behavior of the XCLIB library. This encapsulates the global
-  operations for the XCLIB. This has only static methods, no instance can
+  operations for the XCLIB. This has only static methods, no instance can#else
   be created of this class.
   
   @author Daniel Hahn,,,
@@ -97,9 +96,6 @@ public:
       @return The pxd_readushort return code. (0 if successful).
     */
     static uchar* getBufferCopy(int unit, int* result);
-
-	/// Looks up the XCLIB error message and prints it
-	static void printPXDMessage(int errorcode);
 
     
 private:

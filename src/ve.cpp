@@ -8,33 +8,12 @@ using namespace std;
 
 Stopwatch* Ve::timer;
 VideoCanvas* Ve::mainVideo;
-DummyOverlay* Ve::overlay;
 VideoSource* Ve::rightEye;
 VideoSource* Ve::leftEye;
 /// The overlays that will be displayed
 vector<Overlay*> Ve::overlays;
 
-int main(int argc, char *argv[])
-{
-  /* Ve::initGL(argc, argv);  
-  
-  VideoSource* left = new DummySource();// new EpixSource(1, "cam1.fmt");
-  cout << "Left source created" << endl;
-  VideoSource* right = new DummySource(); // new EpixSource(0);
-  cout << "Right source created" << endl;
-  Ve::init(left, right);
-  
-  // Create overlays
-  Overlay* dummy = new DummyOverlay();
-  Ve::addOverlay(new DummyOverlay()); 
-  
-  Ve::start();
-  */
-  return EXIT_SUCCESS;
-}
-
-
-void init(VideoSource* left, VideoSource* right) {
+void Ve::init(VideoSource* left, VideoSource* right) {
     cout << "OpenGL Init complete." << endl;
     Ve::rightEye = right;
     Ve::leftEye = left;
@@ -50,36 +29,43 @@ void init(VideoSource* left, VideoSource* right) {
     glutSpecialFunc     ( Ve::arrow_keys );
 }
 
-void start() {
+void Ve::start() {
     Ve::timer->start();
     glutMainLoop        ( );          // Initialize The Main Loop
 }
 
-void addOverlay(Overlay* ol) {
+void Ve::addOverlay(Overlay* ol) {
     Ve::overlays.push_back(ol);
 }
 
 void Ve::shutdown() {
     timer->stop();
     delete mainVideo;
-    delete overlay;
+    for (int i=0 ; i < overlays.size() ; i++) {
+	delete overlays[i];
+    }
+    overlays.clear();
     cout << "Elapsed time was " << timer->getSeconds() 
 	<< " seconds and " << timer->getMilis() 
 	<< " millis with " << timer->getCount() << " frames. "
 	<< " Framerate: " << timer->getFramerate() 
 	<< endl;
+    if (rightEye->timerSupported()) {
 	Stopwatch* rightTimer = rightEye->getAndStopTimer();
-	Stopwatch* leftTimer = leftEye->getAndStopTimer();
 	cout << "Right Eye: Elapsed time was " << rightTimer->getSeconds() 
-	<< " seconds and " << rightTimer->getMilis() 
-	<< " millis with " << rightTimer->getCount() << " frames. "
-	<< " Framerate: " << rightTimer->getFramerate() 
-	<< endl;
+	    << " seconds and " << rightTimer->getMilis() 
+	    << " millis with " << rightTimer->getCount() << " frames. "
+	    << " Framerate: " << rightTimer->getFramerate() 
+	    << endl;
+    }
+    if (leftEye->timerSupported()) {
+	Stopwatch* leftTimer = leftEye->getAndStopTimer();
 	cout << "Left Eye: Elapsed time was " << leftTimer->getSeconds() 
-	<< " seconds and " << leftTimer->getMilis() 
-	<< " millis with " << leftTimer->getCount() << " frames. "
-	<< " Framerate: " << leftTimer->getFramerate() 
-	<< endl;
+	    << " seconds and " << leftTimer->getMilis() 
+	    << " millis with " << leftTimer->getCount() << " frames. "
+	    << " Framerate: " << leftTimer->getFramerate() 
+	    << endl;
+    }
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) { 
 	cout << "Some openGL error has occured." << endl;

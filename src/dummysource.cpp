@@ -59,7 +59,14 @@ DummySource::~DummySource()
 IplImage* DummySource::getImage() {
     position = ++position % NUM_IMAGES;
 
-    return images[position];
+    char* data = images[position]->imageData;
+    CvSize size;
+    size.height = images[position]->height;
+    size.width = images[position]->width;
+    IplImage *image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
+    image->imageData = copyBuffer(data, images[position]->imageSize);
+    
+    return image;
 }
 
 /* simple loader for 24bit bitmaps (data is in rgb-format) */
@@ -161,4 +168,10 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 	return 1;
 }
 
-
+char* DummySource::copyBuffer(char* buffer, int size) {
+    char* retVal = new char[size];
+    for (int i=0 ; i < size ; i++) {
+	retVal[i] = buffer[i];
+    }
+    return retVal;
+}

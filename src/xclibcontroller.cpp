@@ -48,9 +48,7 @@ int XCLIBController::openLib(string configFile) {
 		openState = true;
 		cout << "Library opened successfully." << endl;
 	} else {
-		cout << "Could not open library, error code: ";
-		XCLIBController::printPXDMessage(retVal);
-		cout << endl;
+		cout << "Could not open library, error code: " << pxd_mesgErrorCode(retVal)  << endl;
 	}
 
     return retVal;
@@ -72,9 +70,7 @@ int XCLIBController::goLive(int unit) {
 		if (result == 0) {
 		cout << "Gone live successfully, state is " << pxd_goneLive(1<<unit, 0) << endl;
 	} else {
-		cout << "Not gone live, error code: ";
-		XCLIBController::printPXDMessage(result);
-		cout << endl;
+		cout << "Not gone live, error code: " << pxd_mesgErrorCode(result) << endl;
 	}
     return result;
 }
@@ -96,39 +92,4 @@ uchar* XCLIBController::getBufferCopy(int unit, int* result) {
     }
     
     return buffer;
-}
-
-void XCLIBController::printPXDMessage(int errorcode) {
-	switch (errorcode) {
-		case PXERROR:
-			cout << "Could not access imaging board (PXERROR).";
-			break;
-		case PXERMALLOC:
-			cout << "Memory allocation error (PXERMALLOC).";
-			break;
-		case PXERNOFILE:
-			cout << "No format file (PXERNOFILE).";
-			break;
-		case PXERDOSIO:
-			cout << "I/O error (PXERDOSIO).";
-			break;
-		case PXERSEARCH:
-			cout << "Invalid format name (PXERSEARCH).";
-			break;
-		case PXERVIDFORM:
-			cout << "Unsupported video format (PXERVIDFORM).";
-			break;
-		case PXERBADPARM:
-			cout << "Bad parameters (PXERBADPARM).";
-			break;
-		case PXERFILEFORM:
-			cout << "Bad file format (PXERFILEFORM).";
-			break;
-		case PXERISOPEN:
-			cout << "Library already open (PXERISOPEN).";
-			break;
-		case PXERNOTOPEN:
-			cout << "Library not open (PXERNOTOPEN).";
-			break;
-	}
 }

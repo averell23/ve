@@ -39,9 +39,7 @@ void EpixReaderThread::run() {
 			tMutex->leaveMutex();
 			stale = false;
 		} else {
-			cout << "Buffer read error: ";
-			XCLIBController::printPXDMessage(readResult);
-			cout << endl;
+			cout << "Buffer read error: " << pxd_mesgErrorCode(readResult) << endl;
 		}
 		Thread::sleep(20);
     } 

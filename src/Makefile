@@ -65,7 +65,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = -lccgnu2 -lGL -lglut -lopencv -lxclibi86 -lfreetype -lftgl
+LDFLAGS = -lccgnu2 -lGL -lglut -lopencv -lm -lfreetype -lftgl /usr/local/xclib/xclibi86.a
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -124,7 +124,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -144,7 +144,7 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	dummyoverlay.$(OBJEXT) cameracalibration.$(OBJEXT) \
 	epixsource.$(OBJEXT) xclibcontroller.$(OBJEXT) \
 	epixreaderthread.$(OBJEXT) fonttesteroverlay.$(OBJEXT) \
-	overlay.$(OBJEXT)
+	overlay.$(OBJEXT) main.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -158,8 +158,9 @@ DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
 	./$(DEPDIR)/epixreaderthread.Po \
 	./$(DEPDIR)/epixsource.Po \
 	./$(DEPDIR)/fonttesteroverlay.Po \
-	./$(DEPDIR)/overlay.Po ./$(DEPDIR)/stopwatch.Po \
-	./$(DEPDIR)/ve.Po ./$(DEPDIR)/videocanvas.Po \
+	./$(DEPDIR)/main.Po ./$(DEPDIR)/overlay.Po \
+	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
+	./$(DEPDIR)/videocanvas.Po \
 	./$(DEPDIR)/videosource.Po \
 	./$(DEPDIR)/xclibcontroller.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -235,6 +236,7 @@ include ./$(DEPDIR)/dummysource.Po
 include ./$(DEPDIR)/epixreaderthread.Po
 include ./$(DEPDIR)/epixsource.Po
 include ./$(DEPDIR)/fonttesteroverlay.Po
+include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/overlay.Po
 include ./$(DEPDIR)/stopwatch.Po
 include ./$(DEPDIR)/ve.Po

@@ -24,12 +24,16 @@
 #ifndef FONTTESTEROVERLAY_H
 #define FONTTESTEROVERLAY_H
 
-#include <FTGLPixmapFont.h>
+#include <FTGLPolygonFont.h>
+#include <iostream>
+#include "overlay.h"
+
+using namespace std;
 
 /**
 @author Daniel Hahn,,,
 */
-class FontTesterOverlay{
+class FontTesterOverlay : public Overlay {
 public:
     FontTesterOverlay();
 
@@ -39,7 +43,7 @@ public:
 
 private:
     
-    FTGLPixmapFont* font;;
+    FTGLPolygonFont* font;
     
 };
 

@@ -56,6 +56,8 @@ public:
     int loadBMP(char *filename, IplImage **image);
     
     IplImage* getImage();
+    
+    char* copyBuffer(char* buffer, int size);
 
 private:
     IplImage* images[NUM_IMAGES];
