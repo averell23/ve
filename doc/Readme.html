@@ -50,7 +50,11 @@
         <li>The GLUT library</li>
         <li>The OpenCV computer vision library.</li>
         <li>The Epix XCLIB frame grabber library. (If you plan to use an Epix
-            frame grabber board.</li>
+            frame grabber board)</li>
+        <li>The Gnu Common C++ library</li>
+        <li>The FreeType 2 and FTGL font management libraries</li>
+        <li>The GLEW GL Extension Wrangler library</li>
+        <li>The OmniORB4 CORBA ORB</li>
     </ul>
     <h1>Windows Build Instructions</h1>
     The build process has been tested with Visual Studio .NET (VS 7.1), and
@@ -148,6 +152,71 @@ href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/pro
 		</li>
 		<li>
 			Link against <span class="code">ccgnu2.lib</span>
+		</li>
+    </div>
+    <h2>FTGL/Freetype library</h2>
+    <p>
+    Ve uses the FTGL library to render text to the screen, which in turn uses the Freetype2
+    font library.
+    </p>
+    <p>
+    Freetype2 is available from
+    <a href="http://www.freetype.org/download.html#stable">http://www.freetype.org/download.html#stable</a>. You
+    should build the multi-threaded FTGL version, using the VisualStudio project file provided by the distribution. 
+    </p>
+    <p></p>
+    FTGL is available from
+    <a href="http://homepages.paradise.net.nz/henryj/code/index.html#FTGL">http://homepages.paradise.net.nz/henryj/code/index.html#FTGL</a>.
+    You should build the multithreaded version of the library, using the VisualStudio project file provided by the 
+    distribution.
+    </p>
+    <div class="steps">
+		<li>
+			Put the freetype2 <span class="code">include</span> directory
+			into the include search path.
+		</li>
+		<li>
+			Put the FTGL <span class="code">include</span> directory into the
+			include search path.
+		</li>
+		<li>
+			Put the freetype2 <span class="code">objs</span> directory into
+			the library search path.
+		</li>
+		<li>
+			Put the FTGL <span class="code">win32_vcpp/build</span> directory
+			into the library search path.
+		</li>
+		<li>
+			Put the FTGL <span class="code">win32_vcpp/build</span> directory
+			into the DLL search path (PATH).
+		</li>
+		<li>
+			Link against <span class="code">ftgl_static_MT_d.lib</span> and
+			<span class="code">freetype206MT.lib</span>.
+		</li>
+    </div>
+    <h2>GLEW extension handler</h2>
+    <p>
+    The GLEW OpenGL extension handler library can be downloaded from 
+    <a href="http://glew.sourceforge.net/#Download">http://glew.sourceforge.net/#Download</a>
+    as a binary distribution that just needs to be unzipped.
+    </p>
+    <div class="steps">
+		<li>
+			Add the GLEW <span class="code">include</span> directory to your 
+			include search path.
+		</li>
+		<li>
+			Add the GLEW <span class="code">lib</span> directory to your library
+			search path.
+		</li>
+		<li>
+			Add the GLEW <span class="code">lib</span> directory to your DLL
+			search path (PATH).
+		</li>
+		<li>
+			Link against <span class="code">glew32.lib</span>
 		</li>
     </div>
     <h2>Visual Studio Settings</h2>

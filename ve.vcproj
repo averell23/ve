@@ -127,6 +127,16 @@
 			<File
 				RelativePath=".\src\xclibcontroller.cpp">
 			</File>
+			<Filter
+				Name="stubs"
+				Filter="">
+				<File
+					RelativePath=".\src\stubs\positionconnector_impl.cpp">
+				</File>
+				<File
+					RelativePath=".\src\stubs\positionconnectorSK.cc">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -195,6 +205,16 @@
 			<File
 				RelativePath=".\src\xclibcontroller.h">
 			</File>
+			<Filter
+				Name="stubs"
+				Filter="">
+				<File
+					RelativePath=".\src\stubs\positionconnector.hh">
+				</File>
+				<File
+					RelativePath=".\src\stubs\positionconnector_impl.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
