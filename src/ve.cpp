@@ -6,18 +6,30 @@
 
 using namespace std;
 
+Stopwatch* Ve::timer;
+VideoCanvas* Ve::mainVideo;
+DummyOverlay* Ve::overlay;
+VideoSource* Ve::rightEye;
+VideoSource* Ve::leftEye;
+/// The overlays that will be displayed
+vector<Overlay*> Ve::overlays;
+
 int main(int argc, char *argv[])
 {
-  Ve::initGL(argc, argv);  
+  /* Ve::initGL(argc, argv);  
   
-  VideoSource* left = new EpixSource(1, "cam1.fmt");
+  VideoSource* left = new DummySource();// new EpixSource(1, "cam1.fmt");
   cout << "Left source created" << endl;
-  VideoSource* right = new EpixSource(0);
+  VideoSource* right = new DummySource(); // new EpixSource(0);
   cout << "Right source created" << endl;
   Ve::init(left, right);
   
-  Ve::start();
+  // Create overlays
+  Overlay* dummy = new DummyOverlay();
+  Ve::addOverlay(new DummyOverlay()); 
   
+  Ve::start();
+  */
   return EXIT_SUCCESS;
 }
 

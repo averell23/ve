@@ -34,11 +34,11 @@ public:
     Overlay();
 
     ~Overlay();
-    
+
     /*
       The main drawing routine.
     */
-    virtual void draw();
+    virtual void draw() { return; }; 
 
 };
 

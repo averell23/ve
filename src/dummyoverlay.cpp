@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "dummyoverlay.h"
 
-DummyOverlay::DummyOverlay()
+DummyOverlay::DummyOverlay() : Overlay()
 {
 }
 

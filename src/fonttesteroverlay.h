@@ -34,6 +34,8 @@ public:
     FontTesterOverlay();
 
     ~FontTesterOverlay();
+    
+    void draw();
 
 private:
     

@@ -26,6 +26,7 @@
 FontTesterOverlay::FontTesterOverlay()
 {
     font = new FTGLPixmapFont( "Fonts:Arial");
+    font->FaceSize(72);
 }
 
 
@@ -33,4 +34,6 @@ FontTesterOverlay::~FontTesterOverlay()
 {
 }
 
-
+void FontTesterOverlay::draw() {
+    font->Render("Hello World");
+}

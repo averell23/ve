@@ -34,13 +34,13 @@
 /**
 @author Daniel Hahn,,,
 */
-class DummyOverlay : Overlay {
+class DummyOverlay : public Overlay {
 public:
     DummyOverlay();
 
     ~DummyOverlay();
     
-    /** Draw a few openGL objects as an overlay */
+    /** Call the OpenGL commands that draw the overlay */
     void draw();
 
     double rotation;

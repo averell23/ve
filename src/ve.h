@@ -38,6 +38,7 @@
 #include "dummysource.h"
 #include "videocanvas.h"
 #include "stopwatch.h"
+#include "overlay.h"
 #include "dummyoverlay.h"
 
 /** 

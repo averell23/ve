@@ -31,5 +31,3 @@ Overlay::Overlay()
 Overlay::~Overlay()
 {
 }
-
-
