@@ -29,7 +29,7 @@ SF1280Controller::SF1280Controller(int unit, string initFile)
 : EpixCameraController(unit) {
     if (! XCLIBController::initCamLinkSerial(unit)) {
         LOG4CPLUS_WARN(logger, "Unable to open Cam Link serial, controller not usable.");
-        unit = -1;
+        EpixCameraController::unit = -1;
     }
     if(initFile!="") {
         specific = 1;

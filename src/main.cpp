@@ -160,6 +160,7 @@ int main(int argc, char *argv[]) {
                         "Left camera parameter file set to default");
     }
     left->getCalibration()->load();
+    
 
     param = parser.getParamValue("calibrationR");
     if (param != "") {
@@ -193,7 +194,7 @@ int main(int argc, char *argv[]) {
        rightTrack.addListener(&tracker);
        Ve::addOverlay(&tracker);
        Ve::addListener(&tracker);  */
-    StatusOverlay status(true);	// FIXME: proper deletion of overlays?
+    StatusOverlay status(true);	
     Ve::addOverlay(&status);
     Ve::addListener(&status);
     CalibrationOverlay calibration(false);

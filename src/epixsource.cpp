@@ -34,6 +34,9 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adju
     if (XCLIBController::isOpen()) {
         height = pxd_imageYdim();
         width = pxd_imageXdim();
+    } else {
+        height = 0;
+        width = 0;
     }
     EpixSource::cameraModel = cameraModel;
     switch (cameraModel) {

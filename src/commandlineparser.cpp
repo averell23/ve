@@ -119,6 +119,8 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
         }
     } // for
 
+    if (getParamValue("config") != "") readConfigFile(getParamValue("config"));
+
     for (map<string,bool>::iterator pos = requiredParameters.begin() ; pos != requiredParameters.end() ; pos++) {
         if (!(pos->second)) {
             cout << "Required parameter " << pos->first << " not set." << endl;

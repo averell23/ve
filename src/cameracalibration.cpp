@@ -328,12 +328,13 @@ bool CameraCalibration::load(string filename) {
     XMLCh tmpStr[256];
     if (!filename.compare(""))
         filename = CameraCalibration::filename;
+    LOG4CPLUS_DEBUG(logger, "Attempting to load camera calibration from: " << filename);
 
     xercesc::DOMDocument* doc = XMLMacros::XMLReadFile(filename);
-    
+
     if (!doc) {
-	LOG4CPLUS_ERROR(logger, "Unable to load calibration from: " << filename);
-	return false;
+	    LOG4CPLUS_ERROR(logger, "Unable to load calibration from: " << filename);
+	    return false;
     }
     
     xercesc::DOMElement* root = doc->getDocumentElement();
@@ -344,6 +345,8 @@ bool CameraCalibration::load(string filename) {
         LOG4CPLUS_ERROR(logger, "Could not load. Unknown root element: " << nChr);
         xercesc::XMLString::release(&nChr);
         return false;
+    } else {
+        LOG4CPLUS_TRACE(logger, "Found XML root node.");
     }
 
     xercesc::DOMNodeList* nList = root->getChildNodes();
