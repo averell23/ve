@@ -27,6 +27,7 @@
 #include "overlay.h"
 #include "ve.h"
 #include "fontmanager.h"
+#include "veeventlistener.h"
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <cv.hpp> 		// OpenCv
 #include <math.h>
@@ -40,15 +41,13 @@ This allows to track patterns in the video image by means of the ARToolkit.
 
 @author Daniel Hahn,,,
 */
-class TrackerOverlay : public Overlay
+class TrackerOverlay : public Overlay, public VeEventListener
 {
 public:
 
     static const int LEFT = 0;
     
     static const int RIGHT = 1;
-	
-	static const bool DRAW_TEXT = false; // Set to true to display some "debugging" text
     
     TrackerOverlay();
     
@@ -57,6 +56,8 @@ public:
     void drawOverlay();
     
     static char* paramFile; 
+
+	void recieveEvent(VeEvent &e);
     
 private:
     /**
@@ -93,7 +94,7 @@ private:
 		
 		@param markers Pointer to an array of markers.
 		@param markerNum Number of markers in @see markers
-		@return Index of the centermost marker
+		@return Index of the centermost marker. This is -1 if no markers are available.
 	*/
 	int getCenterMarker(ARMarkerInfo* markers, int markerNum);
 	/*
@@ -101,6 +102,12 @@ private:
 		@return Square of the distance of the given point from the center of the screen.
 	*/
 	double TrackerOverlay::centerDistanceSquared(double x, double y);
+	/// Indicates if the text portion of the overlay should be drawn
+	bool doText;
+	/// Indicates if a crosshair should be drawn on every marker
+	bool doCrosshairs;
+	/// Indicates if a highlight indicator should be drawn for the center marker
+	bool doHighlight;
     
 };
 

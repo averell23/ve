@@ -49,11 +49,14 @@ TrackerOverlay::TrackerOverlay() {
 		LOG4CPLUS_DEBUG(logger, "Pattern loaded.");
 	}
 	text = new char[256];
-	LOG4CPLUS_DEBUG(logger, "Overlay created.");
 	xOff = 0;
 	yOff = 1000;
 	xFac = 1000.0f/((float) Ve::getLeftSource()->getWidth());
 	yFac = -4;
+	doText = false;
+	doCrosshairs = true;
+	doHighlight = true;
+	LOG4CPLUS_DEBUG(logger, "Overlay created.");
 }
 
 TrackerOverlay::~TrackerOverlay()
@@ -91,7 +94,7 @@ void TrackerOverlay::drawOverlay() {
     glLoadIdentity();
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-	if (DRAW_TEXT) {
+	if (doText) {
 		if (markerNumL > 0) {
 			sprintf(text, "%f/%f/%f", markerInfoL[0].pos[0], markerInfoL[0].pos[1],
 					sqrt(centerDistanceSquared(markerInfoL[0].pos[0], markerInfoL[0].pos[1])));
@@ -102,39 +105,47 @@ void TrackerOverlay::drawOverlay() {
 	
 
     glTranslatef(-1.0f, 0.0f, 0.0f);
-	if (DRAW_TEXT) {
+	if (doText) {
 		drawOneEye();
 		glTranslatef(-1.0f, 0.0f, 0.0f);
 	}
 	int center = getCenterMarker(markerInfoL, markerNumL);
-	for (int i=0 ; i < markerNumL ; i++) {
-		if (i == center) {
-			glColor3f(1.0f, 0.2f, 0.2f);
+	if (doCrosshairs) {
+		for (int i=0 ; i < markerNumL ; i++) {
+			if (i == center) {
+				glColor3f(1.0f, 0.2f, 0.2f);
+			}
+			drawCrosshairs((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
+			if (i == center) {
+				glColor3f(1.0f, 1.0f, 1.0f);
+			}
 		}
-		drawCrosshairs((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
-		if (i == center) {
-			glColor3f(1.0f, 1.0f, 1.0f);
-		 	drawHighlight((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
-		}
+	}
+	if (doHighlight && (center >= 0)) {
+		drawHighlight((markerInfoL[center].pos[0] * xFac)+ xOff, (markerInfoL[center].pos[1] * yFac) + yOff);
 	}
 	delete markerInfoL;
 	// drawCrosshairs(500,1000);
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f,  1.0f);
-	if (DRAW_TEXT) { 
+	if (doText) { 
 		drawOneEye();
 		glTranslatef(0.0f, 0.0f,  1.0f);
 	}
 	center = getCenterMarker(markerInfoR, markerNumR);
-	for (int i=0 ; i < markerNumR ; i++) {
-		if (i == center) {
-			glColor3f(1.0f, 0.2f, 0.2f);
+	if (doCrosshairs) {
+		for (int i=0 ; i < markerNumR ; i++) {
+			if (i == center) {
+				glColor3f(1.0f, 0.2f, 0.2f);
+			}
+			drawCrosshairs((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff); 
+			if (i == center) {
+				glColor3f(1.0f, 1.0f, 1.0f);
+			}
 		}
-		drawCrosshairs((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff); 
-		if (i == center) {
-			glColor3f(1.0f, 1.0f, 1.0f);
-			drawHighlight((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff);
-		}
+	}
+	if (doHighlight && (center >= 0)) {
+		drawHighlight((markerInfoR[center].pos[0] * xFac)+ xOff, (markerInfoR[center].pos[1] * yFac) + yOff);
 	}
 	// drawCrosshairs(0,0);
     
@@ -232,9 +243,12 @@ void TrackerOverlay::drawHighlight(int x, int y) {
 
 int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
 	float shortestDistance;
-	int centerIndex = 0;
+	int centerIndex = -1;
 	// Init shortest distance
-	shortestDistance = centerDistanceSquared(markers[0].pos[0], markers[0].pos[1]);
+	if (markerNum > 0) {
+		shortestDistance = centerDistanceSquared(markers[0].pos[0], markers[0].pos[1]);
+		centerIndex = 0;
+	}
 
 	for (int i=0 ; i<markerNum ; i++) { 
 		float distance = centerDistanceSquared(markers[i].pos[0], markers[i].pos[1]);
@@ -247,12 +261,21 @@ int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
 	return centerIndex;
 }
 
-
-
 double TrackerOverlay::centerDistanceSquared(double x, double y) {
 	double xPos = x - ((double) width / 2.0f);
 	double yPos = y - ((double) height / 2.0f);
 	/* LOG4CPLUS_DEBUG(logger, "x: " << x << ", y: " << y << ", xPos: " << xPos << ", yPos: " 
 		<< yPos << ", width: " << width << ", height:" << height); */
 	return (xPos*xPos) + (yPos*yPos);
+}
+
+void TrackerOverlay::recieveEvent(VeEvent &e) {
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'n')) {
+        doCrosshairs = !doCrosshairs;
+        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling crosshairs.");
+    }
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'm')) {
+        doHighlight = !doHighlight;
+        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
+    }
 }

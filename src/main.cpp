@@ -149,7 +149,9 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(offset);
     Ve::addListener(offset);
     // Ve::addOverlay(new DummyOverlay(true));
-	Ve::addOverlay(new TrackerOverlay());
+	TrackerOverlay* tracker = new TrackerOverlay();
+	Ve::addOverlay(tracker);
+	Ve::addListener(tracker);
     StatusOverlay* status = new StatusOverlay(true);			// FIXME: proper deletion of overlays?
     Ve::addOverlay(status);
     Ve::addListener(status);
