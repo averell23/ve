@@ -95,6 +95,8 @@ private:
     int calibPointPos;
     /// Buffers for text rendering
     char* text[1];
+    /// Computes the new registration matrices
+    void reRegister();
 };
 
 #endif

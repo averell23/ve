@@ -231,7 +231,7 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
 
     if (lastCorners) delete lastCorners; // tempPoints from last round deleted here!
     lastCorners = tempPoints;
-    lastCornerCount = (found !=0)?found:cornerNum;
+    lastCornerCount = (cornerNum > 0)?cornerNum:(-cornerNum);
 
     if (found != 0) {
         cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood

@@ -33,6 +33,7 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multifit.h>
 #include "videosource.h"
+#include "matrixutils.h"
 #include "cameracalibration.h"
 
 using namespace std;
@@ -72,7 +73,7 @@ public:
     void reRegister();
 
     /**
-      Clears the internal calibration data.
+ 
     */
     void clearCalibrationPoints();
 
@@ -80,6 +81,19 @@ public:
       Transforms a point from sensor coordinates to (ideal) image plane coordinates.
     */
     CvPoint2D32f transformSensorToImage(CvPoint3D32f sensor);
+    
+    /**
+      Insert a new transformation matrix.
+      
+      @param newTrans The transformation for camera1 to camera 
+    */
+    void insertTransformation(gsl_matrix* newTrans);
+    
+    /**
+      Get the transformation matrix for 3D sensor coordiante points
+      to 3D camera world coordinates.
+    */
+    gsl_matrix* get3DTransformation() { return T_orig; }
 
 
 private:
@@ -89,8 +103,17 @@ private:
     vector<CvPoint3D32f> sensorPoints;
     /// Logger for this class
     static Logger logger;
-    /// Pointer to the transformation matrix
+    /**
+       Pointer to the transformation matrix. This is the matrix
+       which transforms 3D sensor points to 2D picture points.
+    */
     gsl_matrix* Trans;
+    /*
+        Pointer to the "original" transformation matrix. This
+	is the matrix which transforms 3D sensor points to
+	3D camera world coordinates.
+    */
+    gsl_matrix* T_orig;
     /// The video source connected to this registration object
     VideoSource* source;
     /**
@@ -98,20 +121,9 @@ private:
       matrix struct.
     */
     gsl_matrix* getCalibrationMatrix();
-    
-    /**
-      Creates a new copy of the given submatrix. The user is
-      responsible for deleting the matrix object after use. A copy
-      of the submatrix may be neccessary because some functions (e.g. blas_dgemm
-      won't work with submatrix views.
-    */
-    gsl_matrix* submatrixCopy(gsl_matrix* source, int top, int left, int height, int width);
 
-    /// Prints the contents of a matrix to stdout
-    void printMatrix(gsl_matrix* mat);
 
-    /// Prints the contents of a vector to stdout
-    void printVector(gsl_vector* vec);
+
 };
 
 #endif

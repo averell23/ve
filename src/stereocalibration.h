@@ -25,6 +25,7 @@
 #define STEREOCALIBRATION_H
 
 #include "cameracalibration.h"
+#include "matrixutils.h"
 
 // Forward declarations
 class CameraCalibration;
@@ -112,14 +113,8 @@ private:
     */
     gsl_matrix* getExtMatrix(CvMatr32f trans, CvMatr32f rot, int size);
     
-    /// Prints the contents of a matrix to stdout
-    void printMatrix(gsl_matrix* mat);
 
-    /// Prints the contents of a vector to stdout
-    void printVector(gsl_vector* vec);
 
-    /// Prints the contents of a float array as a vector
-    void printMatrix(float* content, int rows, int cols);
 };
 
 #endif

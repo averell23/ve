@@ -79,22 +79,22 @@ void StereoCalibration::recalibrate() {
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         for (int i=0 ; i<size ; i++) {
             cout << "Left Rotation Matrix " << i << ": " << endl;
-            printMatrix(leftRotate, 3, 3);
+            MatrixUtils::printMatrix(leftRotate, i*9, 3, 3);
             cout << "Left Translation Vector " << i << ":" << endl;
-            printMatrix(leftTranslate, 3, 1);
+            MatrixUtils::printMatrix(leftTranslate, i*3, 3, 1);
             cout << "Right Rotation Matrix " << i << ": " << endl;
-            printMatrix(rightRotate, 3, 3);
+            MatrixUtils::printMatrix(rightRotate, i*9, 3, 3);
             cout << "Right Translation Vector " << i << ":" << endl;
-            printMatrix(rightTranslate, 3, 1);
+            MatrixUtils::printMatrix(rightTranslate, i*3, 3, 1);
             
         }
 	    cout << "Observation vector:" << endl;
-	    printVector(observ);
+	    MatrixUtils::printVector(observ);
 	}
     gsl_matrix* params = getExtMatrix(rightTranslate, rightRotate, size);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	    cout << "Parameter matrix:" << endl;
-        printMatrix(params);
+        MatrixUtils::printMatrix(params);
     }
     gsl_vector* result = gsl_vector_alloc(16);
     gsl_matrix* cov = gsl_matrix_alloc(16,16);
@@ -105,15 +105,15 @@ void StereoCalibration::recalibrate() {
     LOG4CPLUS_DEBUG(logger, "Least squares fit done, chi squared is " << chisq);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         cout << "Covariance matrix:" << endl;
-        printMatrix(cov);
+        MatrixUtils::printMatrix(cov);
 	    cout << "Result vector:" << endl;
-        printVector(result);
+        MatrixUtils::printVector(result);
     }
     gsl_matrix_view result_mat = gsl_matrix_view_vector(result, 4, 4);
     gsl_matrix_memcpy(transMatrix, &result_mat.matrix);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	    cout << "New translation matrix:" << endl;
-        printMatrix(transMatrix);
+        MatrixUtils::printMatrix(transMatrix);
     }
     gsl_multifit_linear_free(work);
     gsl_matrix_free(cov);
@@ -154,7 +154,7 @@ gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int 
 	}
 	if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	    cout << "External submatrix:" << endl;
-	    printMatrix(extMat);
+	    MatrixUtils::printMatrix(extMat);
 	}	
 	for (int n=0 ; n<4 ; n++) {
 	    gsl_matrix_view submat = gsl_matrix_submatrix(retVal, (16*i) + (4*n), 4*n, 4, 4);
@@ -164,28 +164,4 @@ gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int 
     gsl_matrix_free(extMat);
     LOG4CPLUS_DEBUG(logger, "External matrix created as parameter matrix");
     return retVal;
-}
-
-void StereoCalibration::printMatrix(gsl_matrix* mat) {
-	for (int i=0 ; i<mat->size1 ; i++) {
-		for (int j=0 ; j<mat->size2 ; j++) {
-			cout << gsl_matrix_get(mat, i, j) << "	";
-		}
-		cout << endl;
-	}
-}
-
-void StereoCalibration::printVector(gsl_vector* vec) {
-	for (int i=0 ; i<vec->size ; i++) {
-		cout << gsl_vector_get(vec, i) << endl;
-	}
-}
-
-void StereoCalibration::printMatrix(float* content, int rows, int cols) {
-    for (int i=0 ; i<rows ; i++) {
-		for (int j=0 ; j<cols ; j++) {
-			cout << content[(i*cols) + j] << "	";
-		}
-		cout << endl;
-	}
 }

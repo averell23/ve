@@ -138,6 +138,21 @@ void RegistrationOverlay::drawOverlay() {
 }
 
 
+void RegistrationOverlay::reRegister() {
+    registration->reRegister();
+    ARRegistration* other;
+    if (LEFT_EYE == mode) {
+	other = Ve::getRightSource()->getRegistration();
+    } else {
+	other = Ve::getLeftSource()->getRegistration();
+    }
+    gsl_matrix* T_from = registration->get3DTransformation();
+    gsl_matrix* camTrans = Ve::getStereoCalibration()->getCameraTransformation();
+    gsl_matrix* newTrans = gsl_matrix_alloc(4,4);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, T_from, camTrans, 0.0, newTrans);
+    other->insertTransformation(newTrans);
+    gsl_matrix_free(newTrans);
+}
 
 void RegistrationOverlay::recieveEvent(VeEvent &e) {
     if (measuring && e.getType() == VeEvent::POSITION_EVENT) { // FIXME: Only events for one eye should be treated.
@@ -174,17 +189,17 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
             break;
         case 'e':
         case 'E':
-            if (mode == LEFT_EYE) {
+            /* if (mode == LEFT_EYE) {
                 mode = RIGHT_EYE;
                 registration = Ve::getRightSource()->getRegistration();
             } else {
                 mode = LEFT_EYE;
                 registration = Ve::getLeftSource()->getRegistration();
-            }
+            } */
             break;
         case 'w':
         case 'W':
-            registration->reRegister();
+            reRegister();
             break;
         }
     }

@@ -28,11 +28,15 @@ Logger ARRegistration::logger = Logger::getInstance("Ve.ARRegistration");
 ARRegistration::ARRegistration(VideoSource* source) {
     this->source = source;
     Trans = gsl_matrix_calloc(3,4);
+    T_orig = gsl_matrix_calloc(4,4);
 }
 
 ARRegistration::~ARRegistration() {
     if (Trans != NULL) {
         gsl_matrix_free(Trans);
+    }
+    if (T_orig != NULL) {
+	gsl_matrix_free(T_orig);
     }
 }
 
@@ -61,15 +65,15 @@ void ARRegistration::reRegister() {
     }
     // calibration matrix
     gsl_matrix* c = getCalibrationMatrix();
-    gsl_matrix* c_1 = submatrixCopy(c, 0, 0, 2, 3); // Top part
-    gsl_matrix* c_3 = submatrixCopy(c, 2, 0, 1, 3); // Bottom part
+    gsl_matrix* c_1 = MatrixUtils::submatrixCopy(c, 0, 0, 2, 3); // Top part
+    gsl_matrix* c_3 = MatrixUtils::submatrixCopy(c, 2, 0, 1, 3); // Bottom part
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         cout << "Calibration matrix: " << endl;
-        printMatrix(c);
+        MatrixUtils::printMatrix(c);
         cout << "c_1 part: " << endl;
-        printMatrix(c_1);
+        MatrixUtils::printMatrix(c_1);
         cout << "c_3 part: " << endl;
-        printMatrix(c_3);
+        MatrixUtils::printMatrix(c_3);
     }
     // Create the "master" parameter matrix
     gsl_matrix* params = gsl_matrix_alloc(sensorPoints.size()*3, 12);
@@ -85,7 +89,7 @@ void ARRegistration::reRegister() {
         LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.");
         if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
             cout << "Sensor matrix: " << endl;
-            printMatrix(x_1);
+            MatrixUtils::printMatrix(x_1);
         }
         // Select the region of the parameter matrix to write into
         gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
@@ -93,9 +97,9 @@ void ARRegistration::reRegister() {
         LOG4CPLUS_TRACE(logger, "Submatrices selected.");
 	    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	        cout << "Top submatrix:" << endl;
-	        printMatrix(&sub_top.matrix);
+	        MatrixUtils::printMatrix(&sub_top.matrix);
 	        cout << "Bottom submatrix:" << endl;
-	        printMatrix(&sub_bottom.matrix);
+	        MatrixUtils::printMatrix(&sub_bottom.matrix);
 	    }
         // Compute the parameter values: c_1 * x_1, c_3 * x_1
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
@@ -112,27 +116,26 @@ void ARRegistration::reRegister() {
     gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(sensorPoints.size()*3, 12);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         cout << "Observation vector is:" << endl;
-        printVector(y);
+        MatrixUtils::printVector(y);
         cout << "Parameter matrix is:" << endl;
-        printMatrix(params);
+        MatrixUtils::printMatrix(params);
     }
     gsl_multifit_linear(params, y, T_vec, cov, &chisq, work);
     LOG4CPLUS_DEBUG(logger, "Least squares returned, chi squared is " << chisq);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         cout << "Covariance is:" << endl;
-        printMatrix(cov);
+        MatrixUtils::printMatrix(cov);
 	cout << "Result vector is:" << endl;
-	printVector(T_vec);
+	MatrixUtils::printVector(T_vec);
     }
     gsl_multifit_linear_free(work);
     // Recreate the transformation matrix
-    gsl_matrix* T = gsl_matrix_calloc(4,4);
-    gsl_matrix_set(T, 3, 3, 1);
-    gsl_matrix_view T_sub_vw = gsl_matrix_submatrix(T, 0, 0, 3, 4);
+    gsl_matrix_set(T_orig, 3, 3, 1);
+    gsl_matrix_view T_sub_vw = gsl_matrix_submatrix(T_orig, 0, 0, 3, 4);
     gsl_matrix_view T_vec_vw = gsl_matrix_view_vector(T_vec, 3, 4);
     gsl_matrix_memcpy(&T_sub_vw.matrix, &T_vec_vw.matrix);
     // calculate the final transformation matrix
-    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
     /* FIXME: Numerical Stability kludge
     gsl_matrix_set(Trans, 2, 0, 0);
     gsl_matrix_set(Trans, 2, 1, 0);
@@ -140,7 +143,7 @@ void ARRegistration::reRegister() {
      FIXME: Kludge Ends */
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	cout << "Registration matrix is now: " << endl;
-	    printMatrix(Trans);
+	    MatrixUtils::printMatrix(Trans);
     }
     // Clean up
     gsl_matrix_free(c);
@@ -149,7 +152,6 @@ void ARRegistration::reRegister() {
     gsl_vector_free(y);
     gsl_vector_free(T_vec);
     gsl_matrix_free(params);
-    gsl_matrix_free(T);
     gsl_matrix_free(cov);
     LOG4CPLUS_INFO(logger, "Re-Registered Sensors.");
 }
@@ -188,25 +190,14 @@ CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
     return retVal;
 }
 
-gsl_matrix* ARRegistration::submatrixCopy(gsl_matrix* source, int top, int left, int height, int width) {
-	gsl_matrix* sub = &gsl_matrix_submatrix(source, top, left, height, width).matrix;
-	gsl_matrix* retVal = gsl_matrix_alloc(height, width);
-	gsl_matrix_memcpy(retVal, sub);
-	return retVal;
-}
 
-
-void ARRegistration::printMatrix(gsl_matrix* mat) {
-	for (int i=0 ; i<mat->size1 ; i++) {
-		for (int j=0 ; j<mat->size2 ; j++) {
-			cout << gsl_matrix_get(mat, i, j) << "	";
-		}
-		cout << endl;
-	}
-}
-
-void ARRegistration::printVector(gsl_vector* vec) {
-	for (int i=0 ; i<vec->size ; i++) {
-		cout << gsl_vector_get(vec, i) << endl;
-	}
+void ARRegistration::insertTransformation(gsl_matrix* newTrans) {
+    if ((newTrans->size1 != T_orig->size1) || (newTrans->size2 != T_orig->size2)) {
+	LOG4CPLUS_ERROR(logger, "Could not insert transformation matrix, new matrix has wrong size.");
+	return;
+    }
+    gsl_matrix* c = getCalibrationMatrix();
+    gsl_matrix_memcpy(T_orig, newTrans);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
+    gsl_matrix_free(c);
 }
