@@ -154,3 +154,19 @@ gsl_matrix* ARRegistration::submatrixCopy(gsl_matrix* source, int top, int left,
 	gsl_matrix_memcpy(retVal, sub);
 	return retVal;
 }
+
+
+void ARRegistration::printMatrix(gsl_matrix* mat) {
+	for (int i=0 ; i<mat->size1 ; i++) {
+		for (int j=0 ; j<mat->size2 ; j++) {
+			cout << gsl_matrix_get(mat, i, j) << "	";
+		}
+		cout << endl;
+	}
+}
+
+void ARRegistrion::printVector(gsl_vector* vec) {
+	for (int i=0 ; i<vec->size ; i++) {
+		cout << gsl_vector_get(vec, i) << endl;
+	}
+}

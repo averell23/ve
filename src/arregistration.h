@@ -107,7 +107,11 @@ private:
     */
     gsl_matrix* submatrixCopy(gsl_matrix* source, int top, int left, int height, int width);
 
-    /// Prints the contents of a matrix
+    /// Prints the contents of a matrix to stdout
+    void printMatrix(gsl_matrix* mat);
+
+    /// Prints the contents of a vector to stdout
+    void printVector(gsl_vector* vec);
 };
 
 #endif
