@@ -69,8 +69,8 @@ void ARRegistration::reRegister() {
     // Fill the parameter matrix
     for (int i=0 ; i < sensorPoints.size() ; i++) {
 	gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
-	for (int j=0 ; i < 3 ; i++) { // count rows
-	    for (int k=0 ; j < 3 ; j++) { // count "columns"
+	for (int j=0 ; j < 3 ; j++) { // count rows
+	    for (int k=0 ; k < 3 ; k++) { // count "columns"
 		gsl_matrix_set(x_1, j, k*4, sensorPoints[i].x);
 		gsl_matrix_set(x_1, j, (k*4)+1, sensorPoints[i].y);
 		gsl_matrix_set(x_1, j, (k*4)+2, sensorPoints[i].z);
