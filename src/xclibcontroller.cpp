@@ -26,7 +26,7 @@
 
 
 bool XCLIBController::openState = false;
-Mutex* XCLIBController::cMutex = new Mutex();
+Mutex XCLIBController::cMutex;
 Logger XCLIBController::logger = Logger::getInstance("Ve.XCLIBController");
 
 XCLIBController::XCLIBController()
@@ -39,8 +39,10 @@ XCLIBController::~XCLIBController()
 }
 
 int XCLIBController::openLib(string configFile) {
+    LOG4CPLUS_DEBUG(logger, "Now opening epix library");
     if (openState == true) return 0;
-    
+
+    cMutex.enterMutex();
     char* driverParams = NULL;
     char* format = NULL;
 	if (!strcmp(configFile.c_str(), "")) {
@@ -55,15 +57,18 @@ int XCLIBController::openLib(string configFile) {
 	} else {
 		LOG4CPLUS_ERROR(logger, "Could not open library, error code: " << pxd_mesgErrorCode(retVal));
 	}
-
+	
+    cMutex.leaveMutex();
     return retVal;
 }
 
 int XCLIBController::closeLib() {
+    cMutex.enterMutex();
     if (!openState) return 0;
     int result = pxd_PIXCIclose();
     if (result == 0) openState = false;
     return result;
+    cMutex.leaveMutex();
 }
 
 bool XCLIBController::isOpen() {
@@ -71,6 +76,7 @@ bool XCLIBController::isOpen() {
 }
 
 int XCLIBController::goLive(int unit) {
+    cMutex.enterMutex();
     int result = pxd_goLive(1<<unit, 1);
     if (result == 0) {
 		LOG4CPLUS_DEBUG(logger, "Gone live successfully on unit " << unit
@@ -79,6 +85,7 @@ int XCLIBController::goLive(int unit) {
 		LOG4CPLUS_ERROR(logger, "Not gone live on unit " << unit
 			<< ", error code: " << pxd_mesgErrorCode(result));
 	}
+    cMutex.leaveMutex();
     return result;
 }
 
@@ -87,17 +94,65 @@ int XCLIBController::goUnLive(int unit) {
     return result;
 }
 
-uchar* XCLIBController::getBufferCopy(int unit, int* result) {
-	cMutex->enterMutex();
-    int bufsize = pxd_imageXdim() * pxd_imageYdim() * 3;
+int XCLIBController::getBufferCopy(int unit, uchar* buffer, int bufsize) {
+	cMutex.enterMutex();
+	int result = pxd_readuchar(1<<unit, 1, 0, 0, pxd_imageXdim(), pxd_imageYdim(), buffer, bufsize, "RGB");
+	cMutex.leaveMutex();
+    
+    return result;
+}
 
-    uchar* buffer = new uchar[bufsize];
-    *result = -1024;
+bool XCLIBController::initCamLinkSerial() {
+    #ifdef WIN32
+    int result = clSerialInit(unit, &camLinkSerialRef);
+    if (result != 0) {
+	LOG4CPLUS_WARN(logger, "Error while opening camera link serial, code: " 
+		       << result);
+	return false;
+    } 
+    return true;
+    #else
+    LOG4CPLUS_WARN(logger, "CamLink serial not available/only supported for MS Windows.");
+    return false;
+    #endif
+}
+
+string XCLIBController::writeCamLinkSerial(string message) {
+    #ifdef WIN32
+    ulong size = message.size();
+    ulong origSize = size;
+    string retVal = "";
     
-    if (buffer) {
-		*result = pxd_readuchar(1<<unit, 1, 0, 0, pxd_imageXdim(), pxd_imageYdim(), buffer, bufsize, "RGB");
+    clSerialWrite(serialRef, message.c_str(), &size , serial_timeout);
+    if (size != origSize) {
+	LOG4CPLUS_WARN(logger, "Not all characters could be written to serial out, written " << size << " of " << origSize);
+	return "Internal: Could not write all characters.";
     }
-	cMutex->leaveMutex();
     
-    return buffer;
+    size = 1024;
+    char* buffer = new char[1024];
+    clSerialRead(serialRef, buffer, &size, serial_timeout);
+    retVal += buffer;
+    delete buffer;
+    
+    return retVal;
+    #else
+    LOG4CPLUS_WARN(logger, "CamLink serial not available/only supported for MS Windows.");
+    return "";    
+    #endif
+}
+
+bool XCLIBController::closeCamLinkSerial() {
+    #ifdef WIN32
+    int result = clSerialClose(camLinkSerialRef);
+    if (result != 0) {
+	LOG4CPLUS_WARN(logger, "Error while closing camera link serial, code: " 
+		       << result);
+	return false;
+    } 
+    return true;
+    #else
+    LOG4CPLUS_WARN(logger, "CamLink serial not available/only supported for MS Windows.");
+    return false;
+    #endif
 }

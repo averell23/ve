@@ -12,7 +12,7 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <ignoreparts/>
   </general>
   <kdevautoproject>
@@ -23,7 +23,7 @@
     <run>
       <mainprogram>src/ve</mainprogram>
       <terminal>true</terminal>
-      <programargs/>
+      <programargs></programargs>
       <autocompile>true</autocompile>
       <envvars/>
     </run>
@@ -44,20 +44,20 @@
         <cxxflags>-O0 -g3</cxxflags>
       </debug>
       <default>
-        <configargs/>
-        <builddir/>
-        <topsourcedir/>
-        <cppflags/>
-        <ldflags>-lccgnu2 -lGL -lglut -lopencv -lm -lfreetype -lftgl /usr/local/xclib/xclibi86.a</ldflags>
+        <configargs></configargs>
+        <builddir></builddir>
+        <topsourcedir></topsourcedir>
+        <cppflags></cppflags>
+        <ldflags>-lccgnu2 -lGL -lglut -llog4cplus -lopencv -lm -lfreetype -lGLEW -lftgl /usr/local/xclib/xclibi86.a</ldflags>
         <ccompiler>GccOptions</ccompiler>
         <cxxcompiler>GppOptions</cxxcompiler>
         <f77compiler>G77Options</f77compiler>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cflags/>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cflags></cflags>
         <cxxflags>-I/usr/include/freetype2 -I/usr/local/include/opencv -I/usr/local/xclib -I/usr/include/cc++2</cxxflags>
-        <f77flags/>
+        <f77flags></f77flags>
       </default>
     </configurations>
     <make>
@@ -68,7 +68,7 @@
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
     </make>
   </kdevautoproject>
   <kdevfilecreate>
@@ -90,9 +90,9 @@
   </kdevfileview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions></commitoptions>
-    <addoptions></addoptions>
-    <logoptions></logoptions>
+    <commitoptions/>
+    <addoptions/>
+    <logoptions/>
     <updateoptions>-dP</updateoptions>
     <removeoptions>-f</removeoptions>
     <revertoptions>-C -d -P</revertoptions>
@@ -120,8 +120,8 @@
   <cppsupportpart>
     <filetemplates>
       <choosefiles>false</choosefiles>
-      <interfaceURL/>
-      <implementationURL/>
+      <interfaceURL></interfaceURL>
+      <implementationURL></implementationURL>
       <interfacesuffix>.h</interfacesuffix>
       <implementationsuffix>.cpp</implementationsuffix>
       <lowercasefilenames>true</lowercasefilenames>
@@ -133,9 +133,9 @@
   </kdevclassview>
   <kdevdebugger>
     <general>
-      <programargs/>
-      <gdbpath/>
-      <dbgshell/>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>

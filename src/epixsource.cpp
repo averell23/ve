@@ -107,7 +107,7 @@ void EpixSource::cameraSetup() {
 					if (strcmp(buffer, "104")) {
 						LOG4CPLUS_WARN(logger, "Unable to get result code from camera.");
 					}
-					size = 9;
+					size = 1024;					
 					clSerialWrite(serialRef, "lc36cb8f\r", &size, 1000); // Clock: 60 Mhz
 				}
                                 #else

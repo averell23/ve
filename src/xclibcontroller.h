@@ -33,14 +33,18 @@ extern "C" {
 #include <cc++/thread.h>
 #include <log4cplus/logger.h>
 
+
 using namespace std;
 using namespace ost;
 using namespace log4cplus;
 
 /**
   Controls the behavior of the XCLIB library. This encapsulates the global
-  operations for the XCLIB. This has only static methods, no instance can#else
+  operations for the XCLIB. This has only static methods, no instance can
   be created of this class.
+  
+  This class wraps the XCLIB API, and synchronizes threaded access to the 
+  XCLIB. 
   
   @author Daniel Hahn,,,
 */
@@ -94,24 +98,51 @@ public:
       Gets a copy of the unit's frame buffer. 
       
       @param unit Unit to select (0 == first unit)
-      @param buffer &buffer will point to an array containg a
-                    copy of the current frame buffer.
-      @return The pxd_readushort return code. (0 if successful).
+      @param buffer Pointer to a buffer to which the frame buffer
+                    contents will be copied.
+      @param bufsize Size of buffer
+      @return The pxd_readuchar return code. (0 if successful).
     */
-    static uchar* getBufferCopy(int unit, int* result);
-
-	/**
-		Allows synchronisation on the XCLIB.
-		FIXME: Bad kludge
-	 */
-    static Mutex* cMutex;
-
+    static int getBufferCopy(int unit, uchar* buffer, int bufsize);
+    
+    /**
+      Initializes the CamLink's built-in serial, if supported by the
+      board and library.
+      
+      @return true if the port was opened successfully.
+    */
+    static bool initCamLinkSerial();
+    
+    /**
+      Closes the CamLink's built-in serial port.
+      
+      @return true if the port was closed successfully.
+    */
+    static bool closeCamLinkSerial();
+    
+    /**
+      Writes a string to the built-in CamLink serial port.
+      
+      @param message The message to be written to the serial
+                     port.
+      @return The result string, if one was returned by the
+              serial partner. This may also contain an error
+	      string that indicates that an internal error
+	      was encountered.
+      */
+    static string writeCamLinkSerial(string message);
 
 private:
     /// Constructor is private for singleton class.
     XCLIBController();
     static bool openState;
     static Logger logger;
+    /// Allow to synchronize XCLIB calls.
+    static Mutex cMutex;
+    // Serial port handle for Camera Link connections
+    static void* camLinkSerialRef;
+    /// How long shall we wait before timing out serial operations?
+    static const int serial_timeout = 1000;
 
 };
 

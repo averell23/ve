@@ -33,9 +33,7 @@ void EpixReaderThread::run() {
     
     running = true;
     while (running) { 
-		XCLIBController::cMutex->enterMutex();
-		readResult = pxd_readuchar(1<<unit, 1, 0, 0, width, height, tmpBuffer, bufsize, "RGB");
-		XCLIBController::cMutex->leaveMutex();
+		readResult = XCLIBController::getBufferCopy(1<<unit, tmpBuffer, bufsize);
 		// cout << "Pix value: " << tmpBuffer[0] << " " <<  tmpBuffer[1] << " " << tmpBuffer[2] << endl;
 		if (readResult == bufsize) {
 			tMutex->enterMutex(); // swap the buffers
