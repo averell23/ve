@@ -25,6 +25,9 @@
 #define VEEVENTLISTENER_H
 
 #include "veevent.h"
+#include <cc++/thread.h>
+
+using namespace ost;
 
 /**
 Use to allow child classes to listen for VeEvents.
@@ -33,8 +36,22 @@ Use to allow child classes to listen for VeEvents.
 */
 class VeEventListener {
 public:
-    /// Called when recieving an event.
+	/**
+		Called by the event posting mechanism. This takes care of the
+		synchronization and calls @see recieveEvent in turn.
+	*/
+	void callEvent(VeEvent &e);
+
+private:
+    /**
+		Called when recieving an event. This method must be
+		overwritten by child implementations.
+	*/
     virtual void recieveEvent(VeEvent &e) = 0;
+
+	/// Mutex for synchronizing parallel calls.
+	Mutex mtx;
+
 };
 
 #endif

@@ -36,7 +36,7 @@ void VeEventSource::addListener(VeEventListener *listener) {
 void VeEventSource::postEvent(VeEvent &e) {
     LOG4CPLUS_DEBUG(logger, "Posting event");
     for (int i = 0 ; i < listeners.size() ; i++) {
-        listeners[i]->recieveEvent(e);
+        listeners[i]->callEvent(e);
         LOG4CPLUS_TRACE(logger, "Event posted to listener");
     }
 }

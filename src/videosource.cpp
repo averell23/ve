@@ -77,6 +77,8 @@ void VideoSource::storeBlackOffset() {
 		blackOffset->imageData = bufCopy;
 	}
 	releaseImage();
+	VeEvent e(VeEvent::MISC_EVENT, VeEvent::OFFSET_UPDATE_CODE);
+	postEvent(e);
 }
 
 void VideoSource::clearBlackOffset() {
@@ -85,6 +87,8 @@ void VideoSource::clearBlackOffset() {
 		cvReleaseImageHeader(&blackOffset);
 	}
 	blackOffset = NULL;
+	VeEvent e(VeEvent::MISC_EVENT, VeEvent::OFFSET_UPDATE_CODE);
+	postEvent(e);
 }
 
 void VideoSource::lockImage() {

@@ -30,6 +30,7 @@
 #include "stopwatch.h"
 #include "cameracalibration.h"
 #include "arregistration.h"
+#include "veeventsource.h"
 #include "ve.h"
 
 // Forward declaration
@@ -56,7 +57,7 @@ using namespace ost;
 	
 	@author Daniel Hahn,,,
 */
-class VideoSource {
+class VideoSource : public VeEventSource {
 public:
     /**
         Retrieve the next image for this video source. This returns
@@ -67,7 +68,7 @@ public:
     */
 	virtual IplImage *getImage() { return imgBuffer; }
 
-    /*
+    /**
 		Locks the internal mutex. Child implementations are expected
 		protect the internal buffer with the mutex, so that it is
 		never changed when the lock is set. Callers are expected

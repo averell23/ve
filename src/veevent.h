@@ -53,6 +53,9 @@ public:
     static const int KEYBOARD_EVENT = 1;
     static const int POSITION_EVENT = 2;
 
+	/// Pre-defined code types
+	static const int OFFSET_UPDATE_CODE = 0;
+
 private:
     /// An arbitrary event code
     long code;

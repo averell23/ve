@@ -35,7 +35,7 @@ OffsetOverlay::OffsetOverlay(bool display)
     leftEye = Ve::getLeftSource();
     rightEye = Ve::getRightSource();
     if (leftEye == NULL || rightEye == NULL) {
-        LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
+        LOG4CPLUS_ERROR(logger, "Missing video source: Could not create overlay.");
         return;
     }
     imageHeight = leftEye->getHeight();
@@ -90,6 +90,9 @@ OffsetOverlay::OffsetOverlay(bool display)
     offsetTexLeft = NULL;
     offsetTexRight = NULL;
 
+	rightEye->addListener(this); 
+	leftEye->addListener(this);
+
     LOG4CPLUS_INFO(logger, "Offset Overlay created.");
 }
 
@@ -142,12 +145,6 @@ void OffsetOverlay::drawOverlay() { // FIXME: Could use Multitexturing if suppor
 }
 
 bool OffsetOverlay::createOffsetTextures() {
-
-    if (offsetTexRight != NULL)
-        delete offsetTexRight;
-    if (offsetTexLeft != NULL)
-        delete offsetTexLeft;
-
 	offsetTexRight = Ve::getRightSource()->getBlackOffset()->imageData;
 	offsetTexLeft = Ve::getLeftSource()->getBlackOffset()->imageData;
 
@@ -171,7 +168,7 @@ void OffsetOverlay::recieveEvent(VeEvent &e) {
         toggleDisplay();
         LOG4CPLUS_DEBUG(logger, "Toggling offset correction");
     }
-    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && ((e.getCode() == 73) || (e.getCode() == 105))) {
+	if ((e.getType() == VeEvent::MISC_EVENT) && (e.getCode == VeEvent::OFFSET_UPDATE_CODE)) {
         LOG4CPLUS_DEBUG(logger, "Trying to assign offset correction textures.");
         createOffsetTextures();
     }
