@@ -24,7 +24,7 @@
 #ifndef DUMMYSOURCE_H
 #define DUMMYSOURCE_H
 
-#include <videosource.h>
+#include "videosource.h"
 #include <stdlib.h>
 #include <iostream>
 #include <cv.hpp>

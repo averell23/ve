@@ -16,11 +16,15 @@
 			IntermediateDirectory="Debug"
 			ConfigurationType="1">
 			<Tool
-				Name="VCCLCompilerTool"/>
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="C:\Programme\OpenCV\cv\include"
+				PreprocessorDefinitions="WIN32"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"/>
+				Name="VCLinkerTool"
+				AdditionalDependencies="cv.lib"
+				AdditionalLibraryDirectories="C:\Programme\OpenCV\lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -60,13 +64,55 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\src\cameracalibration.cpp">
+			</File>
+			<File
+				RelativePath=".\src\cameracalibration.h">
+			</File>
+			<File
+				RelativePath=".\src\dummyoverlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\dummysource.cpp">
+			</File>
+			<File
+				RelativePath=".\src\glutCallbacks.cpp">
+			</File>
+			<File
+				RelativePath=".\src\stopwatch.cpp">
+			</File>
+			<File
 				RelativePath=".\src\ve.cpp">
+			</File>
+			<File
+				RelativePath=".\src\videocanvas.cpp">
+			</File>
+			<File
+				RelativePath=".\src\videosource.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\src\dummyoverlay.h">
+			</File>
+			<File
+				RelativePath=".\src\dummysource.h">
+			</File>
+			<File
+				RelativePath=".\src\glutCallbacks.h">
+			</File>
+			<File
+				RelativePath=".\src\stopwatch.h">
+			</File>
+			<File
+				RelativePath=".\src\videocanvas.h">
+			</File>
+			<File
+				RelativePath=".\src\videosource.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

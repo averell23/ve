@@ -25,6 +25,11 @@
 #define VIDEOCANVAS_H
 
 #include "videosource.h"
+
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include <GL/gl.h>		// OpenGL headers
 #include <GL/glut.h>		// GLUT headers
 #include <stdio.h>		// STD input/output headers
