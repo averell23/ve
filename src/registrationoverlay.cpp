@@ -111,6 +111,11 @@ void RegistrationOverlay::drawOverlay() {
 
     // Draws left eye
     glTranslatef(-1.0f, 0.0f, 0.0f);
+    if (measuring) {
+            glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+        } else {
+            glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        }
     if (mode == LEFT_EYE) {
         GLMacros::drawCrosshairs(calibPoints[calibPointPos].x,
                                  calibPoints[calibPointPos].y);
@@ -127,6 +132,7 @@ void RegistrationOverlay::drawOverlay() {
                            + 20, calibPoints[calibPointPos].y + 20, tmpTxt, 30);
     }
 
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     if (mode == LEFT_EYE) {
         GLMacros::blankRightEye();

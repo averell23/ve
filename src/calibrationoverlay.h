@@ -87,6 +87,8 @@ private:
     int imageWidth, imageHeight;
     /// Sets picture-in-picture coordinates
     void setPiPCoordinates();
+    /// Indicates if the last corner find was successful
+    bool foundCorners;
 };
 
 #endif

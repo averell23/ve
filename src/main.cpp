@@ -75,6 +75,14 @@ int main(int argc, char *argv[]) {
                           "Threshold for AR Toolkit detection");
     parser.setupParameter("tracking", false,
                           "Use tracking system: (audio|artoolkit)");
+    parser.setupParameter("leftBright", false, 
+                          "Brightness of left video channel");
+    parser.setupParameter("rightBright", false, 
+                          "Brightness of right video channel");
+    parser.setupOption("swap", "Swap the video sources");
+    parser.setupOption("rotX", "Rotate video images around x axis");
+    parser.setupOption("rotY", "Rotate video images around y axis");
+    parser.setupOption("rotZ", "Rotate video images around z axis");
     parser.setupOption("statusoverlay", "Use the status overlay");
     parser.setupOption("textoverlay", "User text augmentation overlay");
     parser.setupOption("trackingoverlay", "Use Tracker test overlay");
@@ -183,7 +191,43 @@ int main(int argc, char *argv[]) {
     }
     right->getCalibration()->load();
 
-    Ve::init(left, right);
+    int leftBrightness = 50;
+    int rightBrightness = 50;
+    bool xRot, yRot, zRot;
+    bool swap;
+
+    param = parser.getParamValue("leftBright");
+    if (param != "") {
+        leftBrightness = atoi(param.c_str());
+        if (leftBrightness < 0) leftBrightness = 0;
+        if (leftBrightness > 100) leftBrightness = 100;
+        LOG4CPLUS_DEBUG(logger, "Video brightness for left eye set to " << leftBrightness);
+    }
+    param = parser.getParamValue("rightBright");
+    if (param != "") {
+        rightBrightness = atoi(param.c_str());
+        if (rightBrightness < 0) rightBrightness = 0;
+        if (rightBrightness > 100) rightBrightness = 100;
+        LOG4CPLUS_DEBUG(logger, "Video brightness for right eye set to " << rightBrightness);
+    }
+    if (parser.getOptionValue("swap")) {
+        swap = true;
+        LOG4CPLUS_DEBUG(logger, "Swapping left and right eye.");
+    }
+    if (parser.getOptionValue("rotX")) {
+        xRot = true;
+        LOG4CPLUS_DEBUG(logger, "Rotating image around x axis");
+    }
+    if (parser.getOptionValue("rotY")) {
+        yRot = true;
+        LOG4CPLUS_DEBUG(logger, "Rotating image around y axis");
+    }
+    if (parser.getOptionValue("rotZ")) {
+        zRot = true;
+        LOG4CPLUS_DEBUG(logger, "Rotating image around z axis");
+    }
+
+    Ve::init(left, right, swap, xRot, yRot, zRot, leftBrightness, rightBrightness);
     CameraCalibration *calTmp = Ve::getLeftSource()->getCalibration();
     calTmp->setPatternDimension(cvSize(6, 8));
     calTmp->setChessSize(cvSize(28, 28));

@@ -25,7 +25,9 @@
 
 Logger VideoCanvas::logger = Logger::getInstance("Ve.VideoCanvas");
 
-VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool yRot, bool zRot) {
+VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, 
+                         bool xRot, bool yRot, bool zRot, 
+                         int leftBrightness, int rightBrightness) {
     if (left == NULL || right == NULL) {
         LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
         return;
@@ -35,6 +37,8 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
     imagesSaved = 0;
+    VideoCanvas::leftBrightness = leftBrightness;
+    VideoCanvas::rightBrightness = rightBrightness;
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
         LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
@@ -75,9 +79,6 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
 
     leftCount = 0;
     rightCount = 0;
-
-    leftBrightness = 50;
-    rightBrightness = 50;
 
     rightEye->setBrightness(rightBrightness);
     leftEye->setBrightness(leftBrightness);

@@ -61,7 +61,9 @@ class VideoCanvas : public VeEventListener {
 public:
     /** Creates a new video canvas with the given sources for the
         right and left eye. **/
-    VideoCanvas(VideoSource *left, VideoSource *right, bool xRot = false, bool yRot = false, bool zRot = false);
+    VideoCanvas(VideoSource *left, VideoSource *right, 
+                bool xRot, bool yRot, bool zRot, 
+                int leftBrightness = 50, int rightBrightness = 50);
 
     /** Draws the Video Canvas by uploading the texture images */
     void draw();

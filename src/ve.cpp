@@ -17,11 +17,19 @@ vector<Overlay*> Ve::overlays;
 Logger Ve::logger = Logger::getInstance("Ve.Ve");
 VeEventSource Ve::eventSource;
 
-void Ve::init(VideoSource* left, VideoSource* right) {
-    Ve::rightEye = right;
-    Ve::leftEye = left;
+void Ve::init(VideoSource* left, VideoSource* right, bool swap,
+              bool rotX, bool rotY, bool rotZ,
+              int leftBright, int rightBright)
+{
+    if (!swap) {
+        Ve::rightEye = right;
+        Ve::leftEye = left;
+    } else {
+        Ve::rightEye = left;
+        Ve::leftEye = right;
+    }
     Ve::stereoCal = new StereoCalibration(left->getCalibration(), right->getCalibration());
-    Ve::mainVideo = new VideoCanvas(left, right, true, false, false); // FIXME: Should be configurable
+    Ve::mainVideo = new VideoCanvas(Ve::leftEye, Ve::rightEye, rotX, rotY, rotZ, leftBright, rightBright);
     Ve::addListener(Ve::mainVideo);
     LOG4CPLUS_INFO(logger, "Main video canvas created.");
     Ve::timer = new Stopwatch();

@@ -53,6 +53,7 @@ CalibrationOverlay::CalibrationOverlay(bool display) : Overlay(display) {
     imageWidth = Ve::getLeftSource()->getWidth();
     widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
     heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
+    foundCorners = false;
 }
 
 CalibrationOverlay::~CalibrationOverlay() {}
@@ -120,9 +121,13 @@ void CalibrationOverlay::drawPiP() {
         if (0 == i) {
 	       glTranslatef(-1.0f, 0.0f, 0.0f);
 	    }
-	    // Back to Pip coordinates, red markers
+	    // Back to Pip coordinates, set marker color
 	    setPiPCoordinates();
-	    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+        if (foundCorners) {
+            glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+        } else {
+	        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+        }
 
 	    CvPoint vCoords = Ve::getVirtualSize();
 	    float xFac = vCoords.x / (float) imageWidth;
@@ -169,7 +174,7 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
     switch (e.getCode()) {
     case 'x':
     case 'X':
-        cCalibrationObject->takeSnapshot();
+        foundCorners = cCalibrationObject->takeSnapshot();
         break;
     case 'n':
     case 'N':

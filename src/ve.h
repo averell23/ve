@@ -67,7 +67,9 @@ public:
       @param right/left The sources for the two video 
                               images.
     */
-    static void init(VideoSource* left, VideoSource* right);
+    static void init(VideoSource* left, VideoSource* right, bool swap=false,
+                     bool rotX=false, bool rotY=false, bool rotZ=false,
+                     int leftBright=50, int rightBright=50);
 
     /*
       Start video display and processing.

@@ -221,7 +221,7 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     IplImage* threshTmp; // Temp Image for corner detection
     int cornerNum; // Number of corners found
     threshTmp = cvCreateImage(cvSize(image->width, image->height), IPL_DEPTH_8U, 1);
-    CvSize searchWindow = cvSize(chessSize.width * 2, chessSize.height * 2); // Size of the search window for SubPix
+    CvSize searchWindow = cvSize(chessSize.width / 2, chessSize.height / 2); // Size of the search window for SubPix
     // FIXME: value's unit not understood
     cornerNum = patternDimension.height * patternDimension.width;
     int found = cvFindChessBoardCornerGuesses(image, threshTmp,
@@ -234,10 +234,10 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     lastCornerCount = (cornerNum > 0)?cornerNum:(-cornerNum);
 
     if (found != 0) {
-        /* cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
+         cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
 			   searchWindow, cvSize(-1, -1),
 			   cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
-        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found); */
+        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found); 
     } else {
         LOG4CPLUS_WARN(logger, "Corner find unsuccessful, corner count: " << cornerNum);
         tempPoints = NULL;
