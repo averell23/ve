@@ -181,11 +181,12 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
         }
     }
     if (e.getType() == VeEvent::KEYBOARD_EVENT) {
+	gsl_matrix* tMat = Ve::getStereoCalibration()->getCameraTransformation(); // FIXME: Stereo viewing kludge
         switch (e.getCode()) {
         case 'q':
         case 'Q':
             Ve::getRightSource()->getRegistration()->resetCalibration();
-            Ve::getLeftSource()->getRegistration()->resetCalibration();
+            Ve::getLeftSource()->getRegistration()->insertTransformation(tMat);
         case 'r':
         case 'R':
             toggleDisplay();
