@@ -21,65 +21,31 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef CORBACONTROLLER_H
-#define CORBACONTROLLER_H
-
-#include <log4cplus/logger.h>
-#include "veeventsource.h"
-#include "stubs/positionconnector.hh"
-#include "stubs/positionconnector_impl.h"
 #include "corbathread.h"
 
-using namespace log4cplus;
-using namespace std;
-using namespace ost;
+Logger CORBAThread::logger = Logger::getInstance("Ve.CORBAThread");
 
-/**
-Static class that controls the operations of the CORBA subsystem.
-This is a singleton class that will run the CORBA processing in
-a separate thread once it is initialized.
- 
-@author Daniel Hahn,,,
-*/
-class CORBAController {
-public:
+CORBAThread::CORBAThread(CORBA::ORB_var orb) : Thread() {
+    running = false;
+    myORB = orb;
+    start();
+}
 
-    /**
-      Gets the singleton instance of this class.
-    */
-    static CORBAController& getInstance() {
-        return myInstance;
+void CORBAThread::run() {
+    running = true;
+    LOG4CPLUS_DEBUG(logger, "CORBA thread started.");
+    while (running) {
+        if (myORB->work_pending()) {
+            myORB->perform_work();
+        }
+        yield();
     }
+}
 
-    /**
-      Initializes the CORBA subsystem
-    */
-    void init(int argc, char** argv);
 
-    /**
-      Adds a listener for position events.
-    */
-    void addPositionEventListener(VeEventListener* listener);
+CORBAThread::~CORBAThread()
+{
+    running = false;
+}
 
-    void run();
 
-    ~CORBAController();
-
-private:
-    /// The CORBA ORB
-    CORBA::ORB_var orb;
-    /// Logger for this class
-    static Logger logger;
-    /// Internal instance that will run the CORBA worker thread
-    static CORBAController myInstance;
-    /// Private contructor for singleton class
-    CORBAController();
-    /// Handler thread for the ORB
-    CORBAThread* theThread;
-    /// Event source/CORBA object for position events
-    PositionConnector_Impl* positionSource;
-	int x;
-
-};
-
-#endif

@@ -28,10 +28,6 @@ CORBAController CORBAController::myInstance;
 
 CORBAController::CORBAController() : Thread() {
     positionSource = new PositionConnector_Impl();
-	LOG4CPLUS_DEBUG(logger, "Object created.");
-	cout << "aaaaaaaaaaaaaaaarg" << endl;
-	x = 27;
-    running = false;
 }
 
 void CORBAController::init(int argc, char** argv) {
@@ -58,18 +54,9 @@ void CORBAController::init(int argc, char** argv) {
 	} 
 		x = 17;
     LOG4CPLUS_INFO(logger, "CORBA initialized, starting CORBA handler.");
+    theThread = new CORBAThread(orb);
+    theThread->start();
 	// CORBAController::start();
-}
-
-void CORBAController::run() {
-    running = true;
-    LOG4CPLUS_DEBUG(logger, "CORBA thread started." << x);
-    /* while (running) {
-        if (orb->work_pending()) {
-             orb->perform_work();
-        }
-        yield(); 
-    } */
 }
 
 void CORBAController::addPositionEventListener(VeEventListener* listener) {
@@ -77,8 +64,7 @@ void CORBAController::addPositionEventListener(VeEventListener* listener) {
 }
 
 CORBAController::~CORBAController() {
-    running = false;
-    /* positionSource->_remove_ref(); FIXME
-    orb->destroy(); */
+    positionSource->_remove_ref();
+    orb->destroy();
 }
 

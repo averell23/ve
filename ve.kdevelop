@@ -12,7 +12,7 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
+    <description/>
     <ignoreparts/>
     <secondaryLanguages/>
   </general>
@@ -83,7 +83,7 @@
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin></makebin>
+      <makebin/>
     </make>
   </kdevautoproject>
   <kdevfilecreate>
@@ -97,6 +97,7 @@
     <groups>
       <group pattern="*.h" name="Header files" />
       <group pattern="*.cpp" name="Source files" />
+      <hidenonprojectfiles>false</hidenonprojectfiles>
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
@@ -106,9 +107,9 @@
   </kdevfileview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions/>
-    <addoptions/>
-    <logoptions/>
+    <commitoptions></commitoptions>
+    <addoptions></addoptions>
+    <logoptions></logoptions>
     <updateoptions>-dP</updateoptions>
     <removeoptions>-f</removeoptions>
     <revertoptions>-C -d -P</revertoptions>
@@ -157,16 +158,16 @@
   </kdevclassview>
   <kdevdebugger>
     <general>
-      <programargs></programargs>
-      <gdbpath></gdbpath>
-      <dbgshell></dbgshell>
+      <programargs/>
+      <gdbpath/>
+      <dbgshell/>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
-      <configGdbScript></configGdbScript>
-      <runShellScript></runShellScript>
-      <runGdbScript></runGdbScript>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
     </general>
     <display>
       <staticmembers>false</staticmembers>

@@ -21,65 +21,38 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef CORBACONTROLLER_H
-#define CORBACONTROLLER_H
+#ifndef CORBATHREAD_H
+#define CORBATHREAD_H
+
 
 #include <log4cplus/logger.h>
-#include "veeventsource.h"
+#include <cc++/thread.h>
 #include "stubs/positionconnector.hh"
 #include "stubs/positionconnector_impl.h"
-#include "corbathread.h"
 
-using namespace log4cplus;
-using namespace std;
 using namespace ost;
 
 /**
-Static class that controls the operations of the CORBA subsystem.
-This is a singleton class that will run the CORBA processing in
-a separate thread once it is initialized.
- 
+Simple thread class for the CORBAController, to work around a glitch in the WIN32 Common C++ implementation.
+
 @author Daniel Hahn,,,
 */
-class CORBAController {
+class CORBAThread : public Thread {
 public:
 
-    /**
-      Gets the singleton instance of this class.
-    */
-    static CORBAController& getInstance() {
-        return myInstance;
-    }
-
-    /**
-      Initializes the CORBA subsystem
-    */
-    void init(int argc, char** argv);
-
-    /**
-      Adds a listener for position events.
-    */
-    void addPositionEventListener(VeEventListener* listener);
-
+    CORBAThread(CORBA::ORB_var orb);
+    
     void run();
-
-    ~CORBAController();
-
+    
+    ~CORBAThread();
 private:
-    /// The CORBA ORB
-    CORBA::ORB_var orb;
+    /// ORB handled by this thread
+    CORBA::ORB_var myORB;
+    /// Indicates whether the main loop is currently running
+    bool running;
     /// Logger for this class
     static Logger logger;
-    /// Internal instance that will run the CORBA worker thread
-    static CORBAController myInstance;
-    /// Private contructor for singleton class
-    CORBAController();
-    /// Handler thread for the ORB
-    CORBAThread* theThread;
-    /// Event source/CORBA object for position events
-    PositionConnector_Impl* positionSource;
-	int x;
-
+    
 };
 
 #endif
