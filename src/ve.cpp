@@ -69,10 +69,10 @@ void Ve::shutdown() {
         LOG4CPLUS_WARN(logger, "Open GL Error encountered on during runtime." << getGLError(error));
     }
     timer->stop();
-    delete mainVideo;
-    for (int i=0 ; i < overlays.size() ; i++) {
+    /* for (int i=0 ; i < overlays.size() ; i++) {
         delete overlays[i];
-    }
+    } */
+    // FIXME: Proper handling required delete mainVideo;
 }
 
 const char* Ve::getGLError(GLenum error) {

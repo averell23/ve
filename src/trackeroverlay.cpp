@@ -162,4 +162,5 @@ void TrackerOverlay::recieveEvent(VeEvent &e) {
         }
         LOG4CPLUS_TRACE(logger, "Position event handler finished");
     }
+    handleEvent(e);
 }

@@ -45,6 +45,8 @@ TextTrackerOverlay::TextTrackerOverlay(int leftSourceID, int rightSourceID, bool
     elPos.push_back(0);
     elPos.push_back(0);
     elPos.push_back(0);
+    distanceFactor=1.1;
+    maxFontSize = 100;
 }
 
 
@@ -55,8 +57,8 @@ TextTrackerOverlay::~TextTrackerOverlay()
 
 void TextTrackerOverlay::handleEvent(VeEvent &e) {
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 13)) {
-        textPos == (textPos + 1) % texts.size();
-	elPos[textPos] = (elPos[textPos] + 1) % texts[textPos].size();
+        textPos = (textPos + 1) % texts.size();
+	    elPos[textPos] = (elPos[textPos] + 1) % texts[textPos].size();
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, advancing text.");
     }
 }
@@ -67,13 +69,14 @@ void TextTrackerOverlay::drawOneEye(map<int,Position>& positions) {
     int i=0;
     double max = (height*height) + (width*width);
     for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
-	if (i<texts.size()) {
-	    int tpos = elPos[i];
-	    double dist = centerDistanceSquared(posIterator->second.x, posIterator->second.y);
-	    int tsize = (int) ((((max/2.0) - dist) / max) * 60);
-	    if (tsize > 0) {
-		GLMacros::drawText((int) posIterator->second.x, (int) posIterator->second.y, (char*) texts[i][tpos].c_str(), tsize);
+	    if (i<texts.size()) {
+	        int tpos = elPos[i];
+	        double dist = centerDistanceSquared(posIterator->second.x, posIterator->second.y);
+	        int tsize = (int) ((((max/distanceFactor) - dist) / max) * maxFontSize);
+	        if (tsize > 0) {
+		        GLMacros::drawText((int) posIterator->second.x, (int) posIterator->second.y, (char*) texts[i][tpos].c_str(), tsize);
+	        }
+            i++;
 	    }
-	}
     }
 }

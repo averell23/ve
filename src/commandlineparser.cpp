@@ -30,13 +30,6 @@ CommandLineParser::CommandLineParser(string programName, bool ignoreUnknown, boo
     CommandLineParser::programName = programName;
     if (useConfigFile) {
 	setupParameter("config", false, "Read configuration from XML file");
-	try {
-	    xercesc::XMLPlatformUtils::Initialize();
-	} catch (const xercesc::XMLException& toCatch) {
-	    char* message = xercesc::XMLString::transcode(toCatch.getMessage());
-	    LOG4CPLUS_ERROR(logger, "Could not initialize XMLPlatformUtils:" << message);
-	    xercesc::XMLString::release(&message);
-	}
     }
 }
 
@@ -141,7 +134,7 @@ void CommandLineParser::resetRequiredParameters() {
 void CommandLineParser::readConfigFile(string filename) {
     XMLCh tmpStr[256];
 
-    xercesc::DOMDocument* doc = XMLMacros::XMLReadFile(filename);
+    xercesc::DOMDocument* doc = XMLMacros::getInstance().XMLReadFile(filename);
     
     if (!doc) {
 	LOG4CPLUS_ERROR(logger, "Unable to load configuration from: " << filename);
@@ -173,9 +166,9 @@ void CommandLineParser::readConfigFile(string filename) {
     for (XMLSize_t i = 0 ; i < nodeList->getLength() ; i++) {
         xercesc::DOMNode* curNode = nodeList->item(i);
 	if (!xercesc::XMLString::compareString(curNode->getNodeName(), optionStr)) {
-	    const XMLCh* optionNameCh = XMLMacros::getAttributeByName(curNode, nameStr);
+	    const XMLCh* optionNameCh = XMLMacros::getInstance().getAttributeByName(curNode, nameStr);
 	    char* optionName = xercesc::XMLString::transcode(optionNameCh);
-	    const XMLCh* optionValue = XMLMacros::getAttributeByName(curNode, valueStr);
+	    const XMLCh* optionValue = XMLMacros::getInstance().getAttributeByName(curNode, valueStr);
 	    if ((!xercesc::XMLString::compareString(optionValue, trueStr)) 
 		&& (legalOptions.find(optionName) != legalOptions.end()) 
 		&& (options.find(optionName) == options.end()))
@@ -186,7 +179,7 @@ void CommandLineParser::readConfigFile(string filename) {
 	    xercesc::XMLString::release(&optionName);
 	}
 	if (!xercesc::XMLString::compareString(curNode->getNodeName(), parameterStr)) {
-	    const XMLCh* paramNameCh = XMLMacros::getAttributeByName(curNode, nameStr);
+	    const XMLCh* paramNameCh = XMLMacros::getInstance().getAttributeByName(curNode, nameStr);
 	    char* paramName = xercesc::XMLString::transcode(paramNameCh);
 	    if ((legalParameters.find(paramName) != legalParameters.end()) &&
 		(parameters.find(paramName) == parameters.end()))
@@ -195,7 +188,7 @@ void CommandLineParser::readConfigFile(string filename) {
 		    requiredParameters[paramName] = true;
 		    LOG4CPLUS_DEBUG(logger, "Found required parameter in config file: " << paramName << endl);
 		}
-		const XMLCh* content = XMLMacros::getTextChild(curNode);
+		const XMLCh* content = XMLMacros::getInstance().getTextChild(curNode);
 		char* paramVal = xercesc::XMLString::transcode(content);
 		parameters[paramName] = paramVal;
 		LOG4CPLUS_DEBUG(logger, "Set parameter from config file: " << paramName << " to " << paramVal);
@@ -204,8 +197,6 @@ void CommandLineParser::readConfigFile(string filename) {
 	    xercesc::XMLString::release(&paramName);
 	}
     }
-    
-    doc->release();
 }
 CommandLineParser::~CommandLineParser() {}
 

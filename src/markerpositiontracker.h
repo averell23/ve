@@ -60,6 +60,11 @@ public:
     ARUint8* getImageData();
 
     /**
+        Attempts to stop the detection thread cleanly.
+    */
+    void shutdown();
+
+    /**
       Initialize the ARToolkit.
     */
     void initARToolkit();

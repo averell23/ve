@@ -193,7 +193,13 @@
 				RelativePath=".\src\stopwatch.cpp">
 			</File>
 			<File
+				RelativePath=".\src\texttrackeroverlay.cpp">
+			</File>
+			<File
 				RelativePath=".\src\trackeroverlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\trackertestoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\ve.cpp">
@@ -328,7 +334,13 @@
 				RelativePath=".\src\stopwatch.h">
 			</File>
 			<File
+				RelativePath=".\src\texttrackeroverlay.h">
+			</File>
+			<File
 				RelativePath=".\src\trackeroverlay.h">
+			</File>
+			<File
+				RelativePath=".\src\trackertestoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\ve.h">

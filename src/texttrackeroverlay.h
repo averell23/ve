@@ -24,7 +24,7 @@
 #ifndef TEXTTRACKEROVERLAY_H
 #define TEXTTRACKEROVERLAY_H
 
-#include <trackeroverlay.h>
+#include "trackeroverlay.h"
 
 /**
 Places dummy text items at the positions of the tracked objects. The text size is 
@@ -55,6 +55,14 @@ protected:
     int textPos;
     /// Indicates the position in each text vector
     vector<int> elPos;
+    /** 
+        Indicates the distance from the center where the text
+        size will be zero. This is a factor where 1 = full distance
+        2 = half distance, and so on.
+    */
+    double distanceFactor;
+    /// Maximum font size (at the center of the screen)
+    int maxFontSize;
 };
 
 #endif

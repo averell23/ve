@@ -1,0 +1,6 @@
+<config>
+	<parameter name="source">epix</parameter>
+	<parameter name="epixconf">../config/camSubS.fmt</parameter>
+	<parameter name="initA">../config/caminit.txt</parameter>
+	<parameter name="initB">../config/caminit.txt</parameter>
+</config>

@@ -34,7 +34,8 @@
 #include "commandlineparser.h"
 #include "corbacontroller.h"
 #include "arregistration.h"
-#include "trackeroverlay.h"
+#include "trackertestoverlay.h"
+#include "texttrackeroverlay.h"
 #include "markerpositiontracker.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
@@ -187,13 +188,13 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(&offset);
     Ve::addListener(&offset);
     // Ve::addOverlay(new DummyOverlay(true));
-    /* MarkerPositionTracker leftTrack(left, 1);
-       MarkerPositionTracker rightTrack(right, 2);
-       TrackerOverlay tracker(1,2);
-       leftTrack.addListener(&tracker);
-       rightTrack.addListener(&tracker);
-       Ve::addOverlay(&tracker);
-       Ve::addListener(&tracker);  */
+    MarkerPositionTracker* leftTrack = new MarkerPositionTracker(left,1);
+    MarkerPositionTracker* rightTrack = new MarkerPositionTracker(right, 2);
+    TextTrackerOverlay tracker(1,2);
+    leftTrack->addListener(&tracker);
+    rightTrack->addListener(&tracker);
+    Ve::addOverlay(&tracker);
+    Ve::addListener(&tracker); 
     StatusOverlay status(true);	
     Ve::addOverlay(&status);
     Ve::addListener(&status);

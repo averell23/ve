@@ -24,15 +24,33 @@
 #include "xmlmacros.h"
 
 Logger XMLMacros::logger = Logger::getInstance("Ve.XMLMacros");
-xercesc::XercesDOMParser XMLMacros::parser;
-xercesc::HandlerBase XMLMacros::errHandler; 
+XMLMacros XMLMacros::instance;
+
+XMLMacros::XMLMacros() {
+    try {
+        xercesc::XMLPlatformUtils::Initialize();
+    } catch (const xercesc::XMLException& toCatch) {
+        char* message = xercesc::XMLString::transcode(toCatch.getMessage());
+        LOG4CPLUS_ERROR(logger, "Could not initialize XMLPlatformUtils:" << message);
+        xercesc::XMLString::release(&message);
+    }
+    parser = new xercesc::XercesDOMParser();
+    errHandler = new xercesc::HandlerBase();
+    parser->setErrorHandler(errHandler);
+}
+
+XMLMacros::~XMLMacros() {
+    parser->setErrorHandler(NULL);
+    delete parser;
+    delete errHandler;
+    xercesc::XMLPlatformUtils::Terminate();
+}
 
 xercesc::DOMDocument* XMLMacros::XMLReadFile(string filename) {
     XMLCh tmpStr[256];
-    parser.setErrorHandler(&errHandler);
 
     try {
-        parser.parse(filename.c_str());
+        parser->parse(filename.c_str());
     } catch (const xercesc::XMLException& e) {
         char* msg = xercesc::XMLString::transcode(e.getMessage());
         LOG4CPLUS_ERROR(logger, "Caught XML exception while loading: " << msg);
@@ -48,7 +66,7 @@ xercesc::DOMDocument* XMLMacros::XMLReadFile(string filename) {
         return NULL;
     }
 
-    return parser.getDocument();
+    return parser->getDocument();
 }
 
 const XMLCh* XMLMacros::getAttributeByName(xercesc::DOMNode* node, XMLCh* name) {

@@ -37,13 +37,6 @@ CameraCalibration::CameraCalibration(VideoSource *input,
     calibrationMatrix = new float[CALIB_MATRIX_SIZE*CALIB_MATRIX_SIZE];
     rotationMatrices = NULL;
     translationVects = NULL;
-    try {
-        xercesc::XMLPlatformUtils::Initialize();
-    } catch (const xercesc::XMLException& toCatch) {
-        char* message = xercesc::XMLString::transcode(toCatch.getMessage());
-        LOG4CPLUS_ERROR(logger, "Could not initialize XMLPlatformUtils:" << message);
-        xercesc::XMLString::release(&message);
-    }
 }
 
 void CameraCalibration::setFilename(string filename) {
@@ -318,9 +311,8 @@ bool CameraCalibration::save(string filename) {
         curElement->appendChild(text);
     }
 
-    XMLMacros::XMLSaveFile(filename, root);
+    XMLMacros::getInstance().XMLSaveFile(filename, root);
 
-    doc->release();
     return true;
 }
 
@@ -330,7 +322,7 @@ bool CameraCalibration::load(string filename) {
         filename = CameraCalibration::filename;
     LOG4CPLUS_DEBUG(logger, "Attempting to load camera calibration from: " << filename);
 
-    xercesc::DOMDocument* doc = XMLMacros::XMLReadFile(filename);
+    xercesc::DOMDocument* doc = XMLMacros::getInstance().XMLReadFile(filename);
 
     if (!doc) {
 	    LOG4CPLUS_ERROR(logger, "Unable to load calibration from: " << filename);
@@ -368,7 +360,7 @@ bool CameraCalibration::load(string filename) {
         }
     } // for
     
-    doc->release();
+    // doc->release();
 
     LOG4CPLUS_INFO(logger, "Calibration read from " << filename);
 
@@ -389,20 +381,20 @@ bool CameraCalibration::readCalibrationMatrix(xercesc::DOMNodeList* nodeList) {
             double matVal = 0;
             // try to get attributes
             xercesc::XMLString::transcode("x", tmpStr2, 255);
-            const XMLCh* nameX = XMLMacros::getAttributeByName(curNode, tmpStr2);
+            const XMLCh* nameX = XMLMacros::getInstance().getAttributeByName(curNode, tmpStr2);
             if (nameX) {
                 tmpChr = xercesc::XMLString::transcode(nameX);
                 x = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
             xercesc::XMLString::transcode("y", tmpStr2, 255);
-            const XMLCh* nameY = XMLMacros::getAttributeByName(curNode, tmpStr2);
+            const XMLCh* nameY = XMLMacros::getInstance().getAttributeByName(curNode, tmpStr2);
             if (nameY) {
                 tmpChr = xercesc::XMLString::transcode(nameY);
                 y = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
-            const XMLCh* valCh = XMLMacros::getTextChild(curNode);
+            const XMLCh* valCh = XMLMacros::getInstance().getTextChild(curNode);
             if (valCh) {
                 tmpChr = xercesc::XMLString::transcode(valCh);
                 matVal = atof(tmpChr);
@@ -442,13 +434,13 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
             int pos = -1;
             double distVal = 0;
             xercesc::XMLString::transcode("pos", tmpStr2, 255);
-            const XMLCh* namePos = XMLMacros::getAttributeByName(curNode, tmpStr2);
+            const XMLCh* namePos = XMLMacros::getInstance().getAttributeByName(curNode, tmpStr2);
             if (namePos) {
                 tmpChr = xercesc::XMLString::transcode(namePos);
                 pos = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
-            const XMLCh* valCh = XMLMacros::getTextChild(curNode);
+            const XMLCh* valCh = XMLMacros::getInstance().getTextChild(curNode);
             if (valCh) {
                 tmpChr = xercesc::XMLString::transcode(valCh);
                 distVal = atof(tmpChr);

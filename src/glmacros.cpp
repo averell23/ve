@@ -70,6 +70,7 @@ void GLMacros::drawCrosshairs(int x, int y) {
 }
 
 void GLMacros::drawText(int x, int y, char* text, int fontSize) {
+    if (fontSize < 2) return; // Sanity check
     FTGLTextureFont* font = FontManager::getFont(fontSize);
     float xTrans = (float) x / Ve::getVirtualSize().x;
     float yTrans = (float) y / Ve::getVirtualSize().y;

@@ -70,6 +70,10 @@ void MarkerPositionTracker::run() {
     }
 }
 
+void MarkerPositionTracker::shutdown() {
+    running = false;
+}
+
 void MarkerPositionTracker::initARToolkit() {
     mtx.enterMutex();
     // Hardcoded pattern file positions
@@ -130,7 +134,7 @@ ARUint8* MarkerPositionTracker::getImageData() {
             }
         }
     } else {
-        LOG4CPLUS_WARN(logger, "Wront image format for conversion to ARToolkit AGBR.");
+        LOG4CPLUS_WARN(logger, "Wrong image format for conversion to ARToolkit AGBR.");
     }
     source->releaseImage();
     LOG4CPLUS_TRACE(logger, "Released image");

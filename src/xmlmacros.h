@@ -49,8 +49,7 @@ Collection of XML utility functions.
 */
 class XMLMacros{
 public:
-    XMLMacros();
-
+    
     ~XMLMacros();
     
     /**
@@ -58,13 +57,15 @@ public:
       opened and parsed into a DOM. If this isn't successful,
       for whatever reason, the error messages will be logged. A dummy error
       handler is used for the parser. This uses an internal parser object,
-      which will be re-used the next time this function is called.
+      which caches all documents that have been parsed so far. FIXME:
+      The documents will be kept internally, if they are released externally
+      the parser cannot be deleted!
       
       @param filename Name of the XML file to open.
       
       @return Pointer to the DOMDocument or NULL, if errors occured.
     */
-    static xercesc::DOMDocument* XMLReadFile(string filename);
+    xercesc::DOMDocument* XMLReadFile(string filename);
     
     /**
       Attempts to save the given DOM document as an XML file. Error messages
@@ -73,7 +74,7 @@ public:
       @param filename Name of the file to save to.
       @param root Root element of the DOM document to save.
     */
-    static void XMLSaveFile(string filename, xercesc::DOMElement* root);
+    void XMLSaveFile(string filename, xercesc::DOMElement* root);
     
     /**
        Helper method to read text child from a node.
@@ -82,7 +83,7 @@ public:
                node has no text children. Does not combine multiple
 	       text children.
     */
-    static const XMLCh* getTextChild(xercesc::DOMNode* node);
+    const XMLCh* getTextChild(xercesc::DOMNode* node);
 
     /**
       Helper method to get an attribute by name from a node.
@@ -90,15 +91,26 @@ public:
       @return The contents of the attribute, or null if the attribute
               does not exist.
     */
-    static const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
+    const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
+
+    /**
+        Get the singleton instance of this class.
+    */
+    static XMLMacros& getInstance() { return instance; }
+
+
 	
 private:
+    /// Private constructor for singleton
+    XMLMacros();
     /// Logger for this class.
     static Logger logger;
     /// Temporary parser object
-    static xercesc::XercesDOMParser parser;
+    xercesc::XercesDOMParser* parser;
     /// Dummy Error Handler for parser.
-    static xercesc::HandlerBase errHandler; 
+    xercesc::HandlerBase* errHandler; 
+    /// Singleton Object
+    static XMLMacros instance;
 	
 };
 
