@@ -64,7 +64,7 @@ public:
 
     ~TrackerOverlay();
 
-    void drawOverlay();
+    virtual void drawOverlay();
 
     static char* paramFile;
 

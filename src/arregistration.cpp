@@ -130,6 +130,7 @@ void ARRegistration::reRegister() {
     gsl_matrix_free(params);
     gsl_matrix_free(T);
     gsl_matrix_free(cov);
+    LOG4CPLUS_INFO(logger, "Re-Registered Sensors.");
 }
 
 gsl_matrix* ARRegistration::getCalibrationMatrix() {

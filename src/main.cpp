@@ -222,16 +222,16 @@ int main(int argc, char *argv[]) {
     } else {
         LOG4CPLUS_WARN(logger, "No tracking option given, no tracker was initialized.");
     }
+    TrackerTestOverlay testTracker(1,2);
+    TextTrackerOverlay tracker(1,2);
     if (trackingActive) {
-        TrackerTestOverlay testTracker(1,2);
         if (parser.getOptionValue("trackingoverlay")) {
             LOG4CPLUS_DEBUG(logger, "Using test overlay for tracker.");
-            leftTrack->addListener(&testTracker);
+            leftTrack->addListener(&testTracker); 
             rightTrack->addListener(&testTracker);
             Ve::addOverlay(&testTracker);
             Ve::addListener(&testTracker); 
         }
-        TextTrackerOverlay tracker(1,2);
         if (parser.getOptionValue("textoverlay")) {
             LOG4CPLUS_DEBUG(logger, "Using text augmentation");
             leftTrack->addListener(&tracker);

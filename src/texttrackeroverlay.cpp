@@ -45,7 +45,7 @@ TextTrackerOverlay::TextTrackerOverlay(int leftSourceID, int rightSourceID, bool
     elPos.push_back(0);
     elPos.push_back(0);
     elPos.push_back(0);
-    distanceFactor=1.1;
+    distanceFactor=1.2;
     maxFontSize = 100;
 }
 
