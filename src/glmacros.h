@@ -104,11 +104,13 @@ public:
     */
     static void rotateImage();
 
-    /**
-        Converts the given virtual coordinates to actual screen
-        coordinates.
-    */
 
+    /**
+      Gets absolute pixel coordinates from the given virtual 
+      coordinates.
+    */
+    static CvPoint getPixelCoords(int x, int y);
+    
 private:
     /// Logger for this class
     static Logger logger;

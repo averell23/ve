@@ -156,6 +156,23 @@ int GLMacros::checkTextureSize() {
     return textureSize;
 }
 
+CvPoint GLMacros::getPixelCoords(int x, int y) {
+    int pixW = Ve::getLeftSource()->getWidth();
+    int pixH = Ve::getLeftSource()->getHeight();
+    int vx = Ve::getVirtualSize().x;
+    int vy = Ve::getVirtualSize().y;
+    
+    float xFac =  (float) pixW / (float) vx;
+    float yFac = - (float) pixH / (float) vy;
+    int yOff = Ve::getVirtualSize().y;
+    
+    CvPoint retVal;
+    retVal.x = (int) (x * xFac);
+    retVal.y = (int) ((y - yOff) * yFac * 0.5);
+    
+    return retVal;
+}
+
 void GLMacros::rotateImage() {
     if (Ve::mainVideo->xRot) {
 	    glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
