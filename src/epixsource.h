@@ -26,6 +26,7 @@
 
 #include "videosource.h"
 #include "xclibcontroller.h"
+#include "epixreaderthread.h"
 #include <iostream>
 
 using namespace std;
@@ -36,21 +37,15 @@ using namespace std;
 class EpixSource : public VideoSource
 {
 public:
-    EpixSource();
-
+    
     /**
-      Reconfigure the video library with the given file.
+      Creates a new EpixSource. 
       
-      @return The XCLIB return code of the open operation.
+      @param unit Number of the unit from which to read.
+      @param configfile Name of an XCAP Video configuration file.
     */
-    int reconfigure(string filename);
-    
-    /**
-      Selects the framgegrabber unit from which this source reads.
-      This automatically puts the selected unit into the "live" mode.
-    */
-    void selectUnit(int unit);
-    
+    EpixSource(int unit = 0, string configfile = "") ;
+
     virtual IplImage *getImage();
 	
     ~EpixSource();
@@ -58,6 +53,9 @@ public:
 private:
     /// Unit number from which this source reads
     int unit;
+    // The thread that reads from the frame grabber
+    EpixReaderThread* readerThread;
+    
 };
 
 #endif

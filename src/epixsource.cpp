@@ -23,42 +23,29 @@
  ***************************************************************************/
 #include "epixsource.h"
 
-EpixSource::EpixSource()
+EpixSource::EpixSource(int unit, string configfile)
  : VideoSource()
 {
     int result;
     if (!XCLIBController::isOpen()) 
-	result = XCLIBController::openLib();
+	result = XCLIBController::openLib(configfile);
     if (XCLIBController::isOpen()) {
 	    height = pxd_imageYdim();
 	    width = pxd_imageXdim();
     }
+    EpixSource::unit = unit;
+    XCLIBController::goLive(unit);
+    readerThread = new EpixReaderThread(unit);
+    readerThread->start();
 }
 
-int EpixSource::reconfigure(string filename) {
-    if (XCLIBController::isOpen()) 
-	XCLIBController::closeLib();
-    int result = XCLIBController::openLib(filename);
-    if (result == 0) {
-	height = pxd_imageYdim();
-	width = pxd_imageXdim();
-    } else {
-	height = 0;
-	width = 0;
-    }
-    return result;
-}
 
 EpixSource::~EpixSource()
 {
+    readerThread->stop();
     XCLIBController::goUnLive(unit);
 }
 
-void EpixSource::selectUnit(int unit) {
-    XCLIBController::goUnLive(EpixSource::unit);
-    EpixSource::unit = unit;
-    int result = XCLIBController::goLive(EpixSource::unit);
-}
 
 IplImage* EpixSource::getImage() {
     IplImage* image;
@@ -67,12 +54,10 @@ IplImage* EpixSource::getImage() {
     size.width = width;
     
     image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    uchar* buffer = NULL;
-    int result = 0;
-	buffer = XCLIBController::getBufferCopy(unit, &result);
-	if (result == height * width * 3) {
-		image->imageData = (char*) buffer;
-	}
+    uchar* buffer = readerThread->getBuffer();
+    if (buffer != NULL) {
+	image->imageData = (char*) buffer;
+    }
 
-	return image;
+    return image;
 }

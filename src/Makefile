@@ -14,9 +14,9 @@
 
 
 
-srcdir = .
-top_srcdir = ..
-
+srcdir = /home/daniel/sources/ve/src
+top_srcdir = /home/daniel/sources/ve
+VPATH = /home/daniel/sources/ve/src
 pkgdatadir = $(datadir)/ve
 pkglibdir = $(libdir)/ve
 pkgincludedir = $(includedir)/ve
@@ -35,14 +35,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_triplet = i686-pc-cygwin
-ACLOCAL = ${SHELL} /home/81pc04/daten/sources/ve/missing --run aclocal-1.7
+host_triplet = i686-pc-linux-gnu
+ACLOCAL = ${SHELL} /home/daniel/sources/ve/missing --run aclocal-1.7
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/81pc04/daten/sources/ve/missing --run tar
-AUTOCONF = ${SHELL} /home/81pc04/daten/sources/ve/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/81pc04/daten/sources/ve/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/81pc04/daten/sources/ve/missing --run automake-1.7
+AMTAR = ${SHELL} /home/daniel/sources/ve/missing --run tar
+AUTOCONF = ${SHELL} /home/daniel/sources/ve/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/daniel/sources/ve/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/daniel/sources/ve/missing --run automake-1.7
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -51,8 +51,8 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
-CYGPATH_W = cygpath -w
+CXXFLAGS = -I/usr/local/include/opencv -I/usr/local/xclib -I/usr/include/cc++2
+CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 ECHO = echo
@@ -60,18 +60,18 @@ ECHO_C =
 ECHO_N = -n
 ECHO_T = 
 EGREP = grep -E
-EXEEXT = .exe
+EXEEXT = 
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -lGL -lglut -lopencv 
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/81pc04/daten/sources/ve/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/daniel/sources/ve/missing --run makeinfo
 OBJEXT = o
 PACKAGE = ve
 PACKAGE_BUGREPORT = 
@@ -82,7 +82,7 @@ PACKAGE_VERSION =
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 STRIP = strip
 VERSION = 0.1
 ac_ct_CC = gcc
@@ -97,21 +97,21 @@ am__include = include
 am__leading_dot = .
 am__quote = 
 bindir = ${exec_prefix}/bin
-build = i686-pc-cygwin
+build = i686-pc-linux-gnu
 build_alias = 
 build_cpu = i686
-build_os = cygwin
+build_os = linux-gnu
 build_vendor = pc
 datadir = ${prefix}/share
 exec_prefix = ${prefix}
-host = i686-pc-cygwin
+host = i686-pc-linux-gnu
 host_alias = 
 host_cpu = i686
-host_os = cygwin
+host_os = linux-gnu
 host_vendor = pc
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /home/81pc04/daten/sources/ve/install-sh
+install_sh = /home/daniel/sources/ve/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localstatedir = ${prefix}/var
@@ -124,7 +124,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp glutCallbacks.h glutCallbacks.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp glutCallbacks.h glutCallbacks.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -142,7 +142,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	dummysource.$(OBJEXT) stopwatch.$(OBJEXT) \
 	glutCallbacks.$(OBJEXT) dummyoverlay.$(OBJEXT) \
-	cameracalibration.$(OBJEXT)
+	cameracalibration.$(OBJEXT) epixsource.$(OBJEXT) \
+	xclibcontroller.$(OBJEXT) epixreaderthread.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -153,10 +154,13 @@ am__depfiles_maybe = depfiles
 DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
 	./$(DEPDIR)/dummyoverlay.Po \
 	./$(DEPDIR)/dummysource.Po \
+	./$(DEPDIR)/epixreaderthread.Po \
+	./$(DEPDIR)/epixsource.Po \
 	./$(DEPDIR)/glutCallbacks.Po \
 	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
 	./$(DEPDIR)/videocanvas.Po \
-	./$(DEPDIR)/videosource.Po
+	./$(DEPDIR)/videosource.Po \
+	./$(DEPDIR)/xclibcontroller.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -227,11 +231,14 @@ distclean-compile:
 include ./$(DEPDIR)/cameracalibration.Po
 include ./$(DEPDIR)/dummyoverlay.Po
 include ./$(DEPDIR)/dummysource.Po
+include ./$(DEPDIR)/epixreaderthread.Po
+include ./$(DEPDIR)/epixsource.Po
 include ./$(DEPDIR)/glutCallbacks.Po
 include ./$(DEPDIR)/stopwatch.Po
 include ./$(DEPDIR)/ve.Po
 include ./$(DEPDIR)/videocanvas.Po
 include ./$(DEPDIR)/videosource.Po
+include ./$(DEPDIR)/xclibcontroller.Po
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)

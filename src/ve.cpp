@@ -25,13 +25,11 @@ int main(int argc, char *argv[])
 {
   initGL(argc, argv);
   cout << "Init complete." << endl;
-  EpixSource *right = new EpixSource();
+  EpixSource *right = new EpixSource(1);
   // DummySource* right = new DummySource();
-  right->selectUnit(1);
   cout << "Right source created" << endl;
-  EpixSource *left = new EpixSource();
+  EpixSource *left = new EpixSource(0);
   // DummySource* left = new DummySource();
-  left->selectUnit(0);
   cout << "Left source created" << endl;
   mainVideo = new VideoCanvas(left, right);
   overlay = new DummyOverlay();

@@ -48,7 +48,7 @@
         <builddir></builddir>
         <topsourcedir></topsourcedir>
         <cppflags></cppflags>
-        <ldflags>-lGL -lglut -lopencv -L/usr/local/xclib -lxclibi86</ldflags>
+        <ldflags>-lGL -lglut -lopencv </ldflags>
         <ccompiler>GccOptions</ccompiler>
         <cxxcompiler>GppOptions</cxxcompiler>
         <f77compiler>G77Options</f77compiler>
@@ -56,7 +56,7 @@
         <cxxcompilerbinary></cxxcompilerbinary>
         <f77compilerbinary></f77compilerbinary>
         <cflags></cflags>
-        <cxxflags>-I/usr/local/include/opencv -I/usr/local/xclib</cxxflags>
+        <cxxflags>-I/usr/local/include/opencv -I/usr/local/xclib -I/usr/include/cc++2</cxxflags>
         <f77flags></f77flags>
       </default>
     </configurations>
