@@ -67,7 +67,7 @@ protected:
       Main drawing routine, to be overwritten by the child
       classes.
     */
-    virtual void drawOverlay() { return; }
+    virtual void drawOverlay() = 0;
 
 };
 

@@ -23,8 +23,11 @@
  ***************************************************************************/
 #include "dummyoverlay.h"
 
+Logger DummyOverlay::logger = Logger::getInstance("Ve.DummyOverlay");
+
 DummyOverlay::DummyOverlay(bool display) : Overlay(display)
 {
+    rotation = 0;
 }
 
 
@@ -33,6 +36,7 @@ DummyOverlay::~DummyOverlay()
 }
 
 void DummyOverlay::drawOverlay() {
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
@@ -47,9 +51,10 @@ void DummyOverlay::drawOverlay() {
 	glVertex3f(-0.1f, -0.1f, 0.0f);
 	glVertex3f(0.1f, -0.1f, 0.0f);
 	glVertex3f(0.1f, 0.1f, 0.0f);
+    glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
 	glVertex3f(-0.1f, 0.1f, 0.0f);
     glEnd();
-
+    
     glLoadIdentity();
     glTranslatef(-0.5f + (sin(rotation/5.0)*0.3), cos(rotation/5.0)*0.3, 0.0f);
     glRotatef(rotation*4.0, 0.0f, 0.0f, 1.0f);    
@@ -70,11 +75,14 @@ void DummyOverlay::drawOverlay() {
 	glVertex3f(0.1f, -0.1f, 0.0f);
     glEnd();
     
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     // Restore Matrices
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );		
     glPopMatrix();
     
     rotation += 0.8f;
+    LOG4CPLUS_TRACE(logger, "Rotation now at " << rotation);
 }
 

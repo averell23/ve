@@ -124,7 +124,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -146,7 +146,8 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	epixreaderthread.$(OBJEXT) fonttesteroverlay.$(OBJEXT) \
 	overlay.$(OBJEXT) main.$(OBJEXT) fontmanager.$(OBJEXT) \
 	statusoverlay.$(OBJEXT) commandlineparser.$(OBJEXT) \
-	veevent.$(OBJEXT) veeventsource.$(OBJEXT)
+	veevent.$(OBJEXT) veeventsource.$(OBJEXT) \
+	offsetoverlay.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -162,8 +163,8 @@ DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
 	./$(DEPDIR)/epixsource.Po \
 	./$(DEPDIR)/fontmanager.Po \
 	./$(DEPDIR)/fonttesteroverlay.Po \
-	./$(DEPDIR)/main.Po ./$(DEPDIR)/overlay.Po \
-	./$(DEPDIR)/statusoverlay.Po \
+	./$(DEPDIR)/main.Po ./$(DEPDIR)/offsetoverlay.Po \
+	./$(DEPDIR)/overlay.Po ./$(DEPDIR)/statusoverlay.Po \
 	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
 	./$(DEPDIR)/veevent.Po ./$(DEPDIR)/veeventsource.Po \
 	./$(DEPDIR)/videocanvas.Po \
@@ -245,6 +246,7 @@ include ./$(DEPDIR)/epixsource.Po
 include ./$(DEPDIR)/fontmanager.Po
 include ./$(DEPDIR)/fonttesteroverlay.Po
 include ./$(DEPDIR)/main.Po
+include ./$(DEPDIR)/offsetoverlay.Po
 include ./$(DEPDIR)/overlay.Po
 include ./$(DEPDIR)/statusoverlay.Po
 include ./$(DEPDIR)/stopwatch.Po

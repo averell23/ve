@@ -38,6 +38,7 @@
 #include <log4cplus/logger.h>
 
 using namespace std;
+using namespace log4cplus;
 
 /**
 A canvas for displaying a stereo video feed. This retrieves a picture for the

@@ -28,6 +28,7 @@
 #include "dummysource.h"
 #include "dummyoverlay.h"
 #include "statusoverlay.h"
+#include "offsetoverlay.h"
 #include "commandlineparser.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
@@ -96,9 +97,9 @@ int main(int argc, char *argv[])
   param = parser.getParamValue("source");
   if (param == "dummy") {
       LOG4CPLUS_INFO(logger, "Using dummy video source");
-      right = new DummySource(); // EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
+      right = new DummySource(); 
       LOG4CPLUS_DEBUG(logger, "Right video source created");
-      left = new DummySource(); // EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
+      left = new DummySource();
       LOG4CPLUS_DEBUG(logger, "Left video source created");
   } else if (param == "epix") {
       LOG4CPLUS_INFO(logger, "Using epix video source");
@@ -115,10 +116,13 @@ int main(int argc, char *argv[])
   
   LOG4CPLUS_DEBUG(logger, "Adding overlays");
   // Create overlays
-  // Ve::addOverlay(new DummyOverlay()); 
+  Ve::addOverlay(new DummyOverlay(true)); 
   StatusOverlay* status = new StatusOverlay(true);
   Ve::addOverlay(status);
   Ve::addListener(status);
+  OffsetOverlay* offset = new OffsetOverlay(false);
+  Ve::addOverlay(offset);
+  Ve::addListener(offset);
   LOG4CPLUS_DEBUG(logger, "Overlays added.");
   
   Ve::start();
