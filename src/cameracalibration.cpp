@@ -226,7 +226,7 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
         for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
             for (int widthPos = 0 ; widthPos < patternDimension.width ; widthPos++) { // count through width
                 objPoints[pointPosition].x = heightPos * chessSize.height;
-                objPoints[pointPosition].y = widthPos * chessSize.width;
+                objPoints[pointPosition].y = (patternDimension.width - 1 - widthPos) * chessSize.width;
                 objPoints[pointPosition].z = 0;
                 pointPosition++; // absolute count
             } // for width
