@@ -26,8 +26,10 @@
 
 #include "overlay.h"
 #include "ve.h"
+#include "fontmanager.h"
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <cv.hpp> 		// OpenCv
+#include <math.h>
 // Include ARToolkit stuff
 #include <AR/ar.h>
 
@@ -63,12 +65,40 @@ private:
 	                   captured. Possible values are RIGHT or LEFT
     */
     ARUint8* getImageData(int leftOrRight);
-    /// List of markers found in one image
-    ARMarkerInfo *markerInfo;
     /// Threshold for marker detection
     int thresh;
     /// Logger for this class
     static Logger logger;
+	/// Contains the drawing code for a single eye.
+    void drawOneEye();
+    /// The font used for status display
+    FTGLTextureFont* font;
+	/// Text for display
+	char* text;
+	/// Draws crosshairs at the given position
+    void drawCrosshairs(int x, int y);
+	/// Draw a highlight indicator at the given position
+	void drawHighlight(int x, int y);
+	/// Factor for correcting the image coordinates
+	float xFac, yFac;
+	/// Offset for correcting the image coordinates
+	float xOff, yOff;
+	/// Screen dimensions
+	int height, width;
+	/**
+		From the given markers, select the one that is closest to the center of the
+		screen.
+		
+		@param markers Pointer to an array of markers.
+		@param markerNum Number of markers in @see markers
+		@return Index of the centermost marker
+	*/
+	int getCenterMarker(ARMarkerInfo* markers, int markerNum);
+	/*
+		Calculate distance from sreen center.
+		@return Square of the distance of the given point from the center of the screen.
+	*/
+	double TrackerOverlay::centerDistanceSquared(double x, double y);
     
 };
 

@@ -28,14 +28,15 @@ char* TrackerOverlay::paramFile = "../config/camera.param";
 
 TrackerOverlay::TrackerOverlay() {
     thresh = 100;
+	// Screen dimensions
+	height = Ve::getLeftSource()->getHeight();
+	width = Ve::getLeftSource()->getWidth();
     // Init ARToolkit camera parameters
     ARParam cparam, wparam;
     if (arParamLoad(paramFile, 1, &wparam) < 0) {
 		LOG4CPLUS_WARN(logger, "Could not load parameter file: " << paramFile);
     } else {
 		LOG4CPLUS_DEBUG(logger, "ARToolkit parameters loaded.");
-		int height = Ve::getLeftSource()->getHeight();
-		int width = Ve::getLeftSource()->getWidth();
 		arParamChangeSize(&wparam, width, height, &cparam);
 		arInitCparam(&cparam);
 		LOG4CPLUS_DEBUG(logger, "Camera parameters initialized.");
@@ -47,37 +48,185 @@ TrackerOverlay::TrackerOverlay() {
 	} else {
 		LOG4CPLUS_DEBUG(logger, "Pattern loaded.");
 	}
+	text = new char[256];
+	LOG4CPLUS_DEBUG(logger, "Overlay created.");
+	xOff = 0;
+	yOff = 1000;
+	xFac = 1000.0f/((float) Ve::getLeftSource()->getWidth());
+	yFac = -4;
 }
 
 TrackerOverlay::~TrackerOverlay()
 {
+	delete text;
 }
 
 
 void TrackerOverlay::drawOverlay() {
-    int markerNum;
+	// Marker detection
+    int markerNumL, markerNumR;
+	// Marker Info structures
+	ARMarkerInfo *markerInfo, *markerInfoL, *markerInfoR;
     ARUint8* imageData = getImageData(LEFT);
-    arDetectMarker(imageData, thresh, &markerInfo, &markerNum);
-    LOG4CPLUS_TRACE(logger, "Detected " << markerNum << " markers in image.");
-    delete imageData;
+    arDetectMarker(imageData, thresh, &markerInfo, &markerNumL);
+    LOG4CPLUS_TRACE(logger, "Detected " << markerNumL << " markers in left image.");
+	markerInfoL = new ARMarkerInfo[markerNumL];
+	for (int i=0 ; i < markerNumL ; i++) {
+		markerInfoL[i].pos[0] = markerInfo[i].pos[0]; 
+		 markerInfoL[i].pos[1] = markerInfo[i].pos[1];
+	}
+	delete imageData;
+	imageData = getImageData(RIGHT);
+	arDetectMarker(imageData, thresh, &markerInfoR, &markerNumR);
+	LOG4CPLUS_TRACE(logger, "Detected " << markerNumR << " markers in right image.");
+	delete imageData;
+	
+	// Drawing code
+	glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
+    glPushMatrix();				// ...push the Matrix for backup...
+    glOrtho(-1000, 1000, -1000, 1000, 0, 1);
+    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
+    glPushMatrix();
+    glLoadIdentity();
+
+    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+	if (markerNumL > 0) {
+		sprintf(text, "%f/%f/%f", markerInfoL[0].pos[0], markerInfoL[0].pos[1],
+			    sqrt(centerDistanceSquared(markerInfoL[0].pos[0], markerInfoL[0].pos[1])));
+	} else {
+		sprintf(text, "Detected %d/%d", markerNumL, markerNumR);
+	}
+	
+
+    glTranslatef(-1.0f, 0.0f, 0.0f);
+    drawOneEye();
+	glTranslatef(-1.0f, 0.0f, 0.0f);
+	int center = getCenterMarker(markerInfoL, markerNumL);
+	for (int i=0 ; i < markerNumL ; i++) {
+		if (i == center) {
+			glColor3f(1.0f, 0.2f, 0.2f);
+		}
+		drawCrosshairs((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
+		if (i == center) {
+			glColor3f(1.0f, 1.0f, 1.0f);
+		}
+	}
+	delete markerInfoL;
+	// drawCrosshairs(500,1000);
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f,  1.0f);
+    drawOneEye();
+	glTranslatef(0.0f, 0.0f,  1.0f);
+	center = getCenterMarker(markerInfoR, markerNumR);
+	for (int i=0 ; i < markerNumR ; i++) {
+		if (i == center) {
+			glColor3f(1.0f, 0.2f, 0.2f);
+		}
+		drawCrosshairs((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff); 
+		if (i == center) {
+			glColor3f(1.0f, 1.0f, 1.0f);
+		}
+	}
+	// drawCrosshairs(0,0);
+    
+    // Remove text textures
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Restore Matrices
+    glPopMatrix();
+    glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
 }
 
 ARUint8* TrackerOverlay::getImageData(int leftOrRight) {
-    IplImage* origImage = NULL;
+    IplImage *origImage = NULL;
+	IplImage *offset = NULL;
     if (leftOrRight == LEFT) {
-	origImage = Ve::getLeftSource()->waitAndGetImage();
+		origImage = Ve::getLeftSource()->waitAndGetImage();
+		offset = (IplImage*) Ve::getLeftSource()->getBlackOffset();
     } else {
-	origImage = Ve::getRightSource()->waitAndGetImage();
+		origImage = Ve::getRightSource()->waitAndGetImage();
+		offset = (IplImage*) Ve::getRightSource()->getBlackOffset();
     }
     int imageDimension = origImage->width * origImage->height;
     ARUint8* retImage = new ARUint8[imageDimension * 4];
     for (int i=0 ; i < imageDimension ; i++) {
-	// FIXME: Original image is always assumed to have RGB order
-	retImage[i*4] = 0; // Alpha channel
-	retImage[(i*4)+1] = origImage->imageData[(i*3)+2];
-	retImage[(i*4)+2] = origImage->imageData[(i*3)+1];
-	retImage[(i*4)+3] = origImage->imageData[i*3];
+		// FIXME: Original image is always assumed to have RGB order
+		retImage[i*4] = 255; // Alpha channel
+		if (offset != NULL) {
+			retImage[(i*4)+1] = origImage->imageData[(i*3)+2] - offset->imageData[(i*3)+2];
+			retImage[(i*4)+2] = origImage->imageData[(i*3)+1] - offset->imageData[(i*3)+1];
+			retImage[(i*4)+3] = origImage->imageData[i*3] - offset->imageData[i*3];
+		} else{
+			retImage[(i*4)+1] = origImage->imageData[(i*3)+2];
+			retImage[(i*4)+2] = origImage->imageData[(i*3)+1];
+			retImage[(i*4)+3] = origImage->imageData[i*3];
+		}
     }
+
+	delete origImage->imageData;
+	cvReleaseImageHeader(&origImage);
     
     return retImage;
+}
+
+void TrackerOverlay::drawOneEye() {
+    font = FontManager::getFont();
+    if (font == NULL)
+        return; // Sanity check
+
+    glTranslatef(0.05f, 0.2f, 0.0f);
+    font->Render(text);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glLoadIdentity();
+}
+
+
+void TrackerOverlay::drawCrosshairs(int x, int y) {
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+    // vertical line
+    glVertex3i(x, -1000, 0);
+    glVertex3i(x, 1000, 0);
+    // horizontal line
+    glVertex3i(0, y, 0);
+    glVertex3i(1000, y, 0);
+    //  box
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glEnd();
+}
+
+int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
+	float shortestDistance;
+	int centerIndex = 0;
+	// Init shortest distance
+	shortestDistance = centerDistanceSquared(markers[0].pos[0], markers[0].pos[1]);
+
+	for (int i=0 ; i<markerNum ; i++) { 
+		float distance = centerDistanceSquared(markers[i].pos[0], markers[i].pos[1]);
+		if (distance < shortestDistance) {
+			shortestDistance = distance;
+			centerIndex = i;
+		}
+	}
+
+	return centerIndex;
+}
+
+void TrackerOverlay::drawHighlight(int x, int y) {
+}
+
+double TrackerOverlay::centerDistanceSquared(double x, double y) {
+	double xPos = x - ((double) width / 2.0f);
+	double yPos = y - ((double) height / 2.0f);
+	/* LOG4CPLUS_DEBUG(logger, "x: " << x << ", y: " << y << ", xPos: " << xPos << ", yPos: " 
+		<< yPos << ", width: " << width << ", height:" << height); */
+	return (xPos*xPos) + (yPos*yPos);
 }

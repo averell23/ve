@@ -142,21 +142,14 @@ void OffsetOverlay::drawOverlay() { // FIXME: Could use Multitexturing if suppor
 }
 
 bool OffsetOverlay::createOffsetTextures() {
-    IplImage* rightImage = rightEye->waitAndGetImage();
-    IplImage* leftImage = leftEye->waitAndGetImage();
-
-    if ((leftImage->imageData == NULL) || (rightImage->imageData == NULL)) {
-        LOG4CPLUS_ERROR(logger, "Unable to acquire calibration image.");
-        return false;
-    }
 
     if (offsetTexRight != NULL)
         delete offsetTexRight;
     if (offsetTexLeft != NULL)
         delete offsetTexLeft;
 
-    offsetTexRight = rightImage->imageData;
-    offsetTexLeft = leftImage->imageData;
+	offsetTexRight = Ve::getRightSource()->getBlackOffset()->imageData;
+	offsetTexLeft = Ve::getLeftSource()->getBlackOffset()->imageData;
 
     LOG4CPLUS_DEBUG(logger, "Texture buffers created.");
 
@@ -167,9 +160,6 @@ bool OffsetOverlay::createOffsetTextures() {
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                     GL_RGB, GL_UNSIGNED_BYTE, offsetTexLeft);
     LOG4CPLUS_DEBUG(logger, "Assigned new textures for overlay");
-
-    cvReleaseImageHeader(&rightImage);
-    cvReleaseImageHeader(&leftImage);
 
     LOG4CPLUS_INFO(logger, "Texture creation complete");
 

@@ -204,6 +204,10 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
             leftBrightness +=5;
         rightEye->setBrightness(rightEye->getBrightness() + 5);
     }
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'i')) {
+		leftEye->storeBlackOffset();
+		rightEye->storeBlackOffset();
+	}
 	// FIXME: Quick hack for saving images
 	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'a'))  {
 		char name1[256], name2[256];
