@@ -29,6 +29,8 @@
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <AR/ar.h>		// ARToolkit
 #include "videosource.h"
+#include "position.h"
+#include "vepositionevent.h"
 
 using namespace log4cplus;
 

@@ -35,6 +35,7 @@
 #include "corbacontroller.h"
 #include "arregistration.h"
 #include "trackeroverlay.h"
+#include "markerpositiontracker.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 
@@ -145,24 +146,28 @@ int main(int argc, char *argv[]) {
 
     LOG4CPLUS_DEBUG(logger, "Adding overlays");
     // Create overlays
-    OffsetOverlay* offset = new OffsetOverlay(false);
-    Ve::addOverlay(offset);
-    Ve::addListener(offset);
+    OffsetOverlay offset(false);
+    Ve::addOverlay(&offset);
+    Ve::addListener(&offset);
     // Ve::addOverlay(new DummyOverlay(true));
-	TrackerOverlay* tracker = new TrackerOverlay();
-	Ve::addOverlay(tracker);
-	Ve::addListener(tracker);
-    StatusOverlay* status = new StatusOverlay(true);			// FIXME: proper deletion of overlays?
-    Ve::addOverlay(status);
-    Ve::addListener(status);
-    CalibrationOverlay* calibration = new CalibrationOverlay(false);
-    Ve::addOverlay(calibration);
-    Ve::addListener(calibration);
-    RegistrationOverlay* registration = new RegistrationOverlay(false);
+    MarkerPositionTracker leftTrack(left, 1);
+    MarkerPositionTracker rightTrack(right, 2);
+    TrackerOverlay tracker(1,2);
+    leftTrack.addListener(&tracker);
+    rightTrack.addListener(&tracker);
+    Ve::addOverlay(&tracker);
+    Ve::addListener(&tracker);
+    StatusOverlay status(true);			// FIXME: proper deletion of overlays?
+    Ve::addOverlay(&status);
+    Ve::addListener(&status);
+    CalibrationOverlay calibration(false);
+    Ve::addOverlay(&calibration);
+    Ve::addListener(&calibration);
+    RegistrationOverlay registration(false);
     CORBAController corba = CORBAController::getInstance();
-    corba.addPositionEventListener(registration);
-    Ve::addListener(registration);
-    Ve::addOverlay(registration);
+    corba.addPositionEventListener(&registration);
+    Ve::addListener(&registration);
+    Ve::addOverlay(&registration);
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();

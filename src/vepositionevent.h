@@ -36,7 +36,7 @@ the event code is always 0.
 class VePositionEvent : public VeEvent {
 public:
 
-    VePositionEvent(Position position);
+    VePositionEvent(Position& position);
 
     ~VePositionEvent();
 

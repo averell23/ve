@@ -30,7 +30,7 @@
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
       <runarguments>
-        <ve></ve>
+        <ve/>
         <corbatest/>
         <capture/>
       </runarguments>

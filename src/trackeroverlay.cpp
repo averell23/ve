@@ -26,18 +26,18 @@
 Logger TrackerOverlay::logger = Logger::getInstance("Ve.TrackerOverlay");
 char* TrackerOverlay::paramFile = "../config/camera.param";
 
-TrackerOverlay::TrackerOverlay() {
+TrackerOverlay::TrackerOverlay(int leftSourceID, int rightSourceID, bool display) {
     expireT = 500;
-    
-    // Screen dimensions
-    height = Ve::getLeftSource()->getHeight();
-    width = Ve::getLeftSource()->getWidth();
-    
     text = new char[256];
     doText = false;
     doCrosshairs = true;
     doHighlight = true;
+    TrackerOverlay::leftSourceID = leftSourceID;
+    TrackerOverlay::rightSourceID = rightSourceID;
+    TrackerOverlay::displayState = display;
     LOG4CPLUS_DEBUG(logger, "Overlay created.");
+    width = Ve::getLeftSource()->getWidth();
+    height = Ve::getLeftSource()->getHeight();
 }
 
 TrackerOverlay::~TrackerOverlay()
@@ -97,12 +97,12 @@ void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
 	    } else {
 		glColor3f(1.0f, 1.0f, 1.0f);
 	    }
-	    drawCrosshairs(posIterator->second.x, posIterator->second.y + yOff);
+	    drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y + yOff);
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
     }
     if (doHighlight && (positions.size() >= 0)) {
-	drawHighlight(center->second.x, center->second.y + yOff);
+	drawHighlight((int) center->second.x, (int) center->second.y + yOff);
     }
 }
 
@@ -147,15 +147,15 @@ void TrackerOverlay::drawHighlight(int x, int y) {
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-map<int,Position>::iterator TrackerOverlay::getCenterMarker(map<int,string>& positions) {
+map<int,Position>::iterator TrackerOverlay::getCenterMarker(map<int,Position>& positions) {
 	float shortestDistance;
-	map<int,string>::iterator posIterator = positions.begin();
+	map<int,Position>::iterator posIterator = positions.begin();
 	map<int,Position>::iterator centerObj = posIterator;
 	
 	// Init shortest distance
 	int size = positions.size();
 	if (size > 0) {
-		shortestDistance = centerDistanceSquared(posIterator->second.x, *posIterator->second.y);
+		shortestDistance = centerDistanceSquared(posIterator->second.x, posIterator->second.y);
 	}
 
 	for ( posIterator = positions.begin() ; posIterator != positions.end() ; posIterator++) { 
@@ -181,7 +181,7 @@ void TrackerOverlay::cleanupSingleList(map<int,Position>& positions) {
     for (posIter=positions.begin() ; posIter!=positions.end() ; posIter++) {
 	tmpT = posIter->second.timeStamp;
 	long age = ((currentT.time - tmpT.time) * 1000) + abs(currentT.millitm - tmpT.millitm);
-	if (age > expire) {
+	if (age > expireT) {
 	    positions.erase(posIter);
 	}
     }
@@ -205,7 +205,7 @@ void TrackerOverlay::recieveEvent(VeEvent &e) {
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
     }
 	if (e.getType() == VeEvent::POSITION_EVENT) {
-	    Position pos = ((PositionEvent) e).getPosition();
+	    Position pos = ((VePositionEvent&) e).getPosition();
 	    if (pos.source == leftSourceID) { // Add position events to the list
 		leftPositions[pos.index] = pos;
 	    } else if (pos.source == rightSourceID) {

@@ -35,7 +35,7 @@
 */
 class Position{
 public:
-    Position(int index, int source=0, double=0, double y=0, double z=0);
+    Position(int index=0, int source=0, double=0, double y=0, double z=0);
 
     ~Position();
 

@@ -30,6 +30,7 @@
 #include "veeventlistener.h"
 #include "position.h"
 #include "glmacros.h"
+#include "vepositionevent.h"
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <cv.hpp> 		// OpenCv
 #include <math.h>
@@ -47,11 +48,14 @@ class TrackerOverlay : public Overlay, public VeEventListener
 {
 public:
 
-    static const int LEFT = 0;
-    
-    static const int RIGHT = 1;
-    
-    TrackerOverlay();
+    /**
+      Creates a new tracker overlay.
+      
+      @param leftSourceID ID code of the left channel, used in @see VePositionEvent objects
+      @param rightSourceID ID code of the right channel, used in @see VePositionEven objects
+      @param display Initial display state
+    */
+    TrackerOverlay(int leftSourceID, int rightSourceID, bool display=true);
     
     ~TrackerOverlay();
 
@@ -107,12 +111,6 @@ private:
     void drawCrosshairs(int x, int y);
     /// Draw a highlight indicator at the given position
     void drawHighlight(int x, int y);
-    /// Factor for correcting the image coordinates
-    float xFac, yFac;
-    /// Offset for correcting the image coordinates
-    float xOff, yOff;
-    /// Screen dimensions
-    int height, width;
     
     /**
         From the given markers, select the one that is closest to the center of 
@@ -136,6 +134,8 @@ private:
     bool doCrosshairs;
     /// Indicates if a highlight indicator should be drawn for the center marker
     bool doHighlight;
+    /// Width and height of video picture
+    int width, height;
     
 };
 
