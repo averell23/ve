@@ -90,7 +90,7 @@ OffsetOverlay::OffsetOverlay(bool display)
 
 void OffsetOverlay::drawOverlay() {
     // Set to subtractive blending
-    glBlendEquation(GL_MIN);
+    glBlendEquation(GL_FUNC_REVERSE_SUBTRACT); // FIXME: May not be present in driver
     glBlendFunc(GL_ONE, GL_ONE);
         
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
