@@ -403,6 +403,10 @@ bool CameraCalibration::load(string filename) {
 	    }
 	}
     } // for
+	
+	LOG4CPLUS_INFO(logger, "Calibration read from " << filename);
+	 
+	return true;
 } // function
 
 bool CameraCalibration::readCalibrationMatrix(xercesc::DOMNodeList* nodeList) {
@@ -452,6 +456,11 @@ bool CameraCalibration::readCalibrationMatrix(xercesc::DOMNodeList* nodeList) {
 	    xercesc::XMLString::release(&tmpChr);
 	} // if
     } // for
+	if (retVal) {
+		LOG4CPLUS_INFO(logger, "Calibration saved to " << filename);
+	} else {
+		LOG4CPLUS_WARN(logger, "Calibration not saved to " << filename);
+	}
     return retVal;
 }
 
