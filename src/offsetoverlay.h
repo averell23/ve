@@ -40,21 +40,21 @@
 class OffsetOverlay : public Overlay, public VeEventListener {
 public:
 
-	/**
-		Creates the overlay and registers with right eye video source
-		for event handling.
-	*/
+    /**
+    	Creates the overlay and registers with right eye video source
+    	for event handling.
+    */
     OffsetOverlay(bool display);
 
     ~OffsetOverlay();
 
     void drawOverlay();
 
-	/**
-		Recieve Events. This overlay recieves events from the keyboard,
-		and registeres itself with the @see VideoSource to get 
-		black offset updates. 
-	*/
+    /**
+    	Recieve Events. This overlay recieves events from the keyboard,
+    	and registeres itself with the @see VideoSource to get 
+    	black offset updates. 
+    */
     void recieveEvent(VeEvent &e);
 
 

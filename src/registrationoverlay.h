@@ -45,56 +45,56 @@ Allows the registration of screen coordinates to sensor coordinates recieved thr
 */
 class RegistrationOverlay : public Overlay, public VeEventListener {
 public:
-	/// Indicates calibration for the left eye is in progress
-	static const int LEFT_EYE = 0;
-	/// Indicates calibration for the right eye is in progress
-	static const int RIGHT_EYE = 1;
+    /// Indicates calibration for the left eye is in progress
+    static const int LEFT_EYE = 0;
+    /// Indicates calibration for the right eye is in progress
+    static const int RIGHT_EYE = 1;
 
-	/**
-	  Creates a new registration overlay.
-	  @param registration The registration object used by this overlay
-	*/
-	RegistrationOverlay(bool display);
+    /**
+      Creates a new registration overlay.
+      @param registration The registration object used by this overlay
+    */
+    RegistrationOverlay(bool display);
 
-	~RegistrationOverlay();
+    ~RegistrationOverlay();
 
-	void drawOverlay();
+    void drawOverlay();
 
-	/// Recieves events
-	void recieveEvent(VeEvent &e);
+    /// Recieves events
+    void recieveEvent(VeEvent &e);
 
-	/**
-	  Takes a full set of sensor updates (a set of size @see measureSize) and combines
-	  them into a sensor measurement. The result is added to the current eye's registration
-	  object.
-	  
-	  param x,y The coordinates of the image plane point that corresponds to the measurement.
-	*/
-	void measurePoint(int x, int y);
+    /**
+      Takes a full set of sensor updates (a set of size @see measureSize) and combines
+      them into a sensor measurement. The result is added to the current eye's registration
+      object.
+      
+      param x,y The coordinates of the image plane point that corresponds to the measurement.
+    */
+    void measurePoint(int x, int y);
 
 private:
-	/// Indicates if measure points are being collected
-	bool measuring;
-	/// Logger for this class
-	static Logger logger;
-	/// Temporary sensor points for smoothing out inaccuracies
-	CvPoint3D32f* tmpSensorPoints;
-	/// Number of sensor updates in a full set
-	int measureSize;
-	/// Number of sensor updates recieved since the measurement has started
-	int measureCount;
-	/// Indicates calibration mode (LEFT_EYE or RIGHT_EYE)
-	int mode;
-	/// The registration object used by this overlay
-	ARRegistration* registration;
-	/// Calibration points
-	CvPoint* calibPoints;
-	/// Number of calibration points
-	int calibPointNum;
-	/// Position in the calibration point list
-	int calibPointPos;
-	/// Buffers for text rendering
-	char* text[1];
+    /// Indicates if measure points are being collected
+    bool measuring;
+    /// Logger for this class
+    static Logger logger;
+    /// Temporary sensor points for smoothing out inaccuracies
+    CvPoint3D32f* tmpSensorPoints;
+    /// Number of sensor updates in a full set
+    int measureSize;
+    /// Number of sensor updates recieved since the measurement has started
+    int measureCount;
+    /// Indicates calibration mode (LEFT_EYE or RIGHT_EYE)
+    int mode;
+    /// The registration object used by this overlay
+    ARRegistration* registration;
+    /// Calibration points
+    CvPoint* calibPoints;
+    /// Number of calibration points
+    int calibPointNum;
+    /// Position in the calibration point list
+    int calibPointPos;
+    /// Buffers for text rendering
+    char* text[1];
 };
 
 #endif

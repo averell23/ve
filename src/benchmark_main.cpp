@@ -35,15 +35,14 @@
 
 using namespace log4cplus;
 
-int main(int argc, char *argv[])
-{ 
-	cout << "Ve benchmark utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
-	char* config = "";
+int main(int argc, char *argv[]) {
+    cout << "Ve benchmark utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
+    char* config = "";
 
-	PropertyConfigurator::doConfigure("../config/logger.properties");
-	Logger logger = Logger::getInstance("Ve.main");
+    PropertyConfigurator::doConfigure("../config/logger.properties");
+    Logger logger = Logger::getInstance("Ve.main");
 
-	CommandLineParser parser("ve");
+    CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("epixconf", false, "Epix config file");
     bool result = parser.parseCommandLine(argc, argv);
@@ -52,40 +51,41 @@ int main(int argc, char *argv[])
         parser.printUsage();
         exit(1);
     }
-	bool option = parser.getOptionValue("help");
+    bool option = parser.getOptionValue("help");
     if (option) {
         cout << endl;
         parser.printUsage();
         exit(0);
     }
 
-	string param = parser.getParamValue("epixconf");
-	if (param == "") {
-		LOG4CPLUS_DEBUG(logger, "No epix config file given, using defaults.");
-	} else {
-		config = (char*) param.c_str();
-	}
+    string param = parser.getParamValue("epixconf");
+    if (param == "") {
+        LOG4CPLUS_DEBUG(logger, "No epix config file given, using defaults.");
+    } else {
+        config = (char*) param.c_str();
+    }
 
-	if (!XCLIBController::isOpen()) {
-		XCLIBController::openLib(config);
-	}
-
-	
-	SF1280Controller controller1(0);
-	SF1280Controller controller2(1);
-	controller1.initCamera();
-	controller2.initCamera();
+    if (!XCLIBController::isOpen()) {
+        XCLIBController::openLib(config);
+    }
 
 
-	Ve::initGL(argc, argv);
+    SF1280Controller controller1(0);
+    SF1280Controller controller2(1);
+    controller1.initCamera();
+    controller2.initCamera();
 
-	Benchmark bench;
-	LOG4CPLUS_INFO(logger, "Now running benchmarks.");
-	bench.run();
 
-	/*Destruktoren aufrufen*/
+    Ve::initGL(argc, argv);
 
-	if (XCLIBController::isOpen()) XCLIBController::closeLib();
+    Benchmark bench;
+    LOG4CPLUS_INFO(logger, "Now running benchmarks.");
+    bench.run();
 
-	return EXIT_SUCCESS;
+    /*Destruktoren aufrufen*/
+
+    if (XCLIBController::isOpen())
+        XCLIBController::closeLib();
+
+    return EXIT_SUCCESS;
 }

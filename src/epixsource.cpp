@@ -51,12 +51,12 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adju
         break;
     }
 
-	// Create the image buffer
+    // Create the image buffer
     CvSize size;
     size.height = height;
     size.width = width;
     imgBuffer = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-	imgBuffer->imageData = NULL;
+    imgBuffer->imageData = NULL;
 
     controller->initCamera();
     EpixSource::unit = unit;
@@ -70,8 +70,9 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adju
 EpixSource::~EpixSource() {
     readerThread->stop();
     XCLIBController::goUnLive(unit);
-	if (imgBuffer->imageData != NULL) delete imgBuffer->imageData;
-	cvReleaseImageHeader(&imgBuffer);
+    if (imgBuffer->imageData != NULL)
+        delete imgBuffer->imageData;
+    cvReleaseImageHeader(&imgBuffer);
     delete controller;
 }
 
@@ -88,13 +89,14 @@ void EpixSource::setBrightness(int brightness) {
 }
 
 void EpixSource::bufferUpdate(char* newBuffer) {
-	if (imgMutex.tryEnterMutex()) {
-		if (imgBuffer->imageData != NULL) delete imgBuffer->imageData;
-		imgBuffer->imageData = newBuffer;
-		timer->count();
-		frameCount++;
-		imgMutex.leaveMutex();
-	} else {
-		delete newBuffer;
-	}
+    if (imgMutex.tryEnterMutex()) {
+        if (imgBuffer->imageData != NULL)
+            delete imgBuffer->imageData;
+        imgBuffer->imageData = newBuffer;
+        timer->count();
+        frameCount++;
+        imgMutex.leaveMutex();
+    } else {
+        delete newBuffer;
+    }
 }

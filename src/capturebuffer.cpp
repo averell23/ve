@@ -29,14 +29,13 @@ CaptureBuffer::CaptureBuffer(int images, int size) {
     queueEnd = 0;
     buffer = new CaptureImagePair*[images];
     for (int i=0 ; i < images ; i++) {
-		buffer[i] = new CaptureImagePair(size);
+        buffer[i] = new CaptureImagePair(size);
     }
 }
 
-CaptureBuffer::~CaptureBuffer()
-{
+CaptureBuffer::~CaptureBuffer() {
     for (int i=0 ; i < images ; i++) {
-	delete buffer[i];
+        delete buffer[i];
     }
     delete buffer;
 }
@@ -46,10 +45,10 @@ CaptureImagePair* CaptureBuffer::addQueueElement() {
     mutex.enterMutex();
     int newPos = (queueEnd + 1) % images;
     if (newPos == queueBegin) {
-	retVal = NULL; // No more free buffers
+        retVal = NULL; // No more free buffers
     } else {
-	queueEnd = newPos;
-	retVal = buffer[queueEnd];
+        queueEnd = newPos;
+        retVal = buffer[queueEnd];
     }
     mutex.leaveMutex();
     return retVal;
@@ -59,10 +58,10 @@ CaptureImagePair* CaptureBuffer::getQueueFirst() {
     CaptureImagePair* retVal;
     mutex.enterMutex();
     if (queueEnd == queueBegin) {
-		// Queue is empty
-		retVal = NULL;
+        // Queue is empty
+        retVal = NULL;
     } else {
-		retVal = buffer[queueBegin];
+        retVal = buffer[queueBegin];
     }
     mutex.leaveMutex();
     return retVal;
@@ -71,8 +70,8 @@ CaptureImagePair* CaptureBuffer::getQueueFirst() {
 void CaptureBuffer::removeQueueFirst() {
     mutex.enterMutex();
     if (queueEnd != queueBegin) {
-	int newPos = (queueBegin + 1) % images;
-	queueBegin = newPos;
+        int newPos = (queueBegin + 1) % images;
+        queueBegin = newPos;
     }
     mutex.leaveMutex();
 }

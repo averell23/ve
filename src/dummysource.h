@@ -35,7 +35,7 @@
 using namespace std;
 using namespace log4cplus;
 
-/** 
+/**
  Texture Image structure. 
  FIXME: Could be replaced by IplImage
 */

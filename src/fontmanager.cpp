@@ -30,21 +30,21 @@ FTGLTextureFont* FontManager::internalGetFont(int size) {
     FTGLTextureFont* retVal = NULL;
     int idx = size - 1;
     if (size <= 0) {
-	LOG4CPLUS_WARN(logger, "Cannot get font of negativ or zero size.");
+        LOG4CPLUS_WARN(logger, "Cannot get font of negativ or zero size.");
     } else {
-	if (size > fontsSize) {
-	    growFonts(((size+1)-fontsSize)*2);
-	}
-	if (fonts[idx] == NULL)
-	createFont(size);
+        if (size > fontsSize) {
+            growFonts(((size+1)-fontsSize)*2);
+        }
+        if (fonts[idx] == NULL)
+            createFont(size);
     }
     return fonts[idx];
 }
 
 void FontManager::createFont(int size) {
     if ((size > fontsSize) || (size <= 0)) {
-	LOG4CPLUS_WARN(logger, "Can not create font with illegal size " << size);
-	return;
+        LOG4CPLUS_WARN(logger, "Can not create font with illegal size " << size);
+        return;
     }
     int idx = size - 1;
     fonts[idx] = new FTGLTextureFont(DEFAULT_FONT);
@@ -60,28 +60,28 @@ void FontManager::createFont(int size) {
 void FontManager::growFonts(int increment) {
     LOG4CPLUS_DEBUG(logger, "Resizing fonts array.");
     if (increment <= 0) {
-	LOG4CPLUS_ERROR(logger, "Warning: Could not resize font, illegal value. Continuing, crash possible.");
-	return;
+        LOG4CPLUS_ERROR(logger, "Warning: Could not resize font, illegal value. Continuing, crash possible.");
+        return;
     }// Sanity check
-    
+
     int newSize = fontsSize + increment;
     FTGLTextureFont** tmpFonts = new FTGLTextureFont*[newSize];
     for (int i=0 ; i<fontsSize ; i++) { // Copy old content
-	tmpFonts[i] = fonts[i];
+        tmpFonts[i] = fonts[i];
     }
     for (int i=fontsSize ; i<newSize ; i++) {
-	tmpFonts[i] = NULL;
+        tmpFonts[i] = NULL;
     }
     delete fonts;
     fonts = tmpFonts;
 }
-    
+
 FontManager::FontManager() {
     fontsSize = INTIAL_FONTS_SIZE;
     // Create initial font array.
-    fonts = new FTGLTextureFont*[fontsSize]; 
+    fonts = new FTGLTextureFont*[fontsSize];
     for (int i=0 ; i<fontsSize ; i++) {
-	fonts[i] = NULL;
+        fonts[i] = NULL;
     }
     LOG4CPLUS_DEBUG(logger, "Font manager created.");
 }
@@ -89,7 +89,8 @@ FontManager::FontManager() {
 
 FontManager::~FontManager() {
     for (int i=0 ; i<fontsSize ; i++) {
-	if (fonts[i] != NULL) delete fonts[i];
+        if (fonts[i] != NULL)
+            delete fonts[i];
     }
     delete fonts;
 }

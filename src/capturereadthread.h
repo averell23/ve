@@ -41,11 +41,10 @@ using namespace log4cplus;
 
 /**
 Thread to read captured images from the frame buffer device.
-
+ 
 @author Daniel Hahn,,,
 */
-class CaptureReadThread : public Thread
-{
+class CaptureReadThread : public Thread {
 public:
 
     /**
@@ -56,9 +55,9 @@ public:
       @param info Meta-Information for capturing
     */
     CaptureReadThread(CaptureBuffer* buffer, CaptureInfo* info);
-    
+
     ~CaptureReadThread();
-    
+
     void run();
 
     /**
@@ -66,7 +65,9 @@ public:
     */
     void readImages();
 
-   int getCounter() { return counter; }
+    int getCounter() {
+        return counter;
+    }
 
 private:
     /// Meta information for capture

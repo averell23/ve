@@ -79,10 +79,10 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
 
     for (int i = 1 ; i < argc ; i++) {
         if (argv[i][0] != '-') {
-	    if (!ignoreUnknown) {
-		cout << "Illegal option: " << argv[i] << endl;
-		return false;
-	    }
+            if (!ignoreUnknown) {
+                cout << "Illegal option: " << argv[i] << endl;
+                return false;
+            }
         } // Sanity check
 
         char* current = &argv[i][1];
@@ -102,10 +102,10 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
             parameters[current] = argv[i];
             LOG4CPLUS_DEBUG(logger, "Set parameter " << current << " to " << argv[i]);
         } else {
-	    if (!ignoreUnknown) {
-		cout << "Unknown Option/Parameter: " << current << endl;
-		return false;
-	    }
+            if (!ignoreUnknown) {
+                cout << "Unknown Option/Parameter: " << current << endl;
+                return false;
+            }
         }
     } // for
 

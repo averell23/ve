@@ -55,7 +55,7 @@ void StatusOverlay::drawOverlay() {
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f,  1.0f);
     drawOneEye();
-    
+
     // Remove text textures
     glBindTexture(GL_TEXTURE_2D, 0);
     // Restore Matrices

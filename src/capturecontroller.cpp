@@ -3,7 +3,7 @@
 Logger CaptureController::logger = Logger::getInstance("Ve.CaptureController");
 
 CaptureController::CaptureController(CaptureInfo* info, int size) {
-	this->info = info;
+    this->info = info;
     info->offset_x = 0;
     info->offset_y = 0;
 
@@ -81,36 +81,36 @@ void CaptureController::writeBuffers() {
     char name1[256], name2[256];
     // File handles
     FILE *file1, *file2;
-	Stopwatch timer;
+    Stopwatch timer;
 
-	LOG4CPLUS_INFO(logger, "Starting to write buffer to disk, with file prefix " << info->filePrefix);
-	timer.start();
-	for (int i = 0 ; i < bufferSize ; i++) {
-		if (info->fileFormat == CaptureInfo::FILE_FORMAT_RAW) {
-			sprintf(name1,"%s_a_%d.raw",info->filePrefix, i);
-			sprintf(name2,"%s_b_%d.raw",info->filePrefix, i);
-			writeRAWFiles(name1, name2,
-				buffer->getBufferAt(i),
-				info);
-		} else if (info->fileFormat == CaptureInfo::FILE_FORMAT_BMP){
-			sprintf(name1,"%s_a_%d.bmp",info->filePrefix, i);
-			sprintf(name2,"%s_b_%d.bmp",info->filePrefix, i);
-			writeBMPFiles(name1, name2,
-				buffer->getBufferAt(i),
-				info);
-		} else {
-			LOG4CPLUS_ERROR(logger, "Nothing written: unsupported file format.");
-		}
-		if (info->writeTimestamp) {
-			char stampFile[256];
-			sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, i);
-			writeMetaStamp(stampFile, buffer->getBufferAt(i));
-		} 
-		timer.count();
-	} // for
-	timer.stop();
-	LOG4CPLUS_INFO(logger, "Wrote " << bufferSize << " images to disk in "
-		<< timer.getSeconds() << "s, " << timer.getMilis()  << "ms, framerate was " << timer.getFramerate());
+    LOG4CPLUS_INFO(logger, "Starting to write buffer to disk, with file prefix " << info->filePrefix);
+    timer.start();
+    for (int i = 0 ; i < bufferSize ; i++) {
+        if (info->fileFormat == CaptureInfo::FILE_FORMAT_RAW) {
+            sprintf(name1,"%s_a_%d.raw",info->filePrefix, i);
+            sprintf(name2,"%s_b_%d.raw",info->filePrefix, i);
+            writeRAWFiles(name1, name2,
+                          buffer->getBufferAt(i),
+                          info);
+        } else if (info->fileFormat == CaptureInfo::FILE_FORMAT_BMP) {
+            sprintf(name1,"%s_a_%d.bmp",info->filePrefix, i);
+            sprintf(name2,"%s_b_%d.bmp",info->filePrefix, i);
+            writeBMPFiles(name1, name2,
+                          buffer->getBufferAt(i),
+                          info);
+        } else {
+            LOG4CPLUS_ERROR(logger, "Nothing written: unsupported file format.");
+        }
+        if (info->writeTimestamp) {
+            char stampFile[256];
+            sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, i);
+            writeMetaStamp(stampFile, buffer->getBufferAt(i));
+        }
+        timer.count();
+    } // for
+    timer.stop();
+    LOG4CPLUS_INFO(logger, "Wrote " << bufferSize << " images to disk in "
+                   << timer.getSeconds() << "s, " << timer.getMilis()  << "ms, framerate was " << timer.getFramerate());
 }
 
 void CaptureController::writeRAWFiles(char* aFile, char* bFile, CaptureImagePair* imgPair, CaptureInfo* myInfo) {
@@ -232,7 +232,7 @@ void CaptureController::readBuffer(CaptureImagePair* imgPair, CaptureInfo* myInf
 }
 
 void CaptureController::writeMetaStamp(char* file, CaptureImagePair* imgPair) {
-	// LOG4CPLUS_DEBUG(logger, "Trying to write metastamp file." << file);
+    // LOG4CPLUS_DEBUG(logger, "Trying to write metastamp file." << file);
     ofstream tStream(file);
     if (!tStream) {
         LOG4CPLUS_ERROR(logger, "Could not open timestamp file: " << file);

@@ -25,18 +25,15 @@
 #include <stdlib.h>
 
 
-Stopwatch::Stopwatch()
-{
+Stopwatch::Stopwatch() {
     running = false;
-	counter = 0;
+    counter = 0;
     ftime(&startStamp);
     ftime(&stopStamp);
 }
 
 
-Stopwatch::~Stopwatch()
-{
-}
+Stopwatch::~Stopwatch() {}
 
 void Stopwatch::start() {
     ftime(&startStamp);
@@ -49,19 +46,19 @@ void Stopwatch::stop() {
 }
 
 void Stopwatch::count(int number) {
-   counter += number; 
+    counter += number;
 }
 
 long Stopwatch::getSeconds() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
     return stopStamp.time - startStamp.time;
 }
 
 long Stopwatch::getMilis() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
     return abs(stopStamp.millitm - startStamp.millitm);
 }
@@ -72,28 +69,28 @@ long Stopwatch::getCount() {
 
 float Stopwatch::getFramerate() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
-    
+
     long seconds = stopStamp.time - startStamp.time;
-	/*printf("counter %l seconds %l\n",counter,seconds);*/
+    /*printf("counter %l seconds %l\n",counter,seconds);*/
     long milis = abs(stopStamp.millitm - startStamp.millitm);
-	/*printf("milis %ld\n",milis);*/
-	
-    return counter / ((double) ((seconds * 1000) + milis) / 1000.0f);   
+    /*printf("milis %ld\n",milis);*/
+
+    return counter / ((double) ((seconds * 1000) + milis) / 1000.0f);
 }
 
 float Stopwatch::getDatarate(long kbytes) {
-	if (running) {
-		ftime(&stopStamp);
-	}
+    if (running) {
+        ftime(&stopStamp);
+    }
 
-	long milis = ((stopStamp.time - startStamp.time) * 1000) + abs(stopStamp.millitm - startStamp.millitm);
-	float rate = ((double) kbytes / 1024.0f) / ((double) milis / 1000.0f);
+    long milis = ((stopStamp.time - startStamp.time) * 1000) + abs(stopStamp.millitm - startStamp.millitm);
+    float rate = ((double) kbytes / 1024.0f) / ((double) milis / 1000.0f);
 
-	return rate;
+    return rate;
 }
 
 void Stopwatch::reset() {
-	counter = 0;
+    counter = 0;
 }

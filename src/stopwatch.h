@@ -35,52 +35,52 @@ Quick and dirty stopwatch class for fps calculations.
   
 @author Daniel Hahn,,,
 */
-class Stopwatch{
+class Stopwatch {
 public:
-    
+
     /** Starts the timer. */
     void start();
-    
+
     /** Stops the timer */
     void stop();
-    
+
     /** Increases Frame count */
     void count(int number = 1);
 
-	/** Resets the frame count */
-	void reset();
-    
+    /** Resets the frame count */
+    void reset();
+
     /** Get the elapsed time in full seconds **/
     long getSeconds();
-    
-    /** Get the elapsed time in milis 
+
+    /** Get the elapsed time in milis
         (from the last elapsed second) */
     long getMilis();
-    
+
     /** Get the frame count */
     long getCount();
-    
+
     /** Get the framerate */
     float getFramerate();
 
-	/**
-		Get a data rate for the time in which the Stopwatch has run.
-		@param kbytes Kilobytes of data while the watch ran
-		@return Throughput in MByte/s
-	*/
-	float getDatarate(long kbytes);
-    
+    /**
+    	Get a data rate for the time in which the Stopwatch has run.
+    	@param kbytes Kilobytes of data while the watch ran
+    	@return Throughput in MByte/s
+    */
+    float getDatarate(long kbytes);
+
     Stopwatch();
 
     ~Stopwatch();
-    
+
 private:
     /** Timestamps */
     timeb startStamp, stopStamp;
-    
+
     /** Indicates if the clock is running */
     bool running;
-    
+
     /** Internal (frame) counter */
     long counter;
 

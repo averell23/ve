@@ -34,7 +34,7 @@ using namespace log4cplus;
 /**
 	Posts @see VeEvent events to listeners. Child classes automatically gain full
 	event source capability. They just need to call @see postEvent internally.
-
+ 
 	@author Daniel Hahn,,,
 */
 class VeEventSource {
@@ -52,7 +52,7 @@ public:
 
     /**
       Posts an event to all registerd listeners.
-    */ 
+    */
     void postEvent(VeEvent &e);
 
 private:

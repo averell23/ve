@@ -43,8 +43,7 @@ void CORBAThread::run() {
 }
 
 
-CORBAThread::~CORBAThread()
-{
+CORBAThread::~CORBAThread() {
     running = false;
 }
 

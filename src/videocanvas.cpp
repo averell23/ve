@@ -34,7 +34,7 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     rightEye = right;
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
-	imagesSaved = 0;
+    imagesSaved = 0;
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
         LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
@@ -52,11 +52,11 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
                 accomodated = true;
             LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
         }
-	
-	if (textureSize > maxTexSize) {
-	    LOG4CPLUS_FATAL(logger, "Can not accomodate texture, shutting down.");
-	    exit(1);
-	}
+
+        if (textureSize > maxTexSize) {
+            LOG4CPLUS_FATAL(logger, "Can not accomodate texture, shutting down.");
+            exit(1);
+        }
 
         LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
         glGenTextures(2, textures);   /* create the texture names */
@@ -87,8 +87,8 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
                         << textureSize << ") = " << heightFactor);
     }
 
-	leftCount = 0;
-	rightCount = 0;
+    leftCount = 0;
+    rightCount = 0;
 
     leftBrightness = 50;
     rightBrightness = 50;
@@ -99,12 +99,12 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     VideoCanvas::xRot = xRot;
     VideoCanvas::yRot = yRot;
     VideoCanvas::zRot = zRot;
-    
+
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
-	LOG4CPLUS_WARN(logger, "GL error encountered while creating video canvas. " << Ve::getGLError(error));
+        LOG4CPLUS_WARN(logger, "GL error encountered while creating video canvas. " << Ve::getGLError(error));
     } else {
-	LOG4CPLUS_INFO(logger, "Video Canvas successfully created.");
+        LOG4CPLUS_INFO(logger, "Video Canvas successfully created.");
     }
 }
 
@@ -114,7 +114,7 @@ void VideoCanvas::draw() {
         return;
     }
 
-    glColor3f(1.0f, 1.0f, 1.0f);		// Set normal color 
+    glColor3f(1.0f, 1.0f, 1.0f);		// Set normal color
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glLoadIdentity();				// ...and load the Identity Matrix instead
@@ -131,16 +131,16 @@ void VideoCanvas::draw() {
     if (zRot) {
         glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
     }
-    
+
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-	if (leftCount != leftEye->getFrameCount()) {
-		leftEye->lockImage();
-		leftCount = leftEye->getFrameCount();
-		IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
+    if (leftCount != leftEye->getFrameCount()) {
+        leftEye->lockImage();
+        leftCount = leftEye->getFrameCount();
+        IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                         GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
-		leftEye->releaseImage();
+        leftEye->releaseImage();
     } else {
         LOG4CPLUS_TRACE(logger, "Got empty image for left eye");
     }
@@ -157,13 +157,13 @@ void VideoCanvas::draw() {
 
     // Right Quad
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-	if (rightCount != rightEye->getFrameCount()) {
-		rightEye->lockImage();
-		rightCount = rightEye->getFrameCount();
-		IplImage* rightImage = rightEye->getImage();	// FIXME: Check for image properties
+    if (rightCount != rightEye->getFrameCount()) {
+        rightEye->lockImage();
+        rightCount = rightEye->getFrameCount();
+        IplImage* rightImage = rightEye->getImage();	// FIXME: Check for image properties
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                         GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
-		rightEye->releaseImage();
+        rightEye->releaseImage();
     } else {
         LOG4CPLUS_TRACE(logger, "Got empty image for left eye");
     }
@@ -209,33 +209,33 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
             leftBrightness +=5;
         rightEye->setBrightness(rightEye->getBrightness() + 5);
     }
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'i')) {
-		leftEye->storeBlackOffset();
-		rightEye->storeBlackOffset();
-	}
-	// FIXME: Quick hack for saving images
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'a'))  {
-		char name1[256], name2[256];
-		sprintf(name1,"quicksaved_left_%d.raw", imagesSaved);
-		sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
-		rightEye->lockImage();
-		leftEye->lockImage();
-		IplImage* image2 = rightEye->getImage();
-		IplImage* image1 = leftEye->getImage();
-		CaptureImagePair imgPair(0);
-		imgPair.buffer_a = image1->imageData;
-		imgPair.buffer_b = image2->imageData;
-		CaptureInfo info;
-		info.height = image1->height;
-		info.width = image1->width;
-		info.imgSize = image1->height * image1->width * 3;
-		info.planes = 3;
-		info.pixBytes = 1;
-		CaptureController::writeRAWFiles(name1, name2, &imgPair, &info);
-		rightEye->releaseImage();
-		leftEye->releaseImage();
-		imagesSaved++;
-	}
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'i')) {
+        leftEye->storeBlackOffset();
+        rightEye->storeBlackOffset();
+    }
+    // FIXME: Quick hack for saving images
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'a'))  {
+        char name1[256], name2[256];
+        sprintf(name1,"quicksaved_left_%d.raw", imagesSaved);
+        sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
+        rightEye->lockImage();
+        leftEye->lockImage();
+        IplImage* image2 = rightEye->getImage();
+        IplImage* image1 = leftEye->getImage();
+        CaptureImagePair imgPair(0);
+        imgPair.buffer_a = image1->imageData;
+        imgPair.buffer_b = image2->imageData;
+        CaptureInfo info;
+        info.height = image1->height;
+        info.width = image1->width;
+        info.imgSize = image1->height * image1->width * 3;
+        info.planes = 3;
+        info.pixBytes = 1;
+        CaptureController::writeRAWFiles(name1, name2, &imgPair, &info);
+        rightEye->releaseImage();
+        leftEye->releaseImage();
+        imagesSaved++;
+    }
 }
 
 VideoCanvas::~VideoCanvas() {

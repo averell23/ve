@@ -31,8 +31,7 @@ CaptureImagePair::CaptureImagePair(int size) {
     buffer_b = new char[size];
 }
 
-CaptureImagePair::~CaptureImagePair()
-{
+CaptureImagePair::~CaptureImagePair() {
     delete buffer_a;
     delete buffer_b;
 }

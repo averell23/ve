@@ -28,48 +28,48 @@
 
 /**
 Contains meta-information that is used by the capture classes.
-
+ 
 @author Daniel Hahn,,,
 */
-class CaptureInfo{
+class CaptureInfo {
 public:
-    	/// Image height
-	int height;
-	/// Image width
-	int width;
-	/// Top offset (for AOI)
-	int offset_y;
-	/// Left offset (for AOI)
-	int offset_x;
-	// Number of color planes
-	int planes;
-	// Bytes per plane per pixel
-	int pixBytes;
-	// Size of one image in color componets
-	int imgSize;
-	/// File name prefix for saving files
-	char* filePrefix;
-	/// Name of the color model (for the XCLIB functions)
-	char* colorName;
-	/// Timer for reading (in continous mode) FIXME: kludge
-	Stopwatch readTimer;
-	/// Timer for writing (in continous mode) FIXME: kludge
-	Stopwatch writeTimer;
-	/// Color info type
-	int colorType;
-	/// Indicates wether as seperate timestamp should be written
-	bool writeTimestamp;
-	/// Prefix for the timestamp files (including path)
-	char* timstampPrefix;
-	/// Indicates the preferred file format
-	int fileFormat;
-	
-	static const int IMAGE_BAYER = 0;
-	static const int IMAGE_RGB = 1;
-	static const int IMAGE_GRAY = 2;
+    /// Image height
+    int height;
+    /// Image width
+    int width;
+    /// Top offset (for AOI)
+    int offset_y;
+    /// Left offset (for AOI)
+    int offset_x;
+    // Number of color planes
+    int planes;
+    // Bytes per plane per pixel
+    int pixBytes;
+    // Size of one image in color componets
+    int imgSize;
+    /// File name prefix for saving files
+    char* filePrefix;
+    /// Name of the color model (for the XCLIB functions)
+    char* colorName;
+    /// Timer for reading (in continous mode) FIXME: kludge
+    Stopwatch readTimer;
+    /// Timer for writing (in continous mode) FIXME: kludge
+    Stopwatch writeTimer;
+    /// Color info type
+    int colorType;
+    /// Indicates wether as seperate timestamp should be written
+    bool writeTimestamp;
+    /// Prefix for the timestamp files (including path)
+    char* timstampPrefix;
+    /// Indicates the preferred file format
+    int fileFormat;
 
-	static const int FILE_FORMAT_RAW = 0;
-	static const int FILE_FORMAT_BMP = 1;
+    static const int IMAGE_BAYER = 0;
+    static const int IMAGE_RGB = 1;
+    static const int IMAGE_GRAY = 2;
+
+    static const int FILE_FORMAT_RAW = 0;
+    static const int FILE_FORMAT_BMP = 1;
 };
 
 #endif

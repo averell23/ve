@@ -35,7 +35,7 @@ public:
       Creates a new EpixReaderThread.
       
       @param unit Number of the unit from which to read.
-	  @param source Pointer to the source to which this thread is connected.
+    @param source Pointer to the source to which this thread is connected.
     */
     EpixReaderThread(int unit, EpixSource* source);
     ~EpixReaderThread();
@@ -58,8 +58,8 @@ private:
     bool running;
     /// Logger for this class
     static Logger logger;
-	/// Source to which this thread is connected
-	EpixSource* source;
+    /// Source to which this thread is connected
+    EpixSource* source;
 };
 
 #endif

@@ -78,9 +78,9 @@ private:
     CORBAThread* theThread;
     /// Event source/CORBA object for position events
     PositionConnector_Impl* positionSource;
-	int x;
-	/// Filename to which the IOR is written
-	char* iorFileName;
+    int x;
+    /// Filename to which the IOR is written
+    char* iorFileName;
 
 };
 

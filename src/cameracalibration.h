@@ -35,11 +35,11 @@
 #include <math.h>
 #include <gsl/gsl_poly.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>  // Xerces related files
-#include <xercesc/dom/DOM.hpp> 
-#include <xercesc/dom/DOMDocument.hpp> 
-#include <xercesc/sax/HandlerBase.hpp> 
-#include <xercesc/util/XMLString.hpp> 
-#include <xercesc/util/PlatformUtils.hpp> 
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/sax/HandlerBase.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/dom/DOMWriter.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 
@@ -63,12 +63,12 @@ or by loading the data from disk.
 */
 class CameraCalibration {
 public:
-    
+
     /// Size of the calibration matrix.
     static const int CALIB_MATRIX_SIZE = 3;
     /// Size of the distortion vector
     static const int DISTORT_VEC_SIZE = 4;
-    
+
     /** Create a new calibration object.
        @param input The video source that will be calibrated. 
        @param patternDimension Number of the inner corners in the chessboard field.
@@ -106,7 +106,9 @@ public:
       
       @return The calibration matrix in OpenCV format
     */
-    CvMatr32f getCalibrationMatrix() { return calibrationMatrix; }
+    CvMatr32f getCalibrationMatrix() {
+        return calibrationMatrix;
+    }
 
     /**
       Returns the distortion coefficients.
@@ -151,7 +153,7 @@ public:
     int getSnapshotCount() {
         return images.size();
     }
-    
+
     /**
       Distorts the given point with the calibrated distortion
       coefficients.  
@@ -166,7 +168,7 @@ public:
       @return the undistorted ccordinates of the point.
     */
     CvPoint2D32f distortPoint(CvPoint2D32f point);
-    
+
     /**
       Undistorts the given point with the calibrated distortion
       coefficients. This function uses
@@ -179,12 +181,12 @@ public:
       @return the undistorted ccordinates of the point.
     */
     CvPoint2D32f unDistortPoint(CvPoint2D32f point);
-    
+
     /**
       Sets the internal filename for load/save operations.
     */
     void setFilename(string filename);
-    
+
     ~CameraCalibration();
 
 private:
@@ -231,33 +233,33 @@ private:
               successfully created.
     */
     CvPoint2D32f* guessCorners(IplImage* image);
-    
+
     /// Helper method to read in the calibration Matrix from DOM
-	bool readCalibrationMatrix(xercesc::DOMNodeList* nodelist);
-    
+    bool readCalibrationMatrix(xercesc::DOMNodeList* nodelist);
+
     /// Helper method to read in the distortion vector from DOM
-	bool readDistortionVec(xercesc::DOMNodeList* nodeList);
-    
+    bool readDistortionVec(xercesc::DOMNodeList* nodeList);
+
     /**
        Helper method to read text child from a node.
        
        @return The contents of the first text node child, or null if
                node has no text children. Does not combine multiple
-	       text children.
+        text children.
     */
-	const XMLCh* getTextChild(xercesc::DOMNode* node);
-    
+    const XMLCh* getTextChild(xercesc::DOMNode* node);
+
     /**
       Helper method to get an attribute by name from a node.
       
       @return The contents of the attribute, or null if the attribute
               does not exist.
     */
-	const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
-    
+    const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
+
     /// Logger for this class
     static Logger logger;
-    
+
 };
 
 #endif

@@ -33,20 +33,20 @@
 
 /**
 Recieves position updates through CORBA and forwards them to the display overlay.
-
+ 
 @author Daniel Hahn,,,
 */
 class CORBAPositionTracker : public VeEventListener, VeEventSource {
 public:
     /// Source ID for the left eye
     static const int LEFT_EYE_SOURCE = 3;
-    /// Source ID for the right eye 
+    /// Source ID for the right eye
     static const int RIGHT_EYE_SOURCE = 4;
-    
+
     CORBAPositionTracker();
 
     ~CORBAPositionTracker();
-    
+
     /**
       Event handler for recieving Updates through CORBA.
     */

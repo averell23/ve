@@ -49,7 +49,7 @@ public:
 
 private:
     Position pos;
-	
+
 };
 
 #endif

@@ -30,10 +30,10 @@ using namespace ost;
 
 /**
 Buffer for use by @see CaptureController. This can either be used as direct storage or as a queue/ring buffer for concurrent I/O
-
+ 
 @author Daniel Hahn,,,
 */
-class CaptureBuffer{
+class CaptureBuffer {
 public:
 
     /**
@@ -49,15 +49,19 @@ public:
       No range checking is done, this can easily break
       your code.
     */
-    CaptureImagePair* getBufferAt(int index) { return buffer[index]; }
-    
+    CaptureImagePair* getBufferAt(int index) {
+        return buffer[index];
+    }
+
     /**
       Returns the capacity of this buffer in images.
     */
-    int capacity() { return images; }
-    
+    int capacity() {
+        return images;
+    }
+
     ~CaptureBuffer();
-    
+
     /**
       Add a buffer to the beginning of the queue and return a
       pointer to it.
@@ -66,7 +70,7 @@ public:
       is available.
     */
     CaptureImagePair* addQueueElement();
-    
+
     /**
       Get a pointer to the first element in the queue.
       
@@ -74,7 +78,7 @@ public:
       if the queue is currently empty
     */
     CaptureImagePair* getQueueFirst();
-    
+
     /**
       Remove the first element of the queue. This has no effect if
       the queue is currently empty.
@@ -88,11 +92,11 @@ private:
     int images;
     /// Points to the beginning of the queue
     int queueBegin;
-    /// Points to the end of the queue 
+    /// Points to the end of the queue
     int queueEnd;
     /// Mutex for thread-safe operation
     Mutex mutex;
-    
+
 };
 
 #endif

@@ -54,7 +54,7 @@ public:
       @param cameraModel Model code of the camera connected to this source
     */
     EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "",
-		       string adjust = "") ; //FIXME: Config file handling is stoopid
+               string adjust = "") ; //FIXME: Config file handling is stoopid
 
     ~EpixSource();
 
@@ -65,8 +65,8 @@ public:
     const static int CAMERA_DEFAULT = 0;
     const static int CAMERA_1280F = 1;
 
-	/// Allows the thread to insert a new image into the internal buffer. 
-	void bufferUpdate(char* newBuffer);
+    /// Allows the thread to insert a new image into the internal buffer.
+    void bufferUpdate(char* newBuffer);
 
 private:
     /// Unit number from which this source reads

@@ -23,30 +23,26 @@
  ***************************************************************************/
 #include "corbapositiontracker.h"
 
-CORBAPositionTracker::CORBAPositionTracker()
-{
-}
+CORBAPositionTracker::CORBAPositionTracker() {}
 
 
-CORBAPositionTracker::~CORBAPositionTracker()
-{
-}
+CORBAPositionTracker::~CORBAPositionTracker() {}
 
 
 void CORBAPositionTracker::recieveEvent(VeEvent &e) {
     if (e.getType() == VeEvent::POSITION_EVENT) {
-	VePositionEvent& posE = (VePositionEvent&) e;
-	CvPoint3D32f origPoint;
-	origPoint.x = posE.getPosition().x;
-	origPoint.y = posE.getPosition().y;
-	origPoint.z = posE.getPosition().z;
-	CvPoint2D32f leftPoint = Ve::getLeftSource()->getRegistration()->transformSensorToImage(origPoint);
-	CvPoint2D32f rightPoint = Ve::getRightSource()->getRegistration()->transformSensorToImage(origPoint);
-	Position leftPos(posE.getPosition().index, LEFT_EYE_SOURCE, leftPoint.x, leftPoint.y, 0);
-	Position rightPos(posE.getPosition().index, RIGHT_EYE_SOURCE, rightPoint.x, rightPoint.y, 0);
-	VePositionEvent leftE(leftPos);
-	VePositionEvent rightE(rightPos);
-	postEvent(leftE);
-	postEvent(rightE);
+        VePositionEvent& posE = (VePositionEvent&) e;
+        CvPoint3D32f origPoint;
+        origPoint.x = posE.getPosition().x;
+        origPoint.y = posE.getPosition().y;
+        origPoint.z = posE.getPosition().z;
+        CvPoint2D32f leftPoint = Ve::getLeftSource()->getRegistration()->transformSensorToImage(origPoint);
+        CvPoint2D32f rightPoint = Ve::getRightSource()->getRegistration()->transformSensorToImage(origPoint);
+        Position leftPos(posE.getPosition().index, LEFT_EYE_SOURCE, leftPoint.x, leftPoint.y, 0);
+        Position rightPos(posE.getPosition().index, RIGHT_EYE_SOURCE, rightPoint.x, rightPoint.y, 0);
+        VePositionEvent leftE(leftPos);
+        VePositionEvent rightE(rightPos);
+        postEvent(leftE);
+        postEvent(rightE);
     }
 }

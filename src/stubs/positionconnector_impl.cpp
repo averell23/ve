@@ -25,14 +25,12 @@
 
 Logger PositionConnector_Impl::logger = Logger::getInstance("Ve.stubs.PositionConnector");
 
-PositionConnector_Impl::~PositionConnector_Impl()
-{
-}
+PositionConnector_Impl::~PositionConnector_Impl() {}
 
 
 void PositionConnector_Impl::update(CORBA::Short index, CORBA::Float x, CORBA::Float y, CORBA::Float z) {
     LOG4CPLUS_TRACE(logger, "Got update through CORBA: " << x << "," << y << "," << z);
-    Position pos(0, index, x, y, z); 
+    Position pos(0, index, x, y, z);
     VePositionEvent e(pos);
     VeEventSource::postEvent(e);
 }

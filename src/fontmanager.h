@@ -45,7 +45,7 @@ public:
 
     /// Initial size of the internal font array
     static const int INTIAL_FONTS_SIZE = 1024;
-    
+
     /**
       Returns the single instance of the managed font. The font object is
       re-used and must not be changed.
@@ -54,22 +54,24 @@ public:
       
       @return The font object, or NULL if it could not be created.
     */
-    static FTGLTextureFont* getFont(int size=40) { return myInstance.internalGetFont(size); }
+    static FTGLTextureFont* getFont(int size=40) {
+        return myInstance.internalGetFont(size);
+    }
 
 private:
     /**
       Private for singleton class.
     */
     FontManager();
-    
+
     /// The singleton instance;
     static FontManager myInstance;
 
-    /** 
+    /**
       Internal version of @see getFont
     */
     FTGLTextureFont* internalGetFont(int size);
-    
+
     /**
       This actually creates the font object.
       
@@ -82,7 +84,7 @@ private:
       but it's fast.
     */
     FTGLTextureFont** fonts;
-    
+
     /**
       Grows the internal font array.
       
@@ -90,7 +92,7 @@ private:
                        the font array
     */
     void growFonts(int increment);
-    
+
     /**
       Size of the font array.
     */

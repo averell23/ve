@@ -41,11 +41,10 @@ using namespace log4cplus;
 
 /**
 This allows to track patterns in the video image by means of the ARToolkit.
-
+ 
 @author Daniel Hahn,,,
 */
-class TrackerOverlay : public Overlay, public VeEventListener
-{
+class TrackerOverlay : public Overlay, public VeEventListener {
 public:
 
     /**
@@ -56,15 +55,15 @@ public:
       @param display Initial display state
     */
     TrackerOverlay(int leftSourceID, int rightSourceID, bool display=true);
-    
+
     ~TrackerOverlay();
 
     void drawOverlay();
-    
-    static char* paramFile; 
 
-	void recieveEvent(VeEvent &e);
-    
+    static char* paramFile;
+
+    void recieveEvent(VeEvent &e);
+
 private:
     /**
       Contains the on-screen positions of objects in the left eye in 
@@ -78,22 +77,22 @@ private:
     map<int, Position> rightPositions;
     /// Expiry time of positions in milis
     int expireT;
-    
+
     /**
       Clean up the lists of positions. This removes expired position 
       entries from the list. Note: For the sake of cleaner code, this
       is not done during the main list traversal. 
     */
     void positionListCleanup();
-    
+
     /**
       Helper function for @see positionListCleanup
     */
     void cleanupSingleList(map<int,Position>& positions);
-    
+
     /// Source ID codes for left and right eye
     int leftSourceID, rightSourceID;
-    
+
     /// Logger for this class
     static Logger logger;
     /**
@@ -107,26 +106,26 @@ private:
     FTGLTextureFont* font;
     /// Text for display
     char* text;
-    
+
     /// Draw a highlight indicator at the given position
     void drawHighlight(int x, int y);
-    
+
     /**
         From the given markers, select the one that is closest to the center of 
         the screen.
-		
-	@param markers Pointer to an array of markers.
-	@param markerNum Number of markers in @see markers
-	@return Index of the centermost marker. This is -1 if no markers are available.
+
+    @param markers Pointer to an array of markers.
+    @param markerNum Number of markers in @see markers
+    @return Index of the centermost marker. This is -1 if no markers are available.
     */
     map<int,Position>::iterator getCenterMarker(map<int,Position>& positions);
-    
+
     /*
         Calculate distance from sreen center.
-	@return Square of the distance of the given point from the center of the screen.
+    @return Square of the distance of the given point from the center of the screen.
     */
     double TrackerOverlay::centerDistanceSquared(double x, double y);
-	
+
     /// Indicates if the text portion of the overlay should be drawn
     bool doText;
     /// Indicates if a crosshair should be drawn on every marker
@@ -135,7 +134,7 @@ private:
     bool doHighlight;
     /// Width and height of video picture
     int width, height;
-    
+
 };
 
 #endif

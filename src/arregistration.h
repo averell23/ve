@@ -42,10 +42,10 @@ class VideoSource;
 
 /**
 Contains the routines and data to register a sensor coordinate system to the user's view. 
-
+ 
 @author Daniel Hahn,,,
 */
-class ARRegistration{
+class ARRegistration {
 public:
 
     /**
@@ -53,9 +53,9 @@ public:
       VideoSource.
     */
     ARRegistration(VideoSource* source);
-    
+
     ~ARRegistration();
-    
+
     /**
       Adds a image plane/sensor coordinate pair of points to the
       internal calibration data.
@@ -63,24 +63,24 @@ public:
       @param imagePlane 
     */
     void addCalibrationPair(CvPoint2D32f imagePlane, CvPoint3D32f sensor);
-    
+
     /**
       Recalibrates the internal registration matrix with the calibration pairs.
       If not at least 4 calibration pairs are present, the registration matrix
       will be set to the identity matrix.
     */
     void reRegister();
-    
+
     /**
       Clears the internal calibration data.
     */
     void clearCalibrationPoints();
-    
+
     /**
       Transforms a point from sensor coordinates to (ideal) image plane coordinates.
     */
     CvPoint2D32f transformSensorToImage(CvPoint3D32f sensor);
-    
+
 
 private:
     /// Vector for the image plane calibration points

@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     }
 
     CaptureInfo info;
-    
+
     string param = parser.getParamValue("colors");
     if (param == "bayer") {
         info.colorType = CaptureInfo::IMAGE_BAYER;
@@ -91,15 +91,15 @@ int main(int argc, char *argv[]) {
 
     param = parser.getParamValue("format");
     if (param == "raw") {
-	info.fileFormat = CaptureInfo::FILE_FORMAT_RAW;
+        info.fileFormat = CaptureInfo::FILE_FORMAT_RAW;
     } else if (param == "bmp") {
-	info.fileFormat = CaptureInfo::FILE_FORMAT_BMP;
+        info.fileFormat = CaptureInfo::FILE_FORMAT_BMP;
     } else {
-	cout << "Unknown file format: " << param;
-	parser.printUsage();
-	exit(0);
+        cout << "Unknown file format: " << param;
+        parser.printUsage();
+        exit(0);
     }
-    
+
     param = parser.getParamValue("height");
     info.height = atoi(param.c_str());
     param = parser.getParamValue("width");
@@ -108,18 +108,18 @@ int main(int argc, char *argv[]) {
     int size = atoi(param.c_str());
 
 
-	string filePrefix = parser.getParamValue("prefix");
+    string filePrefix = parser.getParamValue("prefix");
     info.filePrefix = (char*) filePrefix.c_str();
 
     string timeString = parser.getParamValue("timestamp");
     if (timeString == "") {
-		info.writeTimestamp = false;
-		info.timstampPrefix = "";
+        info.writeTimestamp = false;
+        info.timstampPrefix = "";
     } else {
-		info.writeTimestamp = true;
-		info.timstampPrefix = (char*) timeString.c_str();
+        info.writeTimestamp = true;
+        info.timstampPrefix = (char*) timeString.c_str();
     }
-    
+
     if (size < 1) {
         LOG4CPLUS_FATAL(logger, "Illegal size: " << size);
         exit(0);
@@ -173,16 +173,16 @@ int main(int argc, char *argv[]) {
             scanf("%c", &key);
         }
         controller.stopLiveCapture();
-		info.readTimer.stop();
-		info.writeTimer.stop();
-		LOG4CPLUS_INFO(logger, "Read " << info.readTimer.getCount() 
-			<< " images in " << info.readTimer.getSeconds() 
-			<< "s" << info.readTimer.getMilis() << "ms, framerate: "
-			<< info.readTimer.getFramerate());
-		LOG4CPLUS_INFO(logger, "Wrote " << info.writeTimer.getCount() 
-			<< " images in " << info.writeTimer.getSeconds() 
-			<< "s" << info.writeTimer.getMilis() << "ms, framerate: "
-			<< info.writeTimer.getFramerate());
+        info.readTimer.stop();
+        info.writeTimer.stop();
+        LOG4CPLUS_INFO(logger, "Read " << info.readTimer.getCount()
+                       << " images in " << info.readTimer.getSeconds()
+                       << "s" << info.readTimer.getMilis() << "ms, framerate: "
+                       << info.readTimer.getFramerate());
+        LOG4CPLUS_INFO(logger, "Wrote " << info.writeTimer.getCount()
+                       << " images in " << info.writeTimer.getSeconds()
+                       << "s" << info.writeTimer.getMilis() << "ms, framerate: "
+                       << info.writeTimer.getFramerate());
     } else {
         controller.captureToBuffers();
         controller.writeBuffers();

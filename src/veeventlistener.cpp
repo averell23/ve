@@ -24,12 +24,12 @@
 #include "veeventlistener.h"
 
 void VeEventListener::callEvent(VeEvent& e) {
-	mtx.enterMutex();
-	if (e.getType() == VeEvent::POSITION_EVENT) {
-		VePositionEvent newE = (VePositionEvent&) e;
-		recieveEvent(newE);
-	} else {
-		recieveEvent(e);
-	}
-	mtx.leaveMutex();
+    mtx.enterMutex();
+    if (e.getType() == VeEvent::POSITION_EVENT) {
+        VePositionEvent newE = (VePositionEvent&) e;
+        recieveEvent(newE);
+    } else {
+        recieveEvent(e);
+    }
+    mtx.leaveMutex();
 }

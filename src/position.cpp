@@ -23,8 +23,7 @@
  ***************************************************************************/
 #include "position.h"
 
-Position::Position(int index, int source, double x, double y, double z)
-{
+Position::Position(int index, int source, double x, double y, double z) {
     Position::x = x;
     Position::y = y;
     Position::z = z;
@@ -34,8 +33,6 @@ Position::Position(int index, int source, double x, double y, double z)
 }
 
 
-Position::~Position()
-{
-}
+Position::~Position() {}
 
 

@@ -54,7 +54,7 @@ void CaptureReadThread::readImages() {
     CaptureImagePair* newBuf = buffer->addQueueElement();
     // Wait for free space in both buffers
     while (newBuf == NULL) {
-	newBuf = buffer->addQueueElement();
+        newBuf = buffer->addQueueElement();
         Thread::yield();
     }
 

@@ -34,16 +34,16 @@ using namespace ost;
 
 /**
 Simple thread class for the CORBAController, to work around a glitch in the WIN32 Common C++ implementation.
-
+ 
 @author Daniel Hahn,,,
 */
 class CORBAThread : public Thread {
 public:
 
     CORBAThread(CORBA::ORB_var orb);
-    
+
     void run();
-    
+
     ~CORBAThread();
 private:
     /// ORB handled by this thread
@@ -52,7 +52,7 @@ private:
     bool running;
     /// Logger for this class
     static Logger logger;
-    
+
 };
 
 #endif

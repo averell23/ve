@@ -30,10 +30,9 @@ ARRegistration::ARRegistration(VideoSource* source) {
     Trans = gsl_matrix_calloc(3,4);
 }
 
-ARRegistration::~ARRegistration()
-{
+ARRegistration::~ARRegistration() {
     if (Trans != NULL) {
-	gsl_matrix_free(Trans);
+        gsl_matrix_free(Trans);
     }
 }
 
@@ -48,17 +47,17 @@ void ARRegistration::clearCalibrationPoints() {
 }
 
 void ARRegistration::reRegister() {
-	LOG4CPLUS_DEBUG(logger, "Re-Registering sensor coordinates.");
+    LOG4CPLUS_DEBUG(logger, "Re-Registering sensor coordinates.");
     if (imagePoints.size() < 4) {
-	LOG4CPLUS_WARN(logger, "Could not proceed with registration, too few registration points.");
-	return;
+        LOG4CPLUS_WARN(logger, "Could not proceed with registration, too few registration points.");
+        return;
     }
     // Create the observation vector
     gsl_vector* y = gsl_vector_alloc(imagePoints.size() * 3);
     for (int i=0 ; i < imagePoints.size() ; i++) {
-	gsl_vector_set(y, i*3, imagePoints[i].x);
-	gsl_vector_set(y, (i*3)+1, imagePoints[i].y);
-	gsl_vector_set(y, (i*3)+2, 1);
+        gsl_vector_set(y, i*3, imagePoints[i].x);
+        gsl_vector_set(y, (i*3)+1, imagePoints[i].y);
+        gsl_vector_set(y, (i*3)+2, 1);
     }
     // calibration matrix
     gsl_matrix* c = getCalibrationMatrix();
@@ -68,24 +67,24 @@ void ARRegistration::reRegister() {
     gsl_matrix* params = gsl_matrix_alloc(sensorPoints.size()*3, 12);
     // Fill the parameter matrix
     for (int i=0 ; i < sensorPoints.size() ; i++) {
-	gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
-	for (int j=0 ; j < 3 ; j++) { // count rows
-	    for (int k=0 ; k < 3 ; k++) { // count "columns"
-		gsl_matrix_set(x_1, j, k*4, sensorPoints[i].x);
-		gsl_matrix_set(x_1, j, (k*4)+1, sensorPoints[i].y);
-		gsl_matrix_set(x_1, j, (k*4)+2, sensorPoints[i].z);
-		gsl_matrix_set(x_1, j, (k*4)+3, 1);
-	    } // for "columns"
-	} // for rows
-	LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
-	// Select the region of the parameter matrix to write into
-	gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
-	gsl_matrix_view sub_bottom = gsl_matrix_submatrix(params, (i*3)+2, 0, 1, 12);
-	LOG4CPLUS_TRACE(logger, "Submatrices selected.");
-	// Compute the parameter values: c_1 * x_1, c_3 * x_1
-	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
-	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_3, x_1, 0.0, &sub_bottom.matrix);
-	gsl_matrix_free(x_1);
+        gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
+        for (int j=0 ; j < 3 ; j++) { // count rows
+            for (int k=0 ; k < 3 ; k++) { // count "columns"
+                gsl_matrix_set(x_1, j, k*4, sensorPoints[i].x);
+                gsl_matrix_set(x_1, j, (k*4)+1, sensorPoints[i].y);
+                gsl_matrix_set(x_1, j, (k*4)+2, sensorPoints[i].z);
+                gsl_matrix_set(x_1, j, (k*4)+3, 1);
+            } // for "columns"
+        } // for rows
+        LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
+        // Select the region of the parameter matrix to write into
+        gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
+        gsl_matrix_view sub_bottom = gsl_matrix_submatrix(params, (i*3)+2, 0, 1, 12);
+        LOG4CPLUS_TRACE(logger, "Submatrices selected.");
+        // Compute the parameter values: c_1 * x_1, c_3 * x_1
+        gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
+        gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_3, x_1, 0.0, &sub_bottom.matrix);
+        gsl_matrix_free(x_1);
     } // for sensorPoints
     LOG4CPLUS_DEBUG(logger, "Temp data structures initialized, now trying to do least-squares fit.");
     gsl_vector* T_vec = gsl_vector_alloc(12);
@@ -110,14 +109,14 @@ void ARRegistration::reRegister() {
     gsl_vector_free(T_vec);
     gsl_matrix_free(params);
     gsl_matrix_free(T);
-	gsl_matrix_free(cov);
+    gsl_matrix_free(cov);
 }
 
 gsl_matrix* ARRegistration::getCalibrationMatrix() {
     // Initialize the calibration matrix from the calibration object
     CameraCalibration* calib = source->getCalibration();
     CvMatr32f calibMatrix = calib->getCalibrationMatrix();
-    gsl_matrix* c = gsl_matrix_calloc(3,4); 
+    gsl_matrix* c = gsl_matrix_calloc(3,4);
     gsl_matrix_set(c, 0, 0, calibMatrix[0]); // Focus length x
     gsl_matrix_set(c, 0, 1, calibMatrix[1]);
     gsl_matrix_set(c, 0, 2, calibMatrix[2]); // Principal point x
@@ -127,7 +126,7 @@ gsl_matrix* ARRegistration::getCalibrationMatrix() {
     // Last row of the calibration matrix
     gsl_matrix_set(c, 2, 2, 1);
 
-	return c;
+    return c;
 }
 
 CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
@@ -144,5 +143,5 @@ CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
     gsl_matrix_free(result);
     gsl_matrix_free(point);
 
-	return retVal;
+    return retVal;
 }

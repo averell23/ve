@@ -100,7 +100,7 @@ public:
       need to correspond to actual pixels on the screen.
     */
     static CvPoint getVirtualSize();
-    
+
     /**
       Registers an event listner with the main event source.
     */
@@ -127,7 +127,7 @@ public:
 
     /** Print OpenGL error code */
     static const char* getGLError(GLenum error);
-    
+
     static Stopwatch *timer;
     static VideoCanvas *mainVideo;
     static VideoSource *rightEye;
@@ -138,8 +138,8 @@ public:
     /// Event source used for events from the main framework
     static VeEventSource eventSource;
 
-	/// Convenience method for buffer copies
-	static char* bufferCopy(char* buffer, int size);
+    /// Convenience method for buffer copies
+    static char* bufferCopy(char* buffer, int size);
 
     // Logger for this class
     static Logger logger;

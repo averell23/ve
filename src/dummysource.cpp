@@ -63,11 +63,11 @@ DummySource::~DummySource() {
 }
 
 IplImage* DummySource::getImage() {
-	if (imgMutex.tryEnterMutex()) { // Only advance if the image is not locked
-		position = ++position % NUM_IMAGES;
-		frameCount++;
-		imgMutex.leaveMutex();
-	}
+    if (imgMutex.tryEnterMutex()) { // Only advance if the image is not locked
+        position = ++position % NUM_IMAGES;
+        frameCount++;
+        imgMutex.leaveMutex();
+    }
 
     imgBuffer = images[position];
 

@@ -33,10 +33,10 @@
 
 /**
 A collection of OpenGL macros for common tasks
-
+ 
 @author Daniel Hahn,,,
 */
-class GLMacros{
+class GLMacros {
 public:
     /**
       Initialize the GL matrices with an ortho matrix that allows to
@@ -45,25 +45,25 @@ public:
       See also @see Ve::getVirtualSize
     */
     static void initVirtualCoords();
-    
+
     /**
       Reverts the projection and model view matrix to the pre-stored 
       values.
     */
     static void revertMatrices();
-    
+
     /**
       Draws crosshairs at the given virtual coordinates.
     */
     static void drawCrosshairs(int x, int y);
-    
+
     /**
       Draws the text at the given virtual coordinates.
       
       @param size FaceSize of the text font.
     */
     static void drawText(int x, int y, char* text, int fontSize);
-    
+
     /**
       Blanks the left eye by drawing a black square in front of 
       all existing elements. 

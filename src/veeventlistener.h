@@ -38,21 +38,21 @@ Use to allow child classes to listen for VeEvents.
 class VeEventListener {
 public:
 
-	/**
-		Called by the event posting mechanism. This takes care of the
-		synchronization and calls @see recieveEvent in turn.
-	*/
-	void callEvent(VeEvent& e);
+    /**
+    	Called by the event posting mechanism. This takes care of the
+    	synchronization and calls @see recieveEvent in turn.
+    */
+    void callEvent(VeEvent& e);
 
 protected:
     /**
-		Called when recieving an event. This method must be
-		overwritten by child implementations.
-	*/
+    Called when recieving an event. This method must be
+    overwritten by child implementations.
+    */
     virtual void recieveEvent(VeEvent &e) = 0;
 
-	/// Mutex for synchronizing parallel calls.
-	Mutex mtx;
+    /// Mutex for synchronizing parallel calls.
+    Mutex mtx;
 
 };
 

@@ -44,11 +44,10 @@ using namespace log4cplus;
 
 /**
 Thread that writes images from the capture buffer to disk
-
+ 
 @author Daniel Hahn,,,
 */
-class CaptureWriteThread : public Thread
-{
+class CaptureWriteThread : public Thread {
 public:
     /**
       Creates a new writing thread.
@@ -58,24 +57,26 @@ public:
       @param info Meta-Information for capturing
     */
     CaptureWriteThread(CaptureBuffer* buffer, CaptureInfo* info);
-    
-    
+
+
     /**
       Writes a pair of images to disk.
     */
     void writeImages();
-    
+
     /**
       Quit writing after the next pair of images and exit thread.
     */
     void quit();
-    
+
     ~CaptureWriteThread();
-    
+
     void run();
 
-    int getCounter() { return counter; }
-    
+    int getCounter() {
+        return counter;
+    }
+
 private:
     /// Meta information for capture
     CaptureInfo* info;

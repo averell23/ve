@@ -41,7 +41,7 @@ Tracks the position of ARToolkit markers in the image.
 */
 class MarkerPositionTracker : public VeEventSource, public Thread {
 public:
-    
+
     /**
       Creates a new PositionTracker.
       
@@ -58,7 +58,7 @@ public:
       RGB order isn't relevant, but the position of the alpha channel is.)
     */
     ARUint8* getImageData();
-    
+
     /**
       Initialize the ARToolkit.
     */
@@ -66,7 +66,7 @@ public:
 
     /// Thread runner method.
     void run();
-    
+
 private:
     /// Threshold for marker detection
     int thresh;

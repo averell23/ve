@@ -30,10 +30,10 @@
     This describes an object position. For a 2D position, 
     z may be set to zero. This is a multi-purpose storage class,
     so no assumptions are made with regard to the unit or meaning of the parameters.
-
+ 
     @author Daniel Hahn,,,
 */
-class Position{
+class Position {
 public:
     Position(int index=0, int source=0, double=0, double y=0, double z=0);
 
@@ -43,9 +43,9 @@ public:
     int index;
     /**
         ID number of the source from which this position was created.
-	This may be used to differntiate between left and right channels etc.
-	
-	A source number of 0 means that a source has not been specified.
+    This may be used to differntiate between left and right channels etc.
+
+    A source number of 0 means that a source has not been specified.
     */
     int source;
     /// X coordinate
@@ -56,8 +56,8 @@ public:
     double z;
     /// Time stamp (object creation time)
     timeb timeStamp;
-    
-    
+
+
 };
 
 #endif

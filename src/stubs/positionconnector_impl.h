@@ -32,16 +32,15 @@
 
 /**
 Implementation of the postion update connector.
-
+ 
 @author Daniel Hahn,,,
 */
-class PositionConnector_Impl : public POA_PositionConnector, public PortableServer::RefCountServantBase, public VeEventSource
-{
+class PositionConnector_Impl : public POA_PositionConnector, public PortableServer::RefCountServantBase, public VeEventSource {
 public:
 
 
     ~PositionConnector_Impl();
-    
+
     void update(CORBA::Short index, CORBA::Float x, CORBA::Float y, CORBA::Float z);
 
 private:

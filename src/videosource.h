@@ -53,7 +53,7 @@ using namespace log4cplus;
 	Timer support is only for performance measures, though. Child classes
 	may ignore the timer, or update it differently from the internal frame
 	count.
-
+ 
 	<b>WARNING:</b> Do read the documentation carefully before attempting
 	to create a child implementation!
 	
@@ -63,27 +63,29 @@ class VideoSource : public VeEventSource {
 public:
     /**
         Retrieve the next image for this video source. This returns
-		a pointer to the current image buffer. The contents of the
-		buffer must not be changed by the caller. Note that the 
-		contents of the buffer are prone to being overwritten if 
-		the internal buffer is not locked.
+    a pointer to the current image buffer. The contents of the
+    buffer must not be changed by the caller. Note that the 
+    contents of the buffer are prone to being overwritten if 
+    the internal buffer is not locked.
     */
-	virtual IplImage *getImage() { return imgBuffer; }
+    virtual IplImage *getImage() {
+        return imgBuffer;
+    }
 
     /**
-		Locks the internal mutex. Child implementations are expected
-		protect the internal buffer with the mutex, so that it is
-		never changed when the lock is set. Callers are expected
-		to release the image ASAP. If the mutex is already locked,
-		calling this function has no effect.
-	*/
-	void lockImage();
+    Locks the internal mutex. Child implementations are expected
+    protect the internal buffer with the mutex, so that it is
+    never changed when the lock is set. Callers are expected
+    to release the image ASAP. If the mutex is already locked,
+    calling this function has no effect.
+    */
+    void lockImage();
 
-	/**
-		Releases the internal mutex. This signals to the class that the
-		internal image buffer may now be overwritten.
-	*/
-	void releaseImage();
+    /**
+    	Releases the internal mutex. This signals to the class that the
+    	internal image buffer may now be overwritten.
+    */
+    void releaseImage();
 
 
     /** Gets the image width for this video source */
@@ -137,39 +139,45 @@ public:
     CameraCalibration* getCalibration() {
         return calibrationObject;
     }
-    
-	/**
-		Gets the internal frame count. Child implementations <b>must</b> increase
-		the frame count every time a new image is acquired.
-	*/
-	unsigned long getFrameCount() { return frameCount; }
+
+    /**
+    	Gets the internal frame count. Child implementations <b>must</b> increase
+    	the frame count every time a new image is acquired.
+    */
+    unsigned long getFrameCount() {
+        return frameCount;
+    }
 
 
-	/** 
-		Stores a "black offset" image that can be subtracted from the video image to correct 
-		some cameras (like the Silicon Imaging 1280).
-	*/
-	void storeBlackOffset();
+    /**
+    	Stores a "black offset" image that can be subtracted from the video image to correct 
+    	some cameras (like the Silicon Imaging 1280).
+    */
+    void storeBlackOffset();
 
-	/**
-		Clears the internal "black offset" image. This may either result in the black offset image
-		being cleared, or the image itself being set to NULL.
-	*/
-	void clearBlackOffset();
+    /**
+    	Clears the internal "black offset" image. This may either result in the black offset image
+    	being cleared, or the image itself being set to NULL.
+    */
+    void clearBlackOffset();
 
-	/**
-		Returns a pointer to the internal "black offset" image. 
+    /**
+    	Returns a pointer to the internal "black offset" image. 
 
-		@return The black offset image, or NULL if the image has not been 
-		        initialized.
-	*/
-	const IplImage* getBlackOffset() { return blackOffset; }
+    	@return The black offset image, or NULL if the image has not been 
+    	        initialized.
+    */
+    const IplImage* getBlackOffset() {
+        return blackOffset;
+    }
 
     /**
       Returns the sensor registration object connected to this source.
     */
-    ARRegistration* getRegistration() { return registrationObject; }
-    
+    ARRegistration* getRegistration() {
+        return registrationObject;
+    }
+
     /**
     	Returns the current brightness setting.
 
@@ -192,20 +200,20 @@ protected:
     CameraCalibration* calibrationObject;
     /// Internal registration Object
     ARRegistration* registrationObject;
-	/// Black offset image
-	IplImage* blackOffset;
-	/// Internal frame counter
-	unsigned long frameCount;
-	/// Internal image buffer
-	IplImage* imgBuffer;
-	/// Mutex for locking the buffer
+    /// Black offset image
+    IplImage* blackOffset;
+    /// Internal frame counter
+    unsigned long frameCount;
+    /// Internal image buffer
+    IplImage* imgBuffer;
+    /// Mutex for locking the buffer
     Mutex imgMutex;
-	/** Mutex for temporary locking while updating @see imgLock */
-	Mutex tmpMutex;
-	/// Indicates whether the image was locked by the user
-	bool imgLock;
-	/// logger for this class
-	static Logger logger;
+    /** Mutex for temporary locking while updating @see imgLock */
+    Mutex tmpMutex;
+    /// Indicates whether the image was locked by the user
+    bool imgLock;
+    /// logger for this class
+    static Logger logger;
 };
 
 #endif

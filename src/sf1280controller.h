@@ -49,9 +49,9 @@ private:
     /// Logger for this class
     static Logger logger;
 
-	string initFile_cam;
+    string initFile_cam;
 
-	int specific;
+    int specific;
 
 };
 

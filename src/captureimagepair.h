@@ -26,10 +26,10 @@
 
 /**
 Helper structure that contains pointer to two image buffer and some metainformation about the image pair.
-
+ 
 @author Daniel Hahn,,,
 */
-class CaptureImagePair{
+class CaptureImagePair {
 public:
 
     /// Pointer to image buffer a
@@ -40,13 +40,13 @@ public:
     unsigned long timestamp;
     /// Image serial number (e.g. the video field count)
     unsigned long serial;
-    
+
     /**
       Creates a new image pair by initializing the buffers
       @param size Size in bytes for each buffer
     */
     CaptureImagePair(int size);
-    
+
     ~CaptureImagePair();
 
 };

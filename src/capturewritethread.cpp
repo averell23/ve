@@ -36,44 +36,42 @@ CaptureWriteThread::CaptureWriteThread(CaptureBuffer* buffer, CaptureInfo* info)
 
 void CaptureWriteThread::run() {
     running = true;
-	info->writeTimer.start();
+    info->writeTimer.start();
     while (running) {
-		writeImages();
-		counter++;
-		if ((counter % 100) == 0) {
-			LOG4CPLUS_INFO(logger, "Wrote: " << counter << " images.");
-		}
-		info->writeTimer.count();
+        writeImages();
+        counter++;
+        if ((counter % 100) == 0) {
+            LOG4CPLUS_INFO(logger, "Wrote: " << counter << " images.");
+        }
+        info->writeTimer.count();
     }
-	info->writeTimer.stop();
+    info->writeTimer.stop();
 }
 
 void CaptureWriteThread::writeImages() {
-	CaptureImagePair* buf = buffer->getQueueFirst();
-	// Wait for both buffers to have data
-	while (buf == NULL) {
-		buf = buffer->getQueueFirst();
-	}
-	// Names for the image files
-	char name1[256], name2[256];
-	sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
-	sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
-	CaptureController::writeRAWFiles(name1, name2, buf, info);
-	if (info->writeTimestamp) {
-		char stampFile[256];
-		sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, counter);
-		CaptureController::writeMetaStamp(stampFile, buffer->getBufferAt(counter));
-	} 
+    CaptureImagePair* buf = buffer->getQueueFirst();
+    // Wait for both buffers to have data
+    while (buf == NULL) {
+        buf = buffer->getQueueFirst();
+    }
+    // Names for the image files
+    char name1[256], name2[256];
+    sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
+    sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
+    CaptureController::writeRAWFiles(name1, name2, buf, info);
+    if (info->writeTimestamp) {
+        char stampFile[256];
+        sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, counter);
+        CaptureController::writeMetaStamp(stampFile, buffer->getBufferAt(counter));
+    }
 
-	buffer->removeQueueFirst();
+    buffer->removeQueueFirst();
 }
 
 void CaptureWriteThread::quit() {
     running = false;
 }
 
-CaptureWriteThread::~CaptureWriteThread()
-{
-}
+CaptureWriteThread::~CaptureWriteThread() {}
 
 
