@@ -110,7 +110,7 @@ void StereoCalibration::recalibrate() {
         MatrixUtils::printVector(result);
     }
     gsl_matrix_view result_mat = gsl_matrix_view_vector(result, 4, 4);
-    gsl_matrix_memcpy(transMatrix, &result_mat.matrix);
+    gsl_matrix_transpose_memcpy(transMatrix, &result_mat.matrix);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	    cout << "New translation matrix:" << endl;
         MatrixUtils::printMatrix(transMatrix);
