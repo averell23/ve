@@ -34,20 +34,10 @@
 #include <log4cplus/logger.h>
 #include <math.h>
 #include <gsl/gsl_poly.h>
-#include <xercesc/parsers/XercesDOMParser.hpp>  // Xerces related files
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
-#include <xercesc/sax/HandlerBase.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/dom/DOMWriter.hpp>
-#include <xercesc/framework/LocalFileFormatTarget.hpp>
+#include "xmlmacros.h"
 
 using namespace std;
 using namespace log4cplus;
-#ifndef XERCES_HAS_CPP_NAMESPACE
-#error "Xerces must have cpp namespace support for ve to compile."
-#endif
 
 // Forward declaration
 class VideoSource;
@@ -239,23 +229,6 @@ private:
 
     /// Helper method to read in the distortion vector from DOM
     bool readDistortionVec(xercesc::DOMNodeList* nodeList);
-
-    /**
-       Helper method to read text child from a node.
-       
-       @return The contents of the first text node child, or null if
-               node has no text children. Does not combine multiple
-        text children.
-    */
-    const XMLCh* getTextChild(xercesc::DOMNode* node);
-
-    /**
-      Helper method to get an attribute by name from a node.
-      
-      @return The contents of the attribute, or null if the attribute
-              does not exist.
-    */
-    const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
 
     /// Logger for this class
     static Logger logger;

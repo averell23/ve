@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     // own command line parser
     Ve::initGL(argc, argv);
 
-    CommandLineParser parser("ve", true);
+    CommandLineParser parser("ve", true, true);
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("debug", false,
                           "Force debug level: (trace|debug|info|warn|error|fatal)");

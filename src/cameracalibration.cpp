@@ -318,33 +318,9 @@ bool CameraCalibration::save(string filename) {
         curElement->appendChild(text);
     }
 
-    xercesc::DOMWriter* serializer = impl->createDOMWriter();
-    xercesc::LocalFileFormatTarget target(filename.c_str());
-    try {
-        serializer->writeNode(&target, *root);
-    } catch (const xercesc::XMLException& e) {
-        char* msg = xercesc::XMLString::transcode(e.getMessage());
-        LOG4CPLUS_ERROR(logger, "Caught XML exception while saving: " << msg);
-        xercesc::XMLString::release(&msg);
-        doc->release();
-        serializer->release();
-        return false;
-    } catch (const xercesc::DOMException& e) {
-        char* msg = xercesc::XMLString::transcode(e.msg);
-        LOG4CPLUS_ERROR(logger, "Caught DOM exception while saving: " << msg);
-        xercesc::XMLString::release(&msg);
-        doc->release();
-        serializer->release();
-        return false;
-    } catch (...) {
-        LOG4CPLUS_ERROR(logger, "Caught unknown exception while saving.");
-        doc->release();
-        serializer->release();
-        return false;
-    }
+    XMLMacros::XMLSaveFile(filename, root);
 
     doc->release();
-    serializer->release();
     return true;
 }
 
@@ -353,28 +329,13 @@ bool CameraCalibration::load(string filename) {
     if (!filename.compare(""))
         filename = CameraCalibration::filename;
 
-    xercesc::XercesDOMParser parser;
-    xercesc::HandlerBase errHandler; // Dummy handler
-    parser.setErrorHandler(&errHandler);
-
-    try {
-        parser.parse(filename.c_str());
-    } catch (const xercesc::XMLException& e) {
-        char* msg = xercesc::XMLString::transcode(e.getMessage());
-        LOG4CPLUS_ERROR(logger, "Caught XML exception while loading: " << msg);
-        xercesc::XMLString::release(&msg);
-        return false;
-    } catch (const xercesc::DOMException& e) {
-        char* msg = xercesc::XMLString::transcode(e.msg);
-        LOG4CPLUS_ERROR(logger, "Caught DOM exception while loading: " << msg);
-        xercesc::XMLString::release(&msg);
-        return false;
-    } catch (...) {
-        LOG4CPLUS_ERROR(logger, "Caught unknown exception while loading.");
-        return false;
+    xercesc::DOMDocument* doc = XMLMacros::XMLReadFile(filename);
+    
+    if (!doc) {
+	LOG4CPLUS_ERROR(logger, "Unable to load calibration from: " << filename);
+	return false;
     }
-
-    xercesc::DOMDocument* doc = parser.getDocument();
+    
     xercesc::DOMElement* root = doc->getDocumentElement();
     const XMLCh* nStr = root->getTagName();
     xercesc::XMLString::transcode("calibration", tmpStr, 255);
@@ -403,6 +364,8 @@ bool CameraCalibration::load(string filename) {
             }
         }
     } // for
+    
+    doc->release();
 
     LOG4CPLUS_INFO(logger, "Calibration read from " << filename);
 
@@ -423,20 +386,20 @@ bool CameraCalibration::readCalibrationMatrix(xercesc::DOMNodeList* nodeList) {
             double matVal = 0;
             // try to get attributes
             xercesc::XMLString::transcode("x", tmpStr2, 255);
-            const XMLCh* nameX = getAttributeByName(curNode, tmpStr2);
+            const XMLCh* nameX = XMLMacros::getAttributeByName(curNode, tmpStr2);
             if (nameX) {
                 tmpChr = xercesc::XMLString::transcode(nameX);
                 x = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
             xercesc::XMLString::transcode("y", tmpStr2, 255);
-            const XMLCh* nameY = getAttributeByName(curNode, tmpStr2);
+            const XMLCh* nameY = XMLMacros::getAttributeByName(curNode, tmpStr2);
             if (nameY) {
                 tmpChr = xercesc::XMLString::transcode(nameY);
                 y = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
-            const XMLCh* valCh = getTextChild(curNode);
+            const XMLCh* valCh = XMLMacros::getTextChild(curNode);
             if (valCh) {
                 tmpChr = xercesc::XMLString::transcode(valCh);
                 matVal = atof(tmpChr);
@@ -476,13 +439,13 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
             int pos = -1;
             double distVal = 0;
             xercesc::XMLString::transcode("pos", tmpStr2, 255);
-            const XMLCh* namePos = getAttributeByName(curNode, tmpStr2);
+            const XMLCh* namePos = XMLMacros::getAttributeByName(curNode, tmpStr2);
             if (namePos) {
                 tmpChr = xercesc::XMLString::transcode(namePos);
                 pos = atoi(tmpChr);
                 xercesc::XMLString::release(&tmpChr);
             }
-            const XMLCh* valCh = getTextChild(curNode);
+            const XMLCh* valCh = XMLMacros::getTextChild(curNode);
             if (valCh) {
                 tmpChr = xercesc::XMLString::transcode(valCh);
                 distVal = atof(tmpChr);
@@ -502,31 +465,4 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
         } // if
     }
     return retVal;
-}
-
-const XMLCh* CameraCalibration::getAttributeByName(xercesc::DOMNode* node, XMLCh* name) {
-    xercesc::DOMNamedNodeMap* attributes = node->getAttributes();
-    if (attributes) {
-        xercesc::DOMNode* attr = attributes->getNamedItem(name);
-        if (attr) {
-            return attr->getNodeValue();
-        } else {
-            char* tmpChr = xercesc::XMLString::transcode(name);
-            LOG4CPLUS_WARN(logger, "Attribute not found: " << name);
-            xercesc::XMLString::release(&tmpChr);
-        }
-    } else {
-        LOG4CPLUS_WARN(logger, "No attributes found when getting by name.");
-    }
-}
-
-const XMLCh* CameraCalibration::getTextChild(xercesc::DOMNode* node) {
-    xercesc::DOMNodeList* children = node->getChildNodes();
-    for (XMLSize_t i=0 ; i<children->getLength() ; i++) {
-        xercesc::DOMNode* curChild = children->item(i);
-        if (curChild->getNodeType() == xercesc::DOMNode::TEXT_NODE) {
-            return curChild->getNodeValue();
-        }
-    }
-    return NULL;
 }

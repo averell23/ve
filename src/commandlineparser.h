@@ -28,6 +28,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <set>
+#include "xmlmacros.h"
 
 using namespace log4cplus;
 using namespace std;
@@ -41,12 +42,20 @@ class CommandLineParser {
 public:
     /**
        Creates a new parser.
-       @value programName This should be set to the program name, that
+       @param programName This should be set to the program name, that
                           is the value of argv[0]. (This is only used for
-     printing the usage information, and will be
-     automatically re-set when parsing a command line).
+                          printing the usage information, and will be
+                          automatically re-set when parsing a command line).
+       @param ignoreUnknown If set to true, the parser will ignore unknown 
+                            parameters and options on the command line.
+       @param useConfigFile If set to true, the parser will include
+                            a "-config" option. If the option is given on the
+			    command line, the config file will be read and
+			    the options set accordingly. Options from the
+			    command line take precedence over the config
+			    file.
     */
-    CommandLineParser(string programName, bool ignoreUnknown = false);
+    CommandLineParser(string programName, bool ignoreUnknown = false, bool useConfigFile = false);
     ~CommandLineParser();
 
     static const int OPTION_UNSET = 0;
@@ -112,14 +121,15 @@ private:
     /// Contains all required parameters
     map<string, bool> requiredParameters;
     /// Contains the options that have been set
-    set
-        <string> options;
+    set<string> options;
     /// Contains the parameter/value pairs
     map<string, string> parameters;
     /// Logger for this class
     static Logger logger;
     /// Indicates wether unknown parameters/options will generate an error
     bool ignoreUnknown;
+    /// Attempts to read configuration from XML file
+    void readConfigFile(string filename);
 
     /**
       Resets the list of required Parameters.
