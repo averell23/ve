@@ -117,6 +117,9 @@ private:
 
     /// Prints the contents of a vector to stdout
     void printVector(gsl_vector* vec);
+
+    /// Prints the contents of a float array as a vector
+    void printMatrix(float* content, int rows, int cols);
 };
 
 #endif

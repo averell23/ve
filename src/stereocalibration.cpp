@@ -77,6 +77,17 @@ void StereoCalibration::recalibrate() {
     LOG4CPLUS_DEBUG(logger, "Intrinsic calibration complete, starting stereo calibration.");
     gsl_vector* observ = getExtVector(leftTranslate, leftRotate, size);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        for (int i=0 ; i<size ; i++) {
+            cout << "Left Rotation Matrix " << i << ": " << endl;
+            printMatrix(leftRotate, 3, 3);
+            cout << "Left Translation Vector " << i << ":" << endl;
+            printMatrix(leftTranslate, 3, 1);
+            cout << "Right Rotation Matrix " << i << ": " << endl;
+            printMatrix(rightRotate, 3, 3);
+            cout << "Right Translation Vector " << i << ":" << endl;
+            printMatrix(rightTranslate, 3, 1);
+            
+        }
 	    cout << "Observation vector:" << endl;
 	    printVector(observ);
 	}
@@ -167,5 +178,14 @@ void StereoCalibration::printMatrix(gsl_matrix* mat) {
 void StereoCalibration::printVector(gsl_vector* vec) {
 	for (int i=0 ; i<vec->size ; i++) {
 		cout << gsl_vector_get(vec, i) << endl;
+	}
+}
+
+void StereoCalibration::printMatrix(float* content, int rows, int cols) {
+    for (int i=0 ; i<rows ; i++) {
+		for (int j=0 ; j<cols ; j++) {
+			cout << content[(i*cols) + j] << "	";
+		}
+		cout << endl;
 	}
 }
