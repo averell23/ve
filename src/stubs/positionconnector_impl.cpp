@@ -32,7 +32,7 @@ PositionConnector_Impl::~PositionConnector_Impl()
 
 void PositionConnector_Impl::update(CORBA::Float x, CORBA::Float y, CORBA::Float z) {
     LOG4CPLUS_TRACE(logger, "Got update through CORBA: " << x << "," << y << "," << z);
-    Position pos(x,y,z);
+    Position pos(0, 0, x, y, z); /// FIXME: Index must be transmitted, too.
     VePositionEvent e(pos);
     VeEventSource::postEvent(e);
 }

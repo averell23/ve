@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "vepositionevent.h"
 
-VePositionEvent::VePositionEvent(Position& position) : VeEvent(VeEvent::POSITION_EVENT, 0) {
+VePositionEvent::VePositionEvent(Position position) : VeEvent(VeEvent::POSITION_EVENT, 0) {
     pos = position;
 }
 

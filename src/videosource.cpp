@@ -120,3 +120,4 @@ void VideoSource::releaseImage() {
 	tmpMutex.leaveMutex();
 	imgMutex.leaveMutex();
 }
+

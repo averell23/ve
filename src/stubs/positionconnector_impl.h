@@ -26,9 +26,9 @@
 
 #include <log4cplus/logger.h>
 #include "positionconnector.hh"
-#include "../position.h"
 #include "../vepositionevent.h"
 #include "../veeventsource.h"
+#include "../position.h"
 
 /**
 Implementation of the postion update connector.

@@ -28,6 +28,8 @@
 #include "ve.h"
 #include "fontmanager.h"
 #include "veeventlistener.h"
+#include "position.h"
+#include "glmacros.h"
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <cv.hpp> 		// OpenCv
 #include <math.h>
@@ -61,53 +63,79 @@ public:
     
 private:
     /**
-	Acquire image data in ARToolkit-compliant format. (ABGR, where the RGB order
-	isn't relevant, but the position of the alpha channel is.)
-	
-	@param leftOrRight Indicates wether the left or the right image should be
-	                   captured. Possible values are RIGHT or LEFT
+      Contains the on-screen positions of objects in the left eye in 
+      virtual coordinates.
     */
-    ARUint8* getImageData(int leftOrRight);
-    /// Threshold for marker detection
-    int thresh;
+    map<int, Position> leftPositions;
+    /**
+      Contains the on-screen positions of objects in the left eye in 
+      virtual coordinates.
+    */
+    map<int, Position> rightPositions;
+    /// Expiry time of positions in milis
+    int expireT;
+    
+    /**
+      Clean up the lists of positions. This removes expired position 
+      entries from the list. Note: For the sake of cleaner code, this
+      is not done during the main list traversal. 
+    */
+    void positionListCleanup();
+    
+    /**
+      Helper function for @see positionListCleanup
+    */
+    void cleanupSingleList(map<int,Position>& positions);
+    
+    /// Source ID codes for left and right eye
+    int leftSourceID, rightSourceID;
+    
     /// Logger for this class
     static Logger logger;
-	/// Contains the drawing code for a single eye.
-    void drawOneEye();
+    /**
+       Contains the drawing code for a single eye.
+       
+       @param positions Pointer to the map that contains the object
+                        positions for the current eyes.
+    */
+    void drawOneEye(map<int,Position>& positions);
     /// The font used for status display
     FTGLTextureFont* font;
-	/// Text for display
-	char* text;
-	/// Draws crosshairs at the given position
+    /// Text for display
+    char* text;
+    /// Draws crosshairs at the given position
     void drawCrosshairs(int x, int y);
-	/// Draw a highlight indicator at the given position
-	void drawHighlight(int x, int y);
-	/// Factor for correcting the image coordinates
-	float xFac, yFac;
-	/// Offset for correcting the image coordinates
-	float xOff, yOff;
-	/// Screen dimensions
-	int height, width;
-	/**
-		From the given markers, select the one that is closest to the center of the
-		screen.
+    /// Draw a highlight indicator at the given position
+    void drawHighlight(int x, int y);
+    /// Factor for correcting the image coordinates
+    float xFac, yFac;
+    /// Offset for correcting the image coordinates
+    float xOff, yOff;
+    /// Screen dimensions
+    int height, width;
+    
+    /**
+        From the given markers, select the one that is closest to the center of 
+        the screen.
 		
-		@param markers Pointer to an array of markers.
-		@param markerNum Number of markers in @see markers
-		@return Index of the centermost marker. This is -1 if no markers are available.
-	*/
-	int getCenterMarker(ARMarkerInfo* markers, int markerNum);
-	/*
-		Calculate distance from sreen center.
-		@return Square of the distance of the given point from the center of the screen.
-	*/
-	double TrackerOverlay::centerDistanceSquared(double x, double y);
-	/// Indicates if the text portion of the overlay should be drawn
-	bool doText;
-	/// Indicates if a crosshair should be drawn on every marker
-	bool doCrosshairs;
-	/// Indicates if a highlight indicator should be drawn for the center marker
-	bool doHighlight;
+	@param markers Pointer to an array of markers.
+	@param markerNum Number of markers in @see markers
+	@return Index of the centermost marker. This is -1 if no markers are available.
+    */
+    map<int,Position>::iterator getCenterMarker(map<int,Position>& positions);
+    
+    /*
+        Calculate distance from sreen center.
+	@return Square of the distance of the given point from the center of the screen.
+    */
+    double TrackerOverlay::centerDistanceSquared(double x, double y);
+	
+    /// Indicates if the text portion of the overlay should be drawn
+    bool doText;
+    /// Indicates if a crosshair should be drawn on every marker
+    bool doCrosshairs;
+    /// Indicates if a highlight indicator should be drawn for the center marker
+    bool doHighlight;
     
 };
 

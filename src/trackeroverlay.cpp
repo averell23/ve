@@ -27,36 +27,17 @@ Logger TrackerOverlay::logger = Logger::getInstance("Ve.TrackerOverlay");
 char* TrackerOverlay::paramFile = "../config/camera.param";
 
 TrackerOverlay::TrackerOverlay() {
-    thresh = 100;
-	// Screen dimensions
-	height = Ve::getLeftSource()->getHeight();
-	width = Ve::getLeftSource()->getWidth();
-    // Init ARToolkit camera parameters
-    ARParam cparam, wparam;
-    if (arParamLoad(paramFile, 1, &wparam) < 0) {
-		LOG4CPLUS_WARN(logger, "Could not load parameter file: " << paramFile);
-    } else {
-		LOG4CPLUS_DEBUG(logger, "ARToolkit parameters loaded.");
-		arParamChangeSize(&wparam, width, height, &cparam);
-		arInitCparam(&cparam);
-		LOG4CPLUS_DEBUG(logger, "Camera parameters initialized.");
-    }
-    // Load patterns
-    int pattId = arLoadPatt("../config/patterns/hiro.pattern"); // FIXME: Global variables instead of hardcode
-    if (pattId < 0) {
-		LOG4CPLUS_WARN(logger, "Pattern could not be loaded.");
-	} else {
-		LOG4CPLUS_DEBUG(logger, "Pattern loaded.");
-	}
-	text = new char[256];
-	xOff = 0;
-	yOff = 1000;
-	xFac = 1000.0f/((float) Ve::getLeftSource()->getWidth());
-	yFac = -4;
-	doText = false;
-	doCrosshairs = true;
-	doHighlight = true;
-	LOG4CPLUS_DEBUG(logger, "Overlay created.");
+    expireT = 500;
+    
+    // Screen dimensions
+    height = Ve::getLeftSource()->getHeight();
+    width = Ve::getLeftSource()->getWidth();
+    
+    text = new char[256];
+    doText = false;
+    doCrosshairs = true;
+    doHighlight = true;
+    LOG4CPLUS_DEBUG(logger, "Overlay created.");
 }
 
 TrackerOverlay::~TrackerOverlay()
@@ -66,140 +47,63 @@ TrackerOverlay::~TrackerOverlay()
 
 
 void TrackerOverlay::drawOverlay() {
-	// Marker detection
-    int markerNumL, markerNumR;
-	// Marker Info structures
-	ARMarkerInfo *markerInfo, *markerInfoL, *markerInfoR;
-    ARUint8* imageData = getImageData(LEFT);
-    arDetectMarker(imageData, thresh, &markerInfo, &markerNumL);
-    LOG4CPLUS_TRACE(logger, "Detected " << markerNumL << " markers in left image.");
-	markerInfoL = new ARMarkerInfo[markerNumL]; // FIXME: Take care, markerInfoL is not completely initialized
-	for (int i=0 ; i < markerNumL ; i++) {
-		markerInfoL[i].pos[0] = markerInfo[i].pos[0]; 
-		 markerInfoL[i].pos[1] = markerInfo[i].pos[1];
-	}
-	delete imageData;
-	imageData = getImageData(RIGHT);
-	arDetectMarker(imageData, thresh, &markerInfoR, &markerNumR);
-	LOG4CPLUS_TRACE(logger, "Detected " << markerNumR << " markers in right image.");
-	delete imageData;
-	
-	// Drawing code
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);		/* Set normal color */
-    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
-    glPushMatrix();				// ...push the Matrix for backup...
-    glOrtho(-1000, 1000, -1000, 1000, 0, 1);
-    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
-    glPushMatrix();
-    glLoadIdentity();
+    // Drawing code
+    GLMacros::initVirtualCoords();
 
-    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-	if (doText) {
-		if (markerNumL > 0) {
-			sprintf(text, "%f/%f/%f", markerInfoL[0].pos[0], markerInfoL[0].pos[1],
-					sqrt(centerDistanceSquared(markerInfoL[0].pos[0], markerInfoL[0].pos[1])));
-		} else {
-			sprintf(text, "Detected %d/%d", markerNumL, markerNumR);
-		} 
-	}
-	
-
-    glTranslatef(-1.0f, 0.0f, 0.0f);
-	if (doText) {
-		drawOneEye();
-		glTranslatef(-1.0f, 0.0f, 0.0f);
-	}
-	int center = getCenterMarker(markerInfoL, markerNumL);
-	if (doCrosshairs) {
-		for (int i=0 ; i < markerNumL ; i++) {
-			if (i == center) {
-				glColor3f(1.0f, 0.2f, 0.2f);
-			}
-			drawCrosshairs((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
-			if (i == center) {
-				glColor3f(1.0f, 1.0f, 1.0f);
-			}
-		}
-	}
-	if (doHighlight && (center >= 0)) {
-		drawHighlight((markerInfoL[center].pos[0] * xFac)+ xOff, (markerInfoL[center].pos[1] * yFac) + yOff);
-	}
-	delete markerInfoL;
-	// drawCrosshairs(500,1000);
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f,  1.0f);
-	if (doText) { 
-		drawOneEye();
-		glTranslatef(0.0f, 0.0f,  1.0f);
-	}
-	center = getCenterMarker(markerInfoR, markerNumR);
-	if (doCrosshairs) {
-		for (int i=0 ; i < markerNumR ; i++) {
-			if (i == center) {
-				glColor3f(1.0f, 0.2f, 0.2f);
-			}
-			drawCrosshairs((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff); 
-			if (i == center) {
-				glColor3f(1.0f, 1.0f, 1.0f);
-			}
-		}
-	}
-	if (doHighlight && (center >= 0)) {
-		drawHighlight((markerInfoR[center].pos[0] * xFac)+ xOff, (markerInfoR[center].pos[1] * yFac) + yOff);
-	}
-	// drawCrosshairs(0,0);
+    positionListCleanup();
     
-    // Remove text textures
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Restore Matrices
-    glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
+    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+    if (doText) {
+	if (leftPositions.size() > 0) {
+	    sprintf(text, "%f/%f/%f", leftPositions.begin()->second.x, leftPositions.begin()->second.y,
+		    sqrt(centerDistanceSquared(leftPositions.begin()->second.x, leftPositions.begin()->second.y)));
+	} else {
+	    sprintf(text, "Detected %d/%d", leftPositions.size(), rightPositions.size());
+	} 
+    }
+	
+
+    // The following draws the left eye
+    glTranslatef(-1.0f, 0.0f, 0.0f);
+    drawOneEye(leftPositions);
+    glLoadIdentity();
+    
+    // The following draws the right eye
+    glTranslatef(0.0f, 0.0f,  1.0f);
+    drawOneEye(rightPositions);
+    
+    GLMacros::revertMatrices();
 }
 
-ARUint8* TrackerOverlay::getImageData(int leftOrRight) {
-    IplImage *origImage = NULL;
-	IplImage *offset = NULL;
-	VideoSource* currentSource = NULL;
-    if (leftOrRight == LEFT) {
-		currentSource = Ve::getLeftSource();
-    } else {
-		currentSource = Ve::getRightSource();
-    }
-	currentSource->lockImage();
-	origImage = currentSource->getImage();
-	offset = (IplImage*) currentSource->getBlackOffset();
 
-    int imageDimension = origImage->width * origImage->height;
-    ARUint8* retImage = new ARUint8[imageDimension * 4];
-    for (int i=0 ; i < imageDimension ; i++) {
-		// FIXME: Original image is always assumed to have RGB order
-		retImage[i*4] = 255; // Alpha channel
-		if (offset != NULL) {
-			retImage[(i*4)+1] = origImage->imageData[(i*3)+2] - offset->imageData[(i*3)+2];
-			retImage[(i*4)+2] = origImage->imageData[(i*3)+1] - offset->imageData[(i*3)+1];
-			retImage[(i*4)+3] = origImage->imageData[i*3] - offset->imageData[i*3];
-		} else{
-			retImage[(i*4)+1] = origImage->imageData[(i*3)+2];
-			retImage[(i*4)+2] = origImage->imageData[(i*3)+1];
-			retImage[(i*4)+3] = origImage->imageData[i*3];
-		}
-    }
-
-	currentSource->releaseImage();
-
-    return retImage;
-}
-
-void TrackerOverlay::drawOneEye() {
+void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
     font = FontManager::getFont();
-    if (font == NULL)
-        return; // Sanity check
-
-    glTranslatef(0.05f, 0.2f, 0.0f);
-    font->Render(text);
+    int yOff = Ve::getVirtualSize().y;
+    int size = positions.size();
+    map<int,Position>::iterator posIterator;
+    // Write static text
+    if (doText && (font != NULL)) { // Sanity check
+	glTranslatef(0.05f, 0.2f, 0.0f);
+	font->Render(text);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glLoadIdentity();
+	glTranslatef(-0.05f, -0.2f, 0.0f); // Translate back
+    }
+    map<int,Position>::iterator center = getCenterMarker(positions);
+    // Draw crosshairs on objects
+    if (doCrosshairs) {
+	for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
+	    if (posIterator == center) {
+		glColor3f(1.0f, 0.2f, 0.2f);
+	    } else {
+		glColor3f(1.0f, 1.0f, 1.0f);
+	    }
+	    drawCrosshairs(posIterator->second.x, posIterator->second.y + yOff);
+	}
+	glColor3f(1.0f, 1.0f, 1.0f);
+    }
+    if (doHighlight && (positions.size() >= 0)) {
+	drawHighlight(center->second.x, center->second.y + yOff);
+    }
 }
 
 
@@ -243,24 +147,44 @@ void TrackerOverlay::drawHighlight(int x, int y) {
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
+map<int,Position>::iterator TrackerOverlay::getCenterMarker(map<int,string>& positions) {
 	float shortestDistance;
-	int centerIndex = -1;
+	map<int,string>::iterator posIterator = positions.begin();
+	map<int,Position>::iterator centerObj = posIterator;
+	
 	// Init shortest distance
-	if (markerNum > 0) {
-		shortestDistance = centerDistanceSquared(markers[0].pos[0], markers[0].pos[1]);
-		centerIndex = 0;
+	int size = positions.size();
+	if (size > 0) {
+		shortestDistance = centerDistanceSquared(posIterator->second.x, *posIterator->second.y);
 	}
 
-	for (int i=0 ; i<markerNum ; i++) { 
-		float distance = centerDistanceSquared(markers[i].pos[0], markers[i].pos[1]);
+	for ( posIterator = positions.begin() ; posIterator != positions.end() ; posIterator++) { 
+		float distance = centerDistanceSquared(posIterator->second.x, posIterator->second.y);
 		if (distance < shortestDistance) {
 			shortestDistance = distance;
-			centerIndex = i;
+			centerObj = posIterator;
 		}
 	}
 
-	return centerIndex;
+	return centerObj;
+}
+
+void TrackerOverlay::positionListCleanup() {
+    cleanupSingleList(leftPositions);
+    cleanupSingleList(rightPositions);
+}
+
+void TrackerOverlay::cleanupSingleList(map<int,Position>& positions) {
+    map<int,Position>::iterator posIter;
+    timeb currentT, tmpT;
+    ftime(&currentT);
+    for (posIter=positions.begin() ; posIter!=positions.end() ; posIter++) {
+	tmpT = posIter->second.timeStamp;
+	long age = ((currentT.time - tmpT.time) * 1000) + abs(currentT.millitm - tmpT.millitm);
+	if (age > expire) {
+	    positions.erase(posIter);
+	}
+    }
 }
 
 double TrackerOverlay::centerDistanceSquared(double x, double y) {
@@ -280,4 +204,14 @@ void TrackerOverlay::recieveEvent(VeEvent &e) {
         doHighlight = !doHighlight;
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
     }
+	if (e.getType() == VeEvent::POSITION_EVENT) {
+	    Position pos = ((PositionEvent) e).getPosition();
+	    if (pos.source == leftSourceID) { // Add position events to the list
+		leftPositions[pos.index] = pos;
+	    } else if (pos.source == rightSourceID) {
+		rightPositions[pos.index] = pos;
+	    } else {
+		LOG4CPLUS_DEBUG(logger, "Caught position event from unknown source.");
+	    }
+	}
 }

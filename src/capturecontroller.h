@@ -25,6 +25,10 @@ using namespace log4cplus;
 using namespace ost;
 using namespace std;
 
+
+/**
+  Allows image capture to memory and to disk. 
+*/
 class CaptureController
 {
 public:

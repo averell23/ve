@@ -27,7 +27,6 @@
 #include "overlay.h"
 #include "veeventlistener.h"
 #include "vepositionevent.h"
-#include "position.h"
 #include "arregistration.h"
 #include "ve.h"
 #include "fontmanager.h"

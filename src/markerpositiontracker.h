@@ -21,60 +21,63 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef CALIBRATIONOVERLAY_H
-#define CALIBRATIONOVERLAY_H
+#ifndef MARKERPOSITIONTRACKER_H
+#define MARKERPOSITIONTRACKER_H
 
-#include "overlay.h"
-#include "veevent.h"
-#include "veeventlistener.h"
-#include "fontmanager.h"
-#include "cameracalibration.h"
-#include "ve.h"
-#include <log4cplus/logger.h>
+#include <veeventsource.h>
+#include <cc++/thread.h>
+#include <log4cplus/logger.h> 	// Log4cplus
+#include <AR/ar.h>		// ARToolkit
+#include "videosource.h"
 
 using namespace log4cplus;
 
 /**
-Provides an interface to the camera calibration routines.
+Tracks the position of ARToolkit markers in the image.
  
 @author Daniel Hahn,,,
 */
-class CalibrationOverlay : public Overlay, public VeEventListener {
+class MarkerPositionTracker : public VeEventSource, public Thread {
 public:
-
-    /// Creates a new overlay
-    CalibrationOverlay(bool display);
-
-    /// Destructor
-    ~CalibrationOverlay();
-
-    /// Recieves events
-    void recieveEvent(VeEvent &e);
-
-    void drawOverlay();
-
-    static const int LEFT_EYE = 0;
-    static const int RIGHT_EYE = 1;
-
-private:
-    /// Pointer to the font object
-    FTGLTextureFont* font;
+    
     /**
-      Draws the picture for one eye.
+      Creates a new PositionTracker.
+      
+      @param source VideoSource in which the markers are detected.
+      @param sourceID Source ID code that will be used for the 
+                      @see Position objects.
     */
-    void drawOneEye();
-    /// Buffers for text rendering
-    char* text[1];
-    /// Calbibration mode: LEFT_EYE or RIGHT_EYE
-    int calibrationMode;
+    MarkerPositionTracker(VideoSource* source, int sourceID);
+
+    ~MarkerPositionTracker();
+
+    /**
+      Acquire image data in ARToolkit-compliant format. (ABGR, where the 
+      RGB order isn't relevant, but the position of the alpha channel is.)
+    */
+    ARUint8* getImageData();
+    
+    /**
+      Initialize the ARToolkit.
+    */
+    void initARToolkit();
+
+    /// Thread runner method.
+    void run();
+    
+private:
+    /// Threshold for marker detection
+    int thresh;
     /// Logger for this class
     static Logger logger;
-    /// If the image of the eye that is NOT calibrated should be blanked
-    bool blankEye;
-    /// Blanks the unused eye
-    void blankOtherEye();
-    /// Current calibration object
-    CameraCalibration* cCalibrationObject;
+    /// Video source on which markers are being detected
+    VideoSource* source;
+    /// Mutex to synchronize ARToolkit access. (ARToolkit re-uses data structures!)
+    Mutex mtx;
+    /// Indicates wether the thread is running
+    bool running;
+    /** Source ID that will be supplied with the @see Position objects */
+    int sourceID;
 
 };
 

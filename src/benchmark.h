@@ -14,6 +14,10 @@ extern "C" {
 
 using namespace log4cplus;
 
+/**
+  Collection of file captures/writing benchmarks. This was intended to do throughput
+  tests with the SF1280 camera. It's not a generic framework.
+*/
 class Benchmark
 {
 public:

@@ -200,7 +200,7 @@ protected:
 	IplImage* imgBuffer;
 	/// Mutex for locking the buffer
     Mutex imgMutex;
-	/// Mutex for temporary locking while updating @see imgLock
+	/** Mutex for temporary locking while updating @see imgLock */
 	Mutex tmpMutex;
 	/// Indicates whether the image was locked by the user
 	bool imgLock;

@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes)
+INCLUDES = -I/usr/include/cc++2 $(all_includes)
 METASOURCES = AUTO
 bin_PROGRAMS =  corbatest
 corbatest_SOURCES =  main.cpp

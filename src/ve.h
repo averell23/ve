@@ -80,7 +80,7 @@ public:
         return rightEye;
     }
 
-    /**
+    /**void run();
     	Get the left video source (e.g. for fps calculations);
     */
     static VideoSource* getLeftSource()  {
@@ -94,6 +94,13 @@ public:
         return timer;
     }
 
+    /**
+      Get the size of the virtual display. The virtual display is the size
+      of one image (that is, one eye) in <i>virtual</i> units. These units
+      need to correspond to actual pixels on the screen.
+    */
+    static CvPoint getVirtualSize();
+    
     /**
       Registers an event listner with the main event source.
     */

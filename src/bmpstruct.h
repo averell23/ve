@@ -35,25 +35,38 @@
   BMP file format header structure.
 */
 typedef struct {
-   unsigned short int type;                 /* Magic identifier            */
-   unsigned int size;                       /* File size in bytes          */
+   /// Magic identifier           
+   unsigned short int type;
+   /// File size in bytes         
+   unsigned int size;                      
+   /// Reserved fields
    unsigned short int reserved1, reserved2;
-   unsigned int offset;                     /* Offset to image data, bytes */
+   /// Offset to image data, bytes 
+   unsigned int offset;                     
 } BMP_HEADER;
 
 /**
   BMP file format info header structure.
 */
 typedef struct {
-   unsigned int size;               /* Header size in bytes      */
-   int width,height;                /* Width and height of image */
-   unsigned short int planes;       /* Number of colour planes   */
-   unsigned short int bits;         /* Bits per pixel            */
-   unsigned int compression;        /* Compression type          */
-   unsigned int imagesize;          /* Image size in bytes       */
-   int xresolution,yresolution;     /* Pixels per meter          */
-   unsigned int ncolours;           /* Number of colours         */
-   unsigned int importantcolours;   /* Important colours         */
+   /// Header size in bytes
+   unsigned int size;
+   /// Width and height of image
+   int width,height;                
+   /// Number of colour planes  
+   unsigned short int planes;
+   /// Bits per pixel          
+   unsigned short int bits;
+   /// Compression type
+   unsigned int compression;
+   /// Image size in bytes
+   unsigned int imagesize;
+   /// Pixels per meter
+   int xresolution,yresolution;
+   /// Number of colours
+   unsigned int ncolours;
+   /// Important colours
+   unsigned int importantcolours;   
 } BMP_INFOHEADER;
 
 #endif

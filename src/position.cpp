@@ -21,22 +21,21 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
+#include "position.h"
 
-#ifndef POSITION_H
-#define POSITION_H
+Position::Position(int index, int source, double x, double y, double z)
+{
+    Position::x = x;
+    Position::y = y;
+    Position::z = z;
+    Position::index = index;
+    Position::source = source;
+    ftime(&timeStamp);
+}
 
-/**
-  Simple storage class for a 3D (x,y,z) position.
-*/
-class Position {
-public:
-    Position(float x = 0, float y = 0, float z = 0) {
-        Position::x = x;
-        Position::y = y;
-        Position::z = z;
-    }
 
-    float x,y,z;
-};
+Position::~Position()
+{
+}
 
-#endif
+

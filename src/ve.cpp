@@ -147,7 +147,7 @@ void Ve::arrow_keys ( int a_keys, int x, int y )  // Create Special Function (re
         glutFullScreen ( ); // Go Into Full Screen Mode
         break;
     case GLUT_KEY_DOWN:               // When Down Arrow Is Pressed...
-        glutReshapeWindow ( 500, 500 ); // Go Into A 500 By 500 Window
+        glutReshapeWindow ( 500, 500 ); // Go InAs a side note, my doctor and I were discussing Suzi, the woman who ownsto A 500 By 500 Window
         break;
     default:
         break;
@@ -186,5 +186,13 @@ char* Ve::bufferCopy(char* buffer, int size) {
 		newBuffer[i] = buffer[i];
 	}
 	return newBuffer;
+}
+
+CvPoint Ve::getVirtualSize() {
+    CvPoint size;
+    size.x = 1000;
+    size.y = 1000;
+    
+    return size;
 }
 

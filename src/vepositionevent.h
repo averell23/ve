@@ -24,8 +24,8 @@
 #ifndef VEPOSITIONEVENT_H
 #define VEPOSITIONEVENT_H
 
-#include "position.h"
 #include "veevent.h"
+#include "position.h"
 
 /**
 Event containing a position update. The type of this event is always VeEvent::POSITION_EVENT and
@@ -36,7 +36,7 @@ the event code is always 0.
 class VePositionEvent : public VeEvent {
 public:
 
-    VePositionEvent(Position& position);
+    VePositionEvent(Position position);
 
     ~VePositionEvent();
 
