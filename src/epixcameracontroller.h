@@ -21,66 +21,55 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef EPIXSOURCE_H
-#define EPIXSOURCE_H
+#ifndef EPIXCAMERACONTROLLER_H
+#define EPIXCAMERACONTROLLER_H
 
-#include "videosource.h"
-#include "xclibcontroller.h"
-#include "epixcameracontroller.h"
-#include "sf1280controller.h"
-#include "epixreaderthread.h"
-#include "stopwatch.h"
-#include <iostream>
-#include <cc++/thread.h>
 #include <log4cplus/logger.h>
+#include "xclibcontroller.h"
 
-using namespace std;
 using namespace log4cplus;
 
 /**
+Interface to control a camera that is connected to an EPIX framegrabber board. 
+The behaviour of the methods will be determined by the camara model, they
+have no effect in the default implementation.
+
 @author Daniel Hahn,,,
 */
-class EpixSource : public VideoSource
-{
+class EpixCameraController{
 public:
+    /**
+      Creates a new camera controller. 
+      
+      @param unit The unit number of the EPIX board
+                  to which the camera is connected.
+    */
+    EpixCameraController(int unit);
+
+    ~EpixCameraController();
     
     /**
-      Creates a new EpixSource. FIXME: Error handling
+      Initializes the camera for use.
       
-      @param unit Number of the unit from which to read.
-      @param configfile Name of an XCAP Video configuration file.
-	  @param cameraModel Model code of the camera connected to this source
+      @return true, if the camera was initialized successfully.
     */
-    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
+    virtual bool initCamera();
+    
+    /**
+      Sets the gain value for the camera.
+      
+      @param gain The gain value, in multiples of the normal gain.
+      @return true if the gain was set successfully.
+    */
+    virtual bool setGain(float gain);
 
-    virtual IplImage *getImage();
-
-	virtual IplImage *waitAndGetImage();
-	
-    ~EpixSource();
-
-    bool timerSupported();
-
-    const static int CAMERA_DEFAULT = 0;
-    const static int CAMERA_1280F = 1;
+protected:
+    /// Unit number of the board to which the camera is connected
+    int unit;
     
 private:
-    /// Unit number from which this source reads
-    int unit;
-    // The thread that reads from the frame grabber
-    EpixReaderThread* readerThread;
-	// Camera model
-	int cameraModel;
-	// Serial port handle for Camera Link connections
-	void* serialRef;
-	/// Logger for this class
-	static Logger logger;
-	/// Mutex for waitAndGetImage()
-	Mutex tMutex;
-	/// Camera controller for this source
-	EpixCameraController* controller;
-	
-    
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

@@ -124,7 +124,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp epixcameracontroller.h epixcameracontroller.cpp sf1280controller.h sf1280controller.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -147,7 +147,8 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	overlay.$(OBJEXT) main.$(OBJEXT) fontmanager.$(OBJEXT) \
 	statusoverlay.$(OBJEXT) commandlineparser.$(OBJEXT) \
 	veevent.$(OBJEXT) veeventsource.$(OBJEXT) \
-	offsetoverlay.$(OBJEXT)
+	offsetoverlay.$(OBJEXT) epixcameracontroller.$(OBJEXT) \
+	sf1280controller.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -159,12 +160,15 @@ DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
 	./$(DEPDIR)/commandlineparser.Po \
 	./$(DEPDIR)/dummyoverlay.Po \
 	./$(DEPDIR)/dummysource.Po \
+	./$(DEPDIR)/epixcameracontroller.Po \
 	./$(DEPDIR)/epixreaderthread.Po \
 	./$(DEPDIR)/epixsource.Po \
 	./$(DEPDIR)/fontmanager.Po \
 	./$(DEPDIR)/fonttesteroverlay.Po \
 	./$(DEPDIR)/main.Po ./$(DEPDIR)/offsetoverlay.Po \
-	./$(DEPDIR)/overlay.Po ./$(DEPDIR)/statusoverlay.Po \
+	./$(DEPDIR)/overlay.Po \
+	./$(DEPDIR)/sf1280controller.Po \
+	./$(DEPDIR)/statusoverlay.Po \
 	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
 	./$(DEPDIR)/veevent.Po ./$(DEPDIR)/veeventsource.Po \
 	./$(DEPDIR)/videocanvas.Po \
@@ -241,6 +245,7 @@ include ./$(DEPDIR)/cameracalibration.Po
 include ./$(DEPDIR)/commandlineparser.Po
 include ./$(DEPDIR)/dummyoverlay.Po
 include ./$(DEPDIR)/dummysource.Po
+include ./$(DEPDIR)/epixcameracontroller.Po
 include ./$(DEPDIR)/epixreaderthread.Po
 include ./$(DEPDIR)/epixsource.Po
 include ./$(DEPDIR)/fontmanager.Po
@@ -248,6 +253,7 @@ include ./$(DEPDIR)/fonttesteroverlay.Po
 include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/offsetoverlay.Po
 include ./$(DEPDIR)/overlay.Po
+include ./$(DEPDIR)/sf1280controller.Po
 include ./$(DEPDIR)/statusoverlay.Po
 include ./$(DEPDIR)/stopwatch.Po
 include ./$(DEPDIR)/ve.Po

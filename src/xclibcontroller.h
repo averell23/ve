@@ -109,13 +109,15 @@ public:
       Initializes the CamLink's built-in serial, if supported by the
       board and library.
       
+      @param Number of the unit to which the camer is connected.
       @return true if the port was opened successfully.
     */
-    static bool initCamLinkSerial();
+    static bool initCamLinkSerial(int unit);
     
     /**
       Closes the CamLink's built-in serial port.
       
+      @param unit Number of the unit to which the camera is connected.
       @return true if the port was closed successfully.
     */
     static bool closeCamLinkSerial();
@@ -125,12 +127,14 @@ public:
       
       @param message The message to be written to the serial
                      port.
+      @param unit Number of the unit to which the camera is
+                  connected
       @return The result string, if one was returned by the
               serial partner. This may also contain an error
 	      string that indicates that an internal error
 	      was encountered.
       */
-    static string writeCamLinkSerial(string message);
+    static string writeCamLinkSerial(int unit, string message);
 
 private:
     /// Constructor is private for singleton class.
@@ -139,8 +143,8 @@ private:
     static Logger logger;
     /// Allow to synchronize XCLIB calls.
     static Mutex cMutex;
-    // Serial port handle for Camera Link connections
-    static void* camLinkSerialRef;
+    // Serial port handles for Camera Link connections
+    static void* camLinkSerialRef[1024];
     /// How long shall we wait before timing out serial operations?
     static const int serial_timeout = 1000;
 

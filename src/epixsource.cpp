@@ -36,9 +36,23 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile)
 	    height = pxd_imageYdim();
 	    width = pxd_imageXdim();
     }
-	EpixSource::cameraModel = cameraModel;
+    EpixSource::cameraModel = cameraModel;
+    switch (cameraModel) {
+	case CAMERA_1280F: 
+	    LOG4CPLUS_INFO(logger, "Trying to set up controller for SF1280 camera.");
+	    controller = new SF1280Controller(unit);
+	    break;
+	case CAMERA_DEFAULT: 
+	    LOG4CPLUS_INFO(logger, "Trying to set up default (dummy) camera controller.");
+	    controller = new EpixCameraController(unit);
+	    break;
+	default:
+	    LOG4CPLUS_WARN(logger, "Unknown camera model. Trying default (dummy) camera controller");
+	    controller = new EpixCameraController(unit);
+	    break;
+    }
+    controller->initCamera();
     EpixSource::unit = unit;
-	cameraSetup();
     XCLIBController::goLive(unit);
     readerThread = new EpixReaderThread(unit);
     readerThread->start();
@@ -49,9 +63,7 @@ EpixSource::~EpixSource()
 {
     readerThread->stop();
     XCLIBController::goUnLive(unit);
-    #ifdef WIN32
-    if (serialRef != NULL) clSerialClose(serialRef);
-    #endif
+    delete controller;
 }
 
 
@@ -82,41 +94,6 @@ bool EpixSource::timerSupported() {
 	return true;
 }
 
-void EpixSource::cameraSetup() {
-	{
-		switch (cameraModel) {
-			case CAMERA_DEFAULT:
-				// No setup for unknow camera
-			break;
-			case CAMERA_1280F:
-				// Setup for Silicon Imaging 1280 F
-				// FIXME: Does not check board capabilities, clSerial only available for WIN32
-				LOG4CPLUS_INFO(logger, "Setting up camera model SI-1280F unit " << unit);
-                                #ifdef WIN32
-				void* serialRef;
-				char* buffer = new char[3];
-				int result = clSerialInit(unit, &serialRef);
-				if (result != 0) {
-					LOG4CPLUS_WARN(logger, "Error while opening camera link serial, code: " 
-						<< result);
-				} else {
-					ulong size = 7;
-					clSerialWrite(serialRef, "ly804d\r", &size , 1000); // Gain
-					size = 3;
-					clSerialRead(serialRef, buffer, &size, 1000);
-					if (strcmp(buffer, "104")) {
-						LOG4CPLUS_WARN(logger, "Unable to get result code from camera.");
-					}
-					size = 1024;					
-					clSerialWrite(serialRef, "lc36cb8f\r", &size, 1000); // Clock: 60 Mhz
-				}
-                                #else
-				LOG4CPLUS_WARN(logger, "Warning: Unable to set camera parameters: Camera Link serial only available under Windows.");
-                                #endif
-			break;
-		}
-	}
-}
 
 IplImage* EpixSource::waitAndGetImage() {
 	IplImage* image;

@@ -21,65 +21,34 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef EPIXSOURCE_H
-#define EPIXSOURCE_H
+#ifndef SF1280CONTROLLER_H
+#define SF1280CONTROLLER_H
 
-#include "videosource.h"
-#include "xclibcontroller.h"
-#include "epixcameracontroller.h"
-#include "sf1280controller.h"
-#include "epixreaderthread.h"
-#include "stopwatch.h"
-#include <iostream>
-#include <cc++/thread.h>
-#include <log4cplus/logger.h>
+#include <epixcameracontroller.h>
+#include <cstdlib>
 
 using namespace std;
-using namespace log4cplus;
 
 /**
+Controller for the Silicon Imaging SF1280F Camera.
+
 @author Daniel Hahn,,,
 */
-class EpixSource : public VideoSource
+class SF1280Controller : public EpixCameraController
 {
 public:
     
-    /**
-      Creates a new EpixSource. FIXME: Error handling
-      
-      @param unit Number of the unit from which to read.
-      @param configfile Name of an XCAP Video configuration file.
-	  @param cameraModel Model code of the camera connected to this source
-    */
-    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
+    bool initCamera();
+    
+    bool setGain(float gain);
+    
+    SF1280Controller(int unit);
 
-    virtual IplImage *getImage();
-
-	virtual IplImage *waitAndGetImage();
-	
-    ~EpixSource();
-
-    bool timerSupported();
-
-    const static int CAMERA_DEFAULT = 0;
-    const static int CAMERA_1280F = 1;
+    ~SF1280Controller();
     
 private:
-    /// Unit number from which this source reads
-    int unit;
-    // The thread that reads from the frame grabber
-    EpixReaderThread* readerThread;
-	// Camera model
-	int cameraModel;
-	// Serial port handle for Camera Link connections
-	void* serialRef;
-	/// Logger for this class
-	static Logger logger;
-	/// Mutex for waitAndGetImage()
-	Mutex tMutex;
-	/// Camera controller for this source
-	EpixCameraController* controller;
-	
+    /// Logger for this class
+    static Logger logger;
     
 };
 

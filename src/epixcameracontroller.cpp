@@ -21,66 +21,28 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef EPIXSOURCE_H
-#define EPIXSOURCE_H
-
-#include "videosource.h"
-#include "xclibcontroller.h"
 #include "epixcameracontroller.h"
-#include "sf1280controller.h"
-#include "epixreaderthread.h"
-#include "stopwatch.h"
-#include <iostream>
-#include <cc++/thread.h>
-#include <log4cplus/logger.h>
 
-using namespace std;
-using namespace log4cplus;
+Logger EpixCameraController::logger = Logger::getInstance("EpixCameraController");
 
-/**
-@author Daniel Hahn,,,
-*/
-class EpixSource : public VideoSource
+bool EpixCameraController::initCamera() {
+    LOG4CPLUS_INFO(logger, "Default Camera init: Nothing was done.");
+    return true;
+}
+
+bool EpixCameraController::setGain(float gain) {
+    LOG4CPLUS_TRACE(logger, "Default Camera init: Gain will not be set");
+    return true;
+}
+
+EpixCameraController::EpixCameraController(int unit)
 {
-public:
-    
-    /**
-      Creates a new EpixSource. FIXME: Error handling
-      
-      @param unit Number of the unit from which to read.
-      @param configfile Name of an XCAP Video configuration file.
-	  @param cameraModel Model code of the camera connected to this source
-    */
-    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
+    EpixCameraController::unit = unit;
+}
 
-    virtual IplImage *getImage();
 
-	virtual IplImage *waitAndGetImage();
-	
-    ~EpixSource();
+EpixCameraController::~EpixCameraController()
+{
+}
 
-    bool timerSupported();
 
-    const static int CAMERA_DEFAULT = 0;
-    const static int CAMERA_1280F = 1;
-    
-private:
-    /// Unit number from which this source reads
-    int unit;
-    // The thread that reads from the frame grabber
-    EpixReaderThread* readerThread;
-	// Camera model
-	int cameraModel;
-	// Serial port handle for Camera Link connections
-	void* serialRef;
-	/// Logger for this class
-	static Logger logger;
-	/// Mutex for waitAndGetImage()
-	Mutex tMutex;
-	/// Camera controller for this source
-	EpixCameraController* controller;
-	
-    
-};
-
-#endif

@@ -102,9 +102,13 @@ int XCLIBController::getBufferCopy(int unit, uchar* buffer, int bufsize) {
     return result;
 }
 
-bool XCLIBController::initCamLinkSerial() {
+bool XCLIBController::initCamLinkSerial(int unit) {
     #ifdef WIN32
-    int result = clSerialInit(unit, &camLinkSerialRef);
+    if ((unit < 0) || (unit >= 1024)) {
+	LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);
+	return false;
+    }
+    int result = clSerialInit(unit, &camLinkSerialRef[unit]);
     if (result != 0) {
 	LOG4CPLUS_WARN(logger, "Error while opening camera link serial, code: " 
 		       << result);
@@ -117,13 +121,17 @@ bool XCLIBController::initCamLinkSerial() {
     #endif
 }
 
-string XCLIBController::writeCamLinkSerial(string message) {
+string XCLIBController::writeCamLinkSerial(int unit, string message) {
     #ifdef WIN32
+    if ((unit < 0) || (unit >= 1024)) {
+	LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);
+	return false;
+    }
     ulong size = message.size();
     ulong origSize = size;
     string retVal = "";
     
-    clSerialWrite(serialRef, message.c_str(), &size , serial_timeout);
+    clSerialWrite(serialRef[unit], message.c_str(), &size , serial_timeout);
     if (size != origSize) {
 	LOG4CPLUS_WARN(logger, "Not all characters could be written to serial out, written " << size << " of " << origSize);
 	return "Internal: Could not write all characters.";
@@ -131,7 +139,7 @@ string XCLIBController::writeCamLinkSerial(string message) {
     
     size = 1024;
     char* buffer = new char[1024];
-    clSerialRead(serialRef, buffer, &size, serial_timeout);
+    clSerialRead(serialRef[unit], buffer, &size, serial_timeout);
     retVal += buffer;
     delete buffer;
     
@@ -144,7 +152,11 @@ string XCLIBController::writeCamLinkSerial(string message) {
 
 bool XCLIBController::closeCamLinkSerial() {
     #ifdef WIN32
-    int result = clSerialClose(camLinkSerialRef);
+    if ((unit < 0) || (unit >= 1024)) {
+	LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);
+	return false;
+    }
+    int result = clSerialClose(camLinkSerialRef[unit]);
     if (result != 0) {
 	LOG4CPLUS_WARN(logger, "Error while closing camera link serial, code: " 
 		       << result);
