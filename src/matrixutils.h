@@ -31,6 +31,7 @@
 #include <gsl/gsl_multifit.h>
 #include <cv.hpp>
 #include <cstdlib>
+#include <cmath>
 
 using namespace log4cplus;
 using namespace std;
@@ -73,6 +74,16 @@ public:
       won't work with submatrix views.
     */
     static gsl_matrix* submatrixCopy(gsl_matrix* source, int top, int left, int height, int width);
+
+    /**
+       Adds a rotation to the given transformation matrix
+
+       @param alpha Rotation (in degrees) around the x axis
+       @param beta Rotation (in degrees) around the y axis
+       @param gamma Rotation (in degrees) around the z axis
+    */
+    static void rotate(gsl_matrix* matrix, double alpha, double beta, double gamma);
+
 };
 
 #endif

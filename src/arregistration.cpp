@@ -165,6 +165,19 @@ void ARRegistration::reRegister() {
 void ARRegistration::resetCalibration() {
     gsl_matrix* c = getCalibrationMatrix();
     gsl_matrix_set_identity(T_orig);
+    float alpha = 180.0; // Fixme: This is evil. Fix it.
+    float beta = 0.0;
+    float gamma = 180.0;
+    /* if (Ve::mainVideo->xRot) {
+	    alpha = 180.0;
+    }
+    if (Ve::mainVideo->yRot) {
+	    beta = 180.0;
+    }
+    if (Ve::mainVideo->zRot) {
+	    gamma = 180.0;
+	} */
+    MatrixUtils::rotate(T_orig, alpha, beta, gamma);
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
     gsl_matrix_free(c);
     LOG4CPLUS_INFO(logger, "Registration reset.");

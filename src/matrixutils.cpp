@@ -53,3 +53,46 @@ gsl_matrix* MatrixUtils::submatrixCopy(gsl_matrix* source, int top, int left, in
 	gsl_matrix_memcpy(retVal, sub);
 	return retVal;
 }
+
+void MatrixUtils::rotate(gsl_matrix* matrix, double alpha, double beta, double gamma) {
+    if ((matrix->size1 != 4) || (matrix->size2 != 4)) return; // FIXME: Error handling?
+    gsl_matrix* rot_tmp = gsl_matrix_alloc(4,4);
+    gsl_matrix* mat_tmp = gsl_matrix_alloc(4,4);
+    double alpha_rad = alpha * M_PI/180.0;
+    double beta_rad = beta * M_PI/180.0;
+    double gamma_rad = gamma * M_PI/180.0;
+    // x rotation
+    float sine = sin(alpha_rad);
+    float cosine = cos(alpha_rad);
+    gsl_matrix_set_identity(rot_tmp);
+    gsl_matrix_set(rot_tmp, 1, 1, cosine);
+    gsl_matrix_set(rot_tmp, 1, 2, sine);
+    gsl_matrix_set(rot_tmp, 2, 1, -sine);
+    gsl_matrix_set(rot_tmp, 2, 2, cosine);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, matrix, rot_tmp, 0.0, mat_tmp);
+    // y rotation
+    sine = sin(beta_rad);
+    cosine = cos(beta_rad);
+    gsl_matrix_set_identity(rot_tmp);
+    gsl_matrix_set(rot_tmp, 0, 0, cosine);
+    gsl_matrix_set(rot_tmp, 0, 2, -sine);
+    gsl_matrix_set(rot_tmp, 2, 0, sine);
+    gsl_matrix_set(rot_tmp, 2, 2, cosine);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, mat_tmp, rot_tmp, 0.0, matrix);
+    // z rotation
+    sine = sin(gamma_rad);
+    cosine = cos(gamma_rad);
+    gsl_matrix_set_identity(rot_tmp);
+    gsl_matrix_set(rot_tmp, 0, 0, cosine);
+    gsl_matrix_set(rot_tmp, 0, 1, sine);
+    gsl_matrix_set(rot_tmp, 1, 0, -sine);
+    gsl_matrix_set(rot_tmp, 1, 1, cosine);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, matrix, rot_tmp, 0.0, mat_tmp);
+
+
+    gsl_matrix_memcpy(matrix, mat_tmp);
+
+    gsl_matrix_free(rot_tmp);
+    gsl_matrix_free(mat_tmp);
+
+}

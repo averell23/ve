@@ -72,10 +72,11 @@ void TextTrackerOverlay::drawOneEye(map<int,Position>& positions) {
     for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
 	    if (i<texts.size()) {
 	        int tpos = elPos[i];
-	        double dist = centerDistanceSquared(posIterator->second.x, posIterator->second.y);
+            CvPoint pos = GLMacros::getPixelCoords((int) posIterator->second.x, (int) posIterator->second.y);
+            double dist = centerDistanceSquared(pos.x, pos.y );
 	        int tsize = (int) ((((max/distanceFactor) - dist) / max) * maxFontSize);
 	        if (tsize > 0) {
-		        GLMacros::drawText((int) posIterator->second.x, (int) posIterator->second.y, (char*) texts[i][tpos].c_str(), tsize);
+                GLMacros::drawText(pos.x, pos.y, (char*) texts[i][tpos].c_str(), tsize);
 	        }
             i++;
 	    }

@@ -12,7 +12,7 @@
 	<option name="rotY" value="false" />
 	<option name="rotZ" value="false" />
 	<option name="statusoverlay" value="true" />
-	<option name="textoverlay" value="false" />
+	<option name="textoverlay" value="true" />
 	<option name="trackingoverlay" value="true" />
 	<option name="dummyoverlay" value="false" />
 </config>
