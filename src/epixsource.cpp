@@ -50,10 +50,18 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adju
         controller = new EpixCameraController(unit);
         break;
     }
+
+	// Create the image buffer
+    CvSize size;
+    size.height = height;
+    size.width = width;
+    imgBuffer = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
+	imgBuffer->imageData = NULL;
+
     controller->initCamera();
     EpixSource::unit = unit;
     XCLIBController::goLive(unit);
-    readerThread = new EpixReaderThread(unit);
+    readerThread = new EpixReaderThread(unit, this);
     timer->start();
     readerThread->start();
 }
@@ -62,56 +70,14 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile, string adju
 EpixSource::~EpixSource() {
     readerThread->stop();
     XCLIBController::goUnLive(unit);
+	if (imgBuffer->imageData != NULL) delete imgBuffer->imageData;
+	cvReleaseImageHeader(&imgBuffer);
     delete controller;
 }
 
 
-IplImage* EpixSource::getImage() {
-    IplImage* image;
-    CvSize size;
-    size.height = height;
-    size.width = width;
-
-    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    if (! tMutex.tryEnterMutex()) {
-        LOG4CPLUS_TRACE(logger, "Returning null image, currently waiting for image.");
-        return image;
-    }
-    uchar* buffer = readerThread->getBuffer();
-    tMutex.leaveMutex();
-    if (buffer != NULL) {
-        image->imageData = (char*) buffer;
-        timer->count();
-    } else {
-        image->imageData = NULL;
-    }
-
-    return image;
-}
-
 bool EpixSource::timerSupported() {
     return true;
-}
-
-
-IplImage* EpixSource::waitAndGetImage() {
-    IplImage* image;
-    CvSize size;
-    size.height = height;
-    size.width = width;
-
-    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    uchar* buffer = NULL;
-    tMutex.enterMutex();
-    while (buffer == NULL) {
-        buffer = readerThread->getBuffer();
-    }
-    tMutex.leaveMutex();
-
-    image->imageData = (char*) buffer;
-    timer->count();
-
-    return image;
 }
 
 void EpixSource::setBrightness(int brightness) {
@@ -119,4 +85,16 @@ void EpixSource::setBrightness(int brightness) {
     if (cameraModel == CAMERA_1280F) {
         controller->setGain(VideoSource::brightness);
     }
+}
+
+void EpixSource::bufferUpdate(char* newBuffer) {
+	if (imgMutex.tryEnterMutex()) {
+		if (imgBuffer->imageData != NULL) delete imgBuffer->imageData;
+		imgBuffer->imageData = newBuffer;
+		timer->count();
+		frameCount++;
+		imgMutex.leaveMutex();
+	} else {
+		delete newBuffer;
+	}
 }

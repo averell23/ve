@@ -14,10 +14,14 @@ extern "C" {
 #include <cc++/thread.h>
 #include <log4cplus/logger.h>
 #include "stopwatch.h"
+#include "epixsource.h"
 
 using namespace std;
 using namespace ost;
 using namespace log4cplus;
+
+// Forward declarations
+class EpixSource;
 
 /**
 Does the actual reading/copy operations for the EPIX card, to keep them out of the main update cycle.
@@ -31,16 +35,12 @@ public:
       Creates a new EpixReaderThread.
       
       @param unit Number of the unit from which to read.
+	  @param source Pointer to the source to which this thread is connected.
     */
-    EpixReaderThread(int unit);
+    EpixReaderThread(int unit, EpixSource* source);
     ~EpixReaderThread();
 
     void run();
-
-    /**
-      Gets the image which is currently in the buffer.
-    */
-    uchar* getBuffer();
 
     /**
       Requests the reader to stop after the current iteration.
@@ -50,20 +50,16 @@ public:
 private:
     /// Picture buffer
     uchar* buffer;
-    /// Temporary buffer
-    uchar* tmpBuffer;
     /// Unit which is read from
     int unit;
-    /// Mutex for buffer access
-    Mutex* tMutex;
     /// buffer size for the image buffer
     int bufsize;
     /// indicates whether the thread is inside the main loop
     bool running;
-    /// indicates wether the current buffer is stale
-    bool stale;
     /// Logger for this class
     static Logger logger;
+	/// Source to which this thread is connected
+	EpixSource* source;
 };
 
 #endif

@@ -180,3 +180,11 @@ void Ve::initGL( int argc, char** argv ) {
     LOG4CPLUS_INFO(logger, "GLUT/GLEW/OpenGL initialization complete");
 }
 
+char* Ve::bufferCopy(char* buffer, int size) {
+	char* newBuffer = new char[size];
+	for (int i=0 ; i<size ; i++) {
+		newBuffer[i] = buffer[i];
+	}
+	return newBuffer;
+}
+

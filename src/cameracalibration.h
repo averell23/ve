@@ -165,13 +165,6 @@ public:
       @return the undistorted ccordinates of the point.
     */
     CvPoint2D32f unDistortPoint(CvPoint2D32f point);
-
-    /**
-      Stores a black offset image. The contents of the black
-      offset image will be deduced from all captured images
-      to correct them.
-    */
-    void takeBlackOffset();
     
     
     ~CameraCalibration();
@@ -221,8 +214,6 @@ private:
     */
     CvPoint2D32f* guessCorners(IplImage* image);
     
-    /// Black offset image
-    IplImage* blackOffset;
     /// Logger for this class
     static Logger logger;
 };

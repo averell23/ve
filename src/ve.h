@@ -46,6 +46,7 @@ using namespace log4cplus;
 
 // Forward declarations
 class VideoCanvas;
+class VideoSource;
 
 /**
   This is the program's main class that includes the basic application framework.
@@ -129,6 +130,9 @@ public:
 
     /// Event source used for events from the main framework
     static VeEventSource eventSource;
+
+	/// Convenience method for buffer copies
+	static char* bufferCopy(char* buffer, int size);
 
     // Logger for this class
     static Logger logger;

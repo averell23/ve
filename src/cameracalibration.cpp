@@ -42,7 +42,6 @@ CameraCalibration::CameraCalibration(VideoSource *input,
     calibrationMatrix = new float[3*3];
     rotationMatrices = NULL;
     translationVects = NULL;
-    blackOffset = NULL;
 }
 
 bool CameraCalibration::takeSnapshot() {
@@ -51,32 +50,40 @@ bool CameraCalibration::takeSnapshot() {
         return false;
     }
 	LOG4CPLUS_DEBUG(logger, "Trying to get snapshot");
-    IplImage* capt = input->waitAndGetImage();
+
+	IplImage* blackOffset = (IplImage*) input->getBlackOffset();
+	input->lockImage();
+    IplImage* capt = input->getImage();
+
     if (blackOffset != NULL) {
-	CvSize size;
-	size.height = capt->height;
-	size.width = capt->width;
-	IplImage* temp = cvCreateImageHeader(size, capt->depth, capt->nChannels);
-	temp->imageData = new char[capt->height * capt->width * capt->depth * capt->nChannels];
-	cvSub(capt, blackOffset, temp);
-	delete capt->imageData;
-	cvReleaseImageHeader(&capt);
-	capt = temp;
-	LOG4CPLUS_DEBUG(logger, "Subtracted black offset image.");
+		CvSize size;
+		size.height = capt->height;
+		size.width = capt->width;
+		IplImage* temp = cvCreateImageHeader(size, capt->depth, capt->nChannels);
+		temp->imageData = new char[capt->height * capt->width * capt->depth * capt->nChannels];
+		cvSub(capt, blackOffset, temp);
+		capt = temp;
+		LOG4CPLUS_DEBUG(logger, "Subtracted black offset image.");
     }
     IplImage* grayTmp = cvCreateImage(cvSize( capt->width, capt->height ), IPL_DEPTH_8U, 1);
 	LOG4CPLUS_TRACE(logger, "Got image");
     cvCvtColor(capt, grayTmp, CV_BGR2GRAY);
-	LOG4CPLUS_TRACE(logger, "Convertedimage");
-    delete capt->imageData;
-    cvReleaseImageHeader(&capt);
+
+	input->releaseImage();
+
+	LOG4CPLUS_TRACE(logger, "Converted Image");
+	if (blackOffset != NULL) {
+		delete capt->imageData;
+		cvReleaseImageHeader(&capt);
+	}
+
     CvPoint2D32f* corners = guessCorners(grayTmp);
     if (corners != NULL) {
-	images.push_back(grayTmp);
-	guessedCorners.push_back(corners);
-	LOG4CPLUS_DEBUG(logger, "Snapshot taken.");
+		images.push_back(grayTmp);
+		guessedCorners.push_back(corners);
+		LOG4CPLUS_DEBUG(logger, "Snapshot taken.");
     } else {
-	LOG4CPLUS_DEBUG(logger, "Snapshot not taken, not all corners found.");
+		LOG4CPLUS_DEBUG(logger, "Snapshot not taken, not all corners found.");
     }
     return true;
 }
@@ -220,21 +227,9 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     return tempPoints;
 }
 
-void CameraCalibration::takeBlackOffset() {
-    if (blackOffset != NULL) {
-	delete blackOffset->imageData;
-	cvReleaseImageHeader(&blackOffset);
-    }
-    blackOffset = input->waitAndGetImage();
-    LOG4CPLUS_DEBUG(logger, "Took offset image");
-}
 
 CameraCalibration::~CameraCalibration() {
     deleteSnapshots();
-    if (blackOffset != NULL) {
-	delete blackOffset->imageData;
-    }
-    cvReleaseImageHeader(&blackOffset);
 }
 
 CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {

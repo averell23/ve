@@ -59,8 +59,6 @@ public:
 
     IplImage* getImage();
 
-    IplImage *waitAndGetImage();
-
     char* copyBuffer(char* buffer, int size);
 
 private:

@@ -29,6 +29,7 @@ VideoSource::VideoSource() {
     timer = new Stopwatch();
 	blackOffset = NULL;
     timer->start();
+	imgLock = false;
 }
 
 
@@ -63,12 +64,47 @@ void VideoSource::setBrightness(int brightness) {
 }
 
 void VideoSource::storeBlackOffset() {
-	blackOffset = waitAndGetImage();
+	lockImage();
+	IplImage* currentImage = getImage();
+	if (blackOffset == NULL) {
+		CvSize size;
+		size.height = currentImage->height;
+		size.width = currentImage->width;
+		blackOffset = cvCreateImageHeader(size, currentImage->depth, currentImage->nChannels);
+		int bufsize = currentImage->height * currentImage->width 
+			* currentImage->nChannels * (currentImage->depth/8);
+		char* bufCopy = Ve::bufferCopy(currentImage->imageData, bufsize);
+		blackOffset->imageData = bufCopy;
+	}
+	releaseImage();
 }
 
 void VideoSource::clearBlackOffset() {
+	if (blackOffset != NULL) {
+		delete blackOffset->imageData;
+		cvReleaseImageHeader(&blackOffset);
+	}
 	blackOffset = NULL;
 }
-IplImage *VideoSource::waitAndGetImageCorrected() {
-	return waitAndGetImage(); // FIXME: Do correction
+
+void VideoSource::lockImage() {
+	tmpMutex.enterMutex();
+	if (imgLock) { // Someone else already locked this
+		tmpMutex.leaveMutex();
+		return; 
+	}
+	imgLock = true;
+	tmpMutex.leaveMutex();
+	imgMutex.enterMutex();
+}
+
+void VideoSource::releaseImage() {
+	tmpMutex.enterMutex();
+	if (!imgLock) { // The image isn't locked
+		tmpMutex.leaveMutex();
+		return;
+	}
+	imgLock = false;
+	tmpMutex.leaveMutex();
+	imgMutex.leaveMutex();
 }

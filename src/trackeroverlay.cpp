@@ -160,13 +160,16 @@ void TrackerOverlay::drawOverlay() {
 ARUint8* TrackerOverlay::getImageData(int leftOrRight) {
     IplImage *origImage = NULL;
 	IplImage *offset = NULL;
+	VideoSource* currentSource = NULL;
     if (leftOrRight == LEFT) {
-		origImage = Ve::getLeftSource()->waitAndGetImage();
-		offset = (IplImage*) Ve::getLeftSource()->getBlackOffset();
+		currentSource = Ve::getLeftSource();
     } else {
-		origImage = Ve::getRightSource()->waitAndGetImage();
-		offset = (IplImage*) Ve::getRightSource()->getBlackOffset();
+		currentSource = Ve::getRightSource();
     }
+	currentSource->lockImage();
+	origImage = currentSource->getImage();
+	offset = (IplImage*) currentSource->getBlackOffset();
+
     int imageDimension = origImage->width * origImage->height;
     ARUint8* retImage = new ARUint8[imageDimension * 4];
     for (int i=0 ; i < imageDimension ; i++) {
@@ -183,9 +186,8 @@ ARUint8* TrackerOverlay::getImageData(int leftOrRight) {
 		}
     }
 
-	delete origImage->imageData;
-	cvReleaseImageHeader(&origImage);
-    
+	currentSource->releaseImage();
+
     return retImage;
 }
 

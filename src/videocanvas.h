@@ -94,6 +94,8 @@ protected:
     int leftBrightness, rightBrightness;
 	/// FIXME: Counter for quick image save hack
 	int imagesSaved;
+	/// Frame count for left and right eye. Used for checking if images were updated.
+	unsigned long leftCount, rightCount;
 
 };
 

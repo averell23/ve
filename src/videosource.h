@@ -26,57 +26,61 @@
 
 #include <stdio.h>
 #include <cv.hpp>
+#include <cc++/thread.h>
 #include "stopwatch.h"
 #include "cameracalibration.h"
 #include "arregistration.h"
+#include "ve.h"
 
 // Forward declaration
 class CameraCalibration;
 class ARRegistration;
+class Ve;
+
+using namespace ost;
 
 /**
-Wrapper class for a source of video images.
- 
-@author Daniel Hahn,,,
+	Wrapper class for a source of video images. A video source is expected
+	to have an internal video buffer. The user may obtain a pointer to the
+	buffer, but not change the contents. If a new image is acquired, the
+	child implementation <b>must</b> increase the frameCount. 
+	Callers must be able to use the frame count in order to check wether
+	a new image has been acquired. 
+	
+	Timer support is only for performance measures, though. Child classes
+	may ignore the timer, or update it differently from the internal frame
+	count.
+
+	<b>WARNING:</b> Do read the documentation carefully before attempting
+	to create a child implementation!
+	
+	@author Daniel Hahn,,,
 */
 class VideoSource {
 public:
     /**
-        Retrieve the next image for this video source. The class should
-    expect the IplImage to be consumed (read: deleted) by the 
-    subsequent processing, so it should not be expected to exist
-    after getImage() was called.
-
-    This should return NULL if no new image was created/acquired 
-    since the last getImage() call, in order to avoid unecessary
-    display updates.
-
-    Child methods should update the internal timer whenever a 
-    none-NULL image is returned.
-
-    @see waitAndGetImage();
+        Retrieve the next image for this video source. This returns
+		a pointer to the current image buffer. The contents of the
+		buffer must not be changed by the caller. Note that the 
+		contents of the buffer are prone to being overwritten if 
+		the internal buffer is not locked.
     */
-    virtual IplImage *getImage() = 0;
+	virtual IplImage *getImage() { return imgBuffer; }
 
-    /**
-    	Works like @see getImage(), except that this function will block
-    	until a new image is available from the source. It's not 
-    	recommended to use this function for the regular display
-    	updates.
-
-    	Until this function is finished, getImage() should not block,
-    	but should always return  NULL.
-
-    	@see getImage()
-    */
-    virtual IplImage *waitAndGetImage() = 0;
+    /*
+		Locks the internal mutex. Child implementations are expected
+		protect the internal buffer with the mutex, so that it is
+		never changed when the lock is set. Callers are expected
+		to release the image ASAP. If the mutex is already locked,
+		calling this function has no effect.
+	*/
+	void lockImage();
 
 	/**
-		Works like @see waitAndGetImage() but will perform image
-		corrections on the image. At the moment, the only correction performed
-		is the subtraction of the black offset.
+		Releases the internal mutex. This signals to the class that the
+		internal image buffer may now be overwritten.
 	*/
-	virtual IplImage *waitAndGetImageCorrected();
+	void releaseImage();
 
 
     /** Gets the image width for this video source */
@@ -131,6 +135,13 @@ public:
         return calibrationObject;
     }
     
+	/**
+		Gets the internal frame count. Child implementations <b>must</b> increase
+		the frame count every time a new image is acquired.
+	*/
+	unsigned long getFrameCount() { return frameCount; }
+
+
 	/** 
 		Stores a "black offset" image that can be subtracted from the video image to correct 
 		some cameras (like the Silicon Imaging 1280).
@@ -143,10 +154,8 @@ public:
 	*/
 	void clearBlackOffset();
 
-	/* 
-		Returns a pointer to the internal "black offset" image. This
-		is actually a pointer to the internal data, so it shouldn't be
-		touched by external routines.
+	/**
+		Returns a pointer to the internal "black offset" image. 
 
 		@return The black offset image, or NULL if the image has not been 
 		        initialized.
@@ -182,6 +191,16 @@ protected:
     ARRegistration* registrationObject;
 	/// Black offset image
 	IplImage* blackOffset;
+	/// Internal frame counter
+	unsigned long frameCount;
+	/// Internal image buffer
+	IplImage* imgBuffer;
+	/// Mutex for locking the buffer
+    Mutex imgMutex;
+	/// Mutex for temporary locking while updating @see imgLock
+	Mutex tmpMutex;
+	/// Indicates whether the image was locked by the user
+	bool imgLock;
 };
 
 #endif

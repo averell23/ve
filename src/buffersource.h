@@ -11,8 +11,7 @@
 class BufferSource :
 	public VideoSource, public VeEventListener
 {
-	IplImage *getImage();
-	IplImage *waitAndGetImage();
+	
 public:
 	/**
 	   Creates a new BufferSource. 

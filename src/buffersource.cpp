@@ -9,18 +9,12 @@ BufferSource::BufferSource(int width, int height, int frameCount, int pixBytes, 
 	BufferSource::planes = planes;
 	BufferSource::buffers = buffers;
 	curImg = 0;
-}
-
-BufferSource::~BufferSource(void)
-{
-}
-
-IplImage* BufferSource::getImage() {
-    char* data = (char*) buffers[curImg];
-    CvSize size;
+	// Create image size for internal buffer
+	CvSize size;
     size.height = height;
     size.width = width;
-	int type;
+	// Determine type of internal buffer
+		int type;
 	if ((pixBytes == 2) && (planes = 1)) {
 		type = IPL_DEPTH_8U;
 	} else if (pixBytes == 2) {
@@ -28,33 +22,40 @@ IplImage* BufferSource::getImage() {
 	} else {
 		type = IPL_DEPTH_8U;
 	}
-    IplImage *image = cvCreateImageHeader(size, type, planes);
-	if ((pixBytes == 2) && (planes = 1)) {
-		image->imageData = transformBuffer((short*) data, height * width);
-	} else {
-		image->imageData = copyBuffer(data, height * width * planes * pixBytes);
-	}
-    
-    return image;
+	// Create internal buffer
+	imgBuffer = cvCreateImageHeader(size, type, planes);
+	imgBuffer->imageData = NULL;
+	// init frame count
+	frameCount = 0;
 }
+
+BufferSource::~BufferSource(void)
+{
+	if ((pixBytes == 2) && (planes = 1) && (imgBuffer->imageData != NULL)) {
+		delete imgBuffer->imageData;
+	}
+	cvReleaseImageHeader(&imgBuffer);
+}
+
 
 void BufferSource::recieveEvent(VeEvent &e) {
 	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 32)) {
+		imgMutex.enterMutex();
 		curImg = (curImg + 1) % frameCount;
+		frameCount++;
+		// Set to the new buffer
+		char* data = (char*) buffers[curImg];
+		if ((pixBytes == 2) && (planes = 1)) {
+			if (imgBuffer->imageData != NULL) { delete imgBuffer->imageData; }
+			imgBuffer->imageData = transformBuffer((short*) data, height * width);
+		} else {
+			imgBuffer->imageData = data;
+		}
+		imgMutex.leaveMutex();
 	}
 }
 
-IplImage* BufferSource::waitAndGetImage() {
-	return getImage();
-}
 
-char* BufferSource::copyBuffer(char* buffer, int size) {
-    char* retVal = new char[size];
-    for (int i=0 ; i < size ; i++) {
-	retVal[i] = buffer[i];
-    }
-    return retVal;
-}
 
 char* BufferSource::transformBuffer(short* buffer, int size) {
 	char* retBuffer = new char[3 * size];

@@ -37,6 +37,9 @@
 using namespace std;
 using namespace log4cplus;
 
+// Forward declarations
+class EpixReaderThread;
+
 /**
 @author Daniel Hahn,,,
 */
@@ -53,10 +56,6 @@ public:
     EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "",
 		       string adjust = "") ; //FIXME: Config file handling is stoopid
 
-    virtual IplImage *getImage();
-
-    virtual IplImage *waitAndGetImage();
-
     ~EpixSource();
 
     bool timerSupported();
@@ -65,6 +64,9 @@ public:
 
     const static int CAMERA_DEFAULT = 0;
     const static int CAMERA_1280F = 1;
+
+	/// Allows the thread to insert a new image into the internal buffer. 
+	void bufferUpdate(char* newBuffer);
 
 private:
     /// Unit number from which this source reads
@@ -81,8 +83,6 @@ private:
     Mutex tMutex;
     /// Camera controller for this source
     EpixCameraController* controller;
-
-
 };
 
 #endif

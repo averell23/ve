@@ -87,6 +87,9 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
                         << textureSize << ") = " << heightFactor);
     }
 
+	leftCount = 0;
+	rightCount = 0;
+
     leftBrightness = 50;
     rightBrightness = 50;
 
@@ -131,15 +134,16 @@ void VideoCanvas::draw() {
     
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-    IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
-    if (!leftImage->imageData == NULL) {
-         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+	if (leftCount != leftEye->getFrameCount()) {
+		leftEye->lockImage();
+		leftCount = leftEye->getFrameCount();
+		IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                         GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
-        delete leftImage->imageData;
+		leftEye->releaseImage();
     } else {
         LOG4CPLUS_TRACE(logger, "Got empty image for left eye");
     }
-    cvReleaseImageHeader(&leftImage);
     glBegin(GL_QUADS);
     glTexCoord2d(0.0f, 0.0f);	// Bottom left
     glVertex3i(-1, -1, 0);
@@ -153,15 +157,16 @@ void VideoCanvas::draw() {
 
     // Right Quad
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-    IplImage* rightImage = rightEye->getImage();
-    if (!rightImage->imageData == NULL) {
+	if (rightCount != rightEye->getFrameCount()) {
+		rightEye->lockImage();
+		rightCount = rightEye->getFrameCount();
+		IplImage* rightImage = rightEye->getImage();	// FIXME: Check for image properties
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
                         GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
-        delete rightImage->imageData;
+		rightEye->releaseImage();
     } else {
-        LOG4CPLUS_TRACE(logger, "Got empty image for right eye");
+        LOG4CPLUS_TRACE(logger, "Got empty image for left eye");
     }
-    cvReleaseImageHeader(&rightImage);
     glBegin(GL_QUADS);
     glTexCoord2d(0.0f, 0.0f);
     glVertex3i(0, -1, 0);
@@ -213,8 +218,10 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
 		char name1[256], name2[256];
 		sprintf(name1,"quicksaved_left_%d.raw", imagesSaved);
 		sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
-		IplImage* image2 = rightEye->waitAndGetImage();
-		IplImage* image1 = leftEye->waitAndGetImage();
+		rightEye->lockImage();
+		leftEye->lockImage();
+		IplImage* image2 = rightEye->getImage();
+		IplImage* image1 = leftEye->getImage();
 		CaptureImagePair imgPair(0);
 		imgPair.buffer_a = image1->imageData;
 		imgPair.buffer_b = image2->imageData;
@@ -225,6 +232,8 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
 		info.planes = 3;
 		info.pixBytes = 1;
 		CaptureController::writeRAWFiles(name1, name2, &imgPair, &info);
+		rightEye->releaseImage();
+		leftEye->releaseImage();
 		imagesSaved++;
 	}
 }
