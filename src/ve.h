@@ -34,20 +34,19 @@
 #include <stdlib.h>
 #include <vector>
 #include <log4cplus/logger.h>
+#include "stereocalibration.h"
 #include "stopwatch.h"
 #include "videocanvas.h"
 #include "videosource.h"
 #include "overlay.h"
 #include "veeventsource.h"
 #include "veeventlistener.h"
-#include "stereocalibration.h"
 
 using namespace log4cplus;
 
 // Forward declarations
 class VideoCanvas;
 class VideoSource;
-class StereoCalibration;
 
 /**
   This is the program's main class that includes the basic application framework.
@@ -91,7 +90,7 @@ public:
     /** 
       Get the stereo calibration object.
     */
-    static StereoCalibration* getStereoCalibration() { return stereoCal; }
+    // static StereoCalibration* getStereoCalibration() { return stereoCal; }
 
     /**
     	Get the main timer.

@@ -190,6 +190,9 @@
 				RelativePath=".\src\statusoverlay.cpp">
 			</File>
 			<File
+				RelativePath=".\src\stereocalibration.cpp">
+			</File>
+			<File
 				RelativePath=".\src\stopwatch.cpp">
 			</File>
 			<File
@@ -329,6 +332,9 @@
 			</File>
 			<File
 				RelativePath=".\src\statusoverlay.h">
+			</File>
+			<File
+				RelativePath=".\src\stereocalibration.h">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.h">
