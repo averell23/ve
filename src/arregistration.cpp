@@ -177,7 +177,7 @@ void ARRegistration::resetCalibration() {
     if (Ve::mainVideo->zRot) {
 	    gamma = 180.0;
 	} */
-    MatrixUtils::rotate(T_orig, alpha, beta, gamma);
+     MatrixUtils::rotate(T_orig, alpha, beta, gamma);
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
     gsl_matrix_free(c);
     LOG4CPLUS_INFO(logger, "Registration reset.");
