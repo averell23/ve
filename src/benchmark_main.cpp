@@ -21,79 +21,71 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "stopwatch.h"
+
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <log4cplus/logger.h>
+#include <log4cplus/configurator.h>
 
+#include "xclibcontroller.h"
+#include "sf1280controller.h"
+#include "benchmark.h"
+#include "commandlineparser.h"
 
-Stopwatch::Stopwatch()
-{
-    running = false;
-	counter = 0;
-    ftime(&startStamp);
-    ftime(&stopStamp);
-}
+using namespace log4cplus;
 
+int main(int argc, char *argv[])
+{ 
+	cout << "Ve benchmark utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
+	char* config = "";
 
-Stopwatch::~Stopwatch()
-{
-}
+	PropertyConfigurator::doConfigure("../config/logger.properties");
+	Logger logger = Logger::getInstance("Ve.main");
 
-void Stopwatch::start() {
-    ftime(&startStamp);
-    running = true;
-}
-
-void Stopwatch::stop() {
-    ftime(&stopStamp);
-    running = false;
-}
-
-void Stopwatch::count(int number) {
-   counter += number; 
-}
-
-long Stopwatch::getSeconds() {
-    if (running) {
-		ftime(&stopStamp);
+	CommandLineParser parser("ve");
+    parser.setupOption("help", "Show usage information");
+    parser.setupParameter("epixconf", false, "Epix config file");
+    bool result = parser.parseCommandLine(argc, argv);
+    if (!result) {
+        cout << endl;
+        parser.printUsage();
+        exit(1);
     }
-    return stopStamp.time - startStamp.time;
-}
-
-long Stopwatch::getMilis() {
-    if (running) {
-		ftime(&stopStamp);
+	bool option = parser.getOptionValue("help");
+    if (option) {
+        cout << endl;
+        parser.printUsage();
+        exit(0);
     }
-    return abs(stopStamp.millitm - startStamp.millitm);
-}
 
-long Stopwatch::getCount() {
-    return counter;
-}
-
-float Stopwatch::getFramerate() {
-    if (running) {
-		ftime(&stopStamp);
-    }
-    
-    long seconds = stopStamp.time - startStamp.time;
-	/*printf("counter %l seconds %l\n",counter,seconds);*/
-    long milis = abs(stopStamp.millitm - startStamp.millitm);
-	/*printf("milis %ld\n",milis);*/
-	
-    return counter / ((double) ((seconds * 1000) + milis) / 1000.0f);   
-}
-
-float Stopwatch::getDatarate(long kbytes) {
-	if (running) {
-		ftime(&stopStamp);
+	string param = parser.getParamValue("epixconf");
+	if (param == "") {
+		LOG4CPLUS_DEBUG(logger, "No epix config file given, using defaults.");
+	} else {
+		config = (char*) param.c_str();
 	}
 
-	long milis = ((stopStamp.time - startStamp.time) * 1000) + abs(stopStamp.millitm - startStamp.millitm);
-	float rate = ((double) kbytes / 1024.0f) / ((double) milis / 1000.0f);
+	if (!XCLIBController::isOpen()) {
+		XCLIBController::openLib(config);
+	}
 
-	return rate;
-}
+	
+	SF1280Controller controller1(0);
+	SF1280Controller controller2(1);
+	controller1.initCamera();
+	controller2.initCamera();
 
-void Stopwatch::reset() {
-	counter = 0;
+
+	Ve::initGL(argc, argv);
+
+	Benchmark bench;
+	LOG4CPLUS_INFO(logger, "Now running benchmarks.");
+	bench.run();
+
+	/*Destruktoren aufrufen*/
+
+	if (XCLIBController::isOpen()) XCLIBController::closeLib();
+
+	return EXIT_SUCCESS;
 }

@@ -19,9 +19,9 @@ void EpixReaderThread::run() {
     // Check wether the EPIX lib is open
     if (!XCLIBController::isOpen())
         return;
-    bufsize = pxd_imageXdim() * pxd_imageYdim() * 3;
     int width = pxd_imageXdim();
     int height = pxd_imageYdim();
+	bufsize = width * height * 3;
     uchar* swapBuffer;
     pxvbtime_t fieldCounter = 0;
     int readResult = 0;

@@ -68,6 +68,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\src\buffersource.cpp">
+			</File>
+			<File
 				RelativePath=".\src\calibrationoverlay.cpp">
 			</File>
 			<File
@@ -104,9 +107,6 @@
 				RelativePath=".\src\fonttesteroverlay.cpp">
 			</File>
 			<File
-				RelativePath=".\src\gainoverlay.cpp">
-			</File>
-			<File
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
@@ -114,6 +114,9 @@
 			</File>
 			<File
 				RelativePath=".\src\overlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\registrationoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\sf1280controller.cpp">
@@ -161,6 +164,9 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\src\buffersource.h">
+			</File>
+			<File
 				RelativePath=".\src\calibrationoverlay.h">
 			</File>
 			<File
@@ -197,9 +203,6 @@
 				RelativePath=".\src\fonttesteroverlay.h">
 			</File>
 			<File
-				RelativePath=".\src\gainoverlay.h">
-			</File>
-			<File
 				RelativePath=".\src\offsetoverlay.h">
 			</File>
 			<File
@@ -207,6 +210,9 @@
 			</File>
 			<File
 				RelativePath=".\src\position.h">
+			</File>
+			<File
+				RelativePath=".\src\registrationoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\sf1280controller.h">

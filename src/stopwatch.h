@@ -26,6 +26,8 @@
 
 #include <sys/timeb.h>  	// Time buffer header
 #include <stdlib.h>
+#include <cstdlib>
+#include <iostream>
 
 
 /**
@@ -44,6 +46,9 @@ public:
     
     /** Increases Frame count */
     void count(int number = 1);
+
+	/** Resets the frame count */
+	void reset();
     
     /** Get the elapsed time in full seconds **/
     long getSeconds();
@@ -57,6 +62,13 @@ public:
     
     /** Get the framerate */
     float getFramerate();
+
+	/**
+		Get a data rate for the time in which the Stopwatch has run.
+		@param kbytes Kilobytes of data while the watch ran
+		@return Throughput in MByte/s
+	*/
+	float getDatarate(long kbytes);
     
     Stopwatch();
 

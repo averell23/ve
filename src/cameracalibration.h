@@ -33,7 +33,7 @@
 #include <iostream>
 #include <log4cplus/logger.h>
 #include <math.h>
-#include <gsl/gsl_poly.h>
+// FIXME #include <gsl/gsl_poly.h>
 
 using namespace std;
 using namespace log4cplus;
