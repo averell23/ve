@@ -25,15 +25,12 @@
 
 Logger DummyOverlay::logger = Logger::getInstance("Ve.DummyOverlay");
 
-DummyOverlay::DummyOverlay(bool display) : Overlay(display)
-{
+DummyOverlay::DummyOverlay(bool display) : Overlay(display) {
     rotation = 0;
 }
 
 
-DummyOverlay::~DummyOverlay()
-{
-}
+DummyOverlay::~DummyOverlay() {}
 
 void DummyOverlay::drawOverlay() {
     glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
@@ -44,46 +41,46 @@ void DummyOverlay::drawOverlay() {
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
-    
-	// glTranslatef(0.0f, 0.0f, 0.5f); // In front of offset, maybe behind other overlays...
+
+    glTranslatef(0.0f, 0.0f, -1.0f); // In front of offset, maybe behind other overlays...
 
     glTranslatef(-0.5f, 0.0f, 0.0f);
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-    glBegin(GL_QUADS); 
-	glVertex3f(-0.1f, -0.1f, 0.0f);
-	glVertex3f(0.1f, -0.1f, 0.0f);
-	glVertex3f(0.1f, 0.1f, 0.0f);
+    glBegin(GL_QUADS);
+    glVertex3f(-0.1f, -0.1f, 0.0f);
+    glVertex3f(0.1f, -0.1f, 0.0f);
+    glVertex3f(0.1f, 0.1f, 0.0f);
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
-	glVertex3f(-0.1f, 0.1f, 0.0f);
+    glVertex3f(-0.1f, 0.1f, 0.0f);
     glEnd();
-    
+
     glLoadIdentity();
     glTranslatef(-0.5f + (sin(rotation/5.0)*0.3), cos(rotation/5.0)*0.3, 0.0f);
-    glRotatef(rotation*4.0, 0.0f, 0.0f, 1.0f);    
-    
-    glBegin(GL_TRIANGLES); 
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.1f, 0.1f, 0.0f);
-	glVertex3f(0.1f, -0.1f, 0.0f);
+    glRotatef(rotation*4.0, 0.0f, 0.0f, 1.0f);
+
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.1f, 0.1f, 0.0f);
+    glVertex3f(0.1f, -0.1f, 0.0f);
     glEnd();
 
     glLoadIdentity();
     glTranslatef(0.5f - (sin(rotation/5.0)*0.3), cos(rotation/5.0)*0.3, 0.0f);
     glRotatef(rotation*4.0, 0.0f, 0.0f, 1.0f);
 
-    glBegin(GL_TRIANGLES); 
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.1f, 0.1f, 0.0f);
-	glVertex3f(0.1f, -0.1f, 0.0f);
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.1f, 0.1f, 0.0f);
+    glVertex3f(0.1f, -0.1f, 0.0f);
     glEnd();
-    
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     // Restore Matrices
     glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );		
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
-    
+
     rotation += 0.8f;
     LOG4CPLUS_TRACE(logger, "Rotation now at " << rotation);
 }

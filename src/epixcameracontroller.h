@@ -33,10 +33,10 @@ using namespace log4cplus;
 Interface to control a camera that is connected to an EPIX framegrabber board. 
 The behaviour of the methods will be determined by the camara model, they
 have no effect in the default implementation.
-
+ 
 @author Daniel Hahn,,,
 */
-class EpixCameraController{
+class EpixCameraController {
 public:
     /**
       Creates a new camera controller. 
@@ -47,14 +47,14 @@ public:
     EpixCameraController(int unit);
 
     ~EpixCameraController();
-    
+
     /**
       Initializes the camera for use.
       
       @return true, if the camera was initialized successfully.
     */
     virtual bool initCamera();
-    
+
     /**
       Sets the gain value for the camera.
       
@@ -66,7 +66,7 @@ public:
 protected:
     /// Unit number of the board to which the camera is connected
     int unit;
-    
+
 private:
     /// Logger for this class
     static Logger logger;

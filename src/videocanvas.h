@@ -45,28 +45,35 @@ using namespace log4cplus;
 A canvas for displaying a stereo video feed. This retrieves a picture for the
 left and the right eye and displays them in their respective half of the 
 screen.
-
+ 
 @author Daniel Hahn,,,
 */
 class VideoCanvas : public VeEventListener {
 public:
     /** Creates a new video canvas with the given sources for the
         right and left eye. **/
-    VideoCanvas(VideoSource *left, VideoSource *right);
+    VideoCanvas(VideoSource *left, VideoSource *right, bool xRot = false, bool yRot = false, bool zRot = false);
 
     /** Draws the Video Canvas by uploading the texture images */
     void draw();
-    
+
     ~VideoCanvas();
 
-	void recieveEvent(VeEvent &e);
+    void recieveEvent(VeEvent &e);
+
+    /// To rotate 180 degrees around the x Axis
+    bool xRot;
+    /// To rotate 180 degrees around the y Axis
+    bool yRot;
+    /// To rotate 180 degrees around the z Axis
+    bool zRot;
 
 protected:
     /** The width and height of the image to be displayed */
     int imageWidth, imageHeight;
     /** The video sources for this canvas */
     VideoSource *leftEye, *rightEye;
-    /** The texture size used by this canvas. This may be large 
+    /** The texture size used by this canvas. This may be large
         than the image size */
     int textureSize;
     /** Textures for OpenGL */
@@ -75,9 +82,9 @@ protected:
     double widthFactor, heightFactor;
     /// Logger for this class
     static Logger logger;
-	/// Brightness setting for the sources
-	int leftBrightness, rightBrightness;
-    
+    /// Brightness setting for the sources
+    int leftBrightness, rightBrightness;
+
 };
 
 #endif

@@ -27,28 +27,25 @@ FTGLTextureFont* FontManager::font = NULL;
 Logger FontManager::logger = Logger::getInstance("Ve.FontManager");
 
 FTGLTextureFont* FontManager::getFont() {
-    if (font == NULL) createFont();
+    if (font == NULL)
+        createFont();
     return font;
 }
 
 void FontManager::createFont() {
     font = new FTGLTextureFont(DEFAULT_FONT);
     if (font->Error()) {
-		LOG4CPLUS_ERROR(logger, "Font could not be created.");
-		font = NULL;
+        LOG4CPLUS_ERROR(logger, "Font could not be created.");
+        font = NULL;
     } else {
-		font->FaceSize(40);
-		LOG4CPLUS_DEBUG(logger, "Font successfully created.");
+        font->FaceSize(40);
+        LOG4CPLUS_DEBUG(logger, "Font successfully created.");
     }
 }
 
-FontManager::FontManager()
-{
-}
+FontManager::FontManager() {}
 
 
-FontManager::~FontManager()
-{
-}
+FontManager::~FontManager() {}
 
 

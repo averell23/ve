@@ -30,18 +30,17 @@
 /**
 Event containing a position update. The type of this event is always VeEvent::POSITION_EVENT and
 the event code is always 0.
-
+ 
 @author Daniel Hahn,,,
 */
-class VePositionEvent : public VeEvent
-{
+class VePositionEvent : public VeEvent {
 public:
 
     VePositionEvent(Position& position);
-    
+
     ~VePositionEvent();
-    
-    /** 
+
+    /**
       Gets the position supplied by the event.
     */
     Position getPosition();

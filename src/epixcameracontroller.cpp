@@ -35,15 +35,12 @@ bool EpixCameraController::setGain(int gain) {
     return true;
 }
 
-EpixCameraController::EpixCameraController(int unit)
-{
+EpixCameraController::EpixCameraController(int unit) {
     EpixCameraController::unit = unit;
-	LOG4CPLUS_DEBUG(logger, "Camera controller created on unit " << unit);
+    LOG4CPLUS_DEBUG(logger, "Camera controller created on unit " << unit);
 }
 
 
-EpixCameraController::~EpixCameraController()
-{
-}
+EpixCameraController::~EpixCameraController() {}
 
 

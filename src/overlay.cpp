@@ -23,18 +23,16 @@
  ***************************************************************************/
 #include "overlay.h"
 
-Overlay::Overlay(bool display)
-{
+Overlay::Overlay(bool display) {
     displayState = display;
 }
 
 
-Overlay::~Overlay()
-{
-}
+Overlay::~Overlay() {}
 
 void Overlay::draw() {
     if (displayState) {
-		drawOverlay();
+        drawOverlay();
     }
 }
+

@@ -48,10 +48,10 @@ using namespace log4cplus;
   
   @author Daniel Hahn,,,
 */
-class XCLIBController{
+class XCLIBController {
 public:
     ~XCLIBController();
-    
+
     /**
       Opens the XCLIB library for use.
       
@@ -59,10 +59,10 @@ public:
              Defaults to NULL.
       @return A value of 0 if the library was successfully opened (or is
               already open), if the library could not be opened the
-	      XCLIB error code is returned.
+       XCLIB error code is returned.
     */
     static int openLib(string configFile = "");
-    
+
     /**
       Closes the XCLIB library.
       
@@ -70,14 +70,14 @@ public:
               not open), in case of problems the XCLIB error code is returned.
     */
     static int closeLib();
-    
+
     /**
       Check if the library is currently open.
       
       @return True if, and only if, the library is currently open for use
     */
     static bool isOpen();
-    
+
     /**
       Puts the selected unit into live capture mode.
       
@@ -85,7 +85,7 @@ public:
       @return The pxd_goLive error code from the XCLIB
     */
     static int goLive(int unit);
-    
+
     /**
       Puts the selected unit out of the live capture mode.
       
@@ -93,7 +93,7 @@ public:
       @return The pxd_goUnLive error code from the XCLIB
     */
     static int goUnLive(int unit);
-    
+
     /**
       Gets a copy of the unit's frame buffer. 
       
@@ -104,7 +104,7 @@ public:
       @return The pxd_readuchar return code. (0 if successful).
     */
     static int getBufferCopy(int unit, uchar* buffer, int bufsize);
-    
+
     /**
       Initializes the CamLink's built-in serial, if supported by the
       board and library.
@@ -113,7 +113,7 @@ public:
       @return true if the port was opened successfully.
     */
     static bool initCamLinkSerial(int unit);
-    
+
     /**
       Closes the CamLink's built-in serial port.
       
@@ -121,7 +121,7 @@ public:
       @return true if the port was closed successfully.
     */
     static bool closeCamLinkSerial(int unit);
-    
+
     /**
       Writes a string to the built-in CamLink serial port.
       
@@ -131,8 +131,8 @@ public:
                   connected
       @return The result string, if one was returned by the
               serial partner. This may also contain an error
-	      string that indicates that an internal error
-	      was encountered.
+       string that indicates that an internal error
+       was encountered.
       */
     static string writeCamLinkSerial(int unit, string message);
 

@@ -23,51 +23,49 @@
  ***************************************************************************/
 #include "fonttesteroverlay.h"
 
-FontTesterOverlay::FontTesterOverlay(bool display) : Overlay(display)
-{
+FontTesterOverlay::FontTesterOverlay(bool display) : Overlay(display) {
     cout << "Creating font" << endl;
     font = new FTGLTextureFont("../fonts/obliviousfont.ttf"); // FIXME: Font path
     cout << "Yup." << font << endl;
     if (font->Error()) {
-		cout << "Duh!" << endl;
-		delete font;
-		font = NULL;
+        cout << "Duh!" << endl;
+        delete font;
+        font = NULL;
     } else {
-		font->FaceSize(50);
+        font->FaceSize(50);
     }
-	rightTimer = Ve::getRightSource()->getTimer();
-	leftTimer = Ve::getLeftSource()->getTimer();
-	gTimer = Ve::getTimer();
+    rightTimer = Ve::getRightSource()->getTimer();
+    leftTimer = Ve::getLeftSource()->getTimer();
+    gTimer = Ve::getTimer();
     cout << "Font tester created" << endl;
-	text = new char[256];
+    text = new char[256];
 }
 
 
-FontTesterOverlay::~FontTesterOverlay()
-{
-}
+FontTesterOverlay::~FontTesterOverlay() {}
 
 void FontTesterOverlay::drawOverlay() {
-	if (font == NULL) return; // Sanity check
+    if (font == NULL)
+        return; // Sanity check
 
-	sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), gTimer->getFramerate());
-    
-	glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), gTimer->getFramerate());
+
+    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glOrtho(-1000, 1000, -1000, 1000, 0, 1);	// ...and load the Identity Matrix instead
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
-    
+
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
     glTranslatef(-0.95f, 0.9f, 0.0f);
-	font->Render(text);
-	glTranslatef(1.0f, 0.0f, 0.0f);
     font->Render(text);
-    
+    glTranslatef(1.0f, 0.0f, 0.0f);
+    font->Render(text);
+
     // Restore Matrices
     glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );		
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
 }

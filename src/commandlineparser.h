@@ -34,25 +34,25 @@ using namespace std;
 
 /**
 A parser for Command line options. 
-
+ 
 @author Daniel Hahn,,,
 */
-class CommandLineParser{
+class CommandLineParser {
 public:
-    /** 
+    /**
        Creates a new parser.
        @value programName This should be set to the program name, that
                           is the value of argv[0]. (This is only used for
-			  printing the usage information, and will be
-			  automatically re-set when parsing a command line).
+     printing the usage information, and will be
+     automatically re-set when parsing a command line).
     */
     CommandLineParser(string programName);
     ~CommandLineParser();
-    
+
     static const int OPTION_UNSET = 0;
     static const int OPTION_SET = 1;
     static const int OPTION_ILLEGAL = 2;
-    
+
     /**
       Retrieves the value of a parameter that 
       was given in the form of 
@@ -60,29 +60,29 @@ public:
       
       @return The value of the parameter, or an empty
                string if paramName was not the name
-	       of a parameter option.
+        of a parameter option.
     */
     string getParamValue(string paramName);
-    
+
     /**
       Retrieves the value of an command line option
       flag. 
       
       @return A value of OPTION_SET or OPTION_UNSET indicating
               if the option was set. If the option is illegal
-	      or an other problem occured, OPTION_ILLEGAL is
-	      returned.
+       or an other problem occured, OPTION_ILLEGAL is
+       returned.
     **/
     int getOptionValue(string optionName);
-    
-    /** 
+
+    /**
       Sets up a possible parameter. 
       @param name The parameter's name.
       @param required Indicates if the parameter is required.
       @param description A description of the parameter
     */
     void setupParameter(string name, bool required = true, string description = "");
-    
+
     /**
       Set up a possible option.
       @param name The option's name.
@@ -90,7 +90,7 @@ public:
     */
     void setupOption(string name, string description = "");
 
-    /** 
+    /**
       Parses the command line. (This also re-sets the internal
       programName to the value of argv[0])
       
@@ -98,7 +98,7 @@ public:
                    and syntactically correct.
     */
     bool parseCommandLine(int argc, char *argv[]);
-    
+
     /** Prints usage information */
     void printUsage();
 
@@ -112,17 +112,18 @@ private:
     /// Contains all required parameters
     map<string, bool> requiredParameters;
     /// Contains the options that have been set
-    set<string> options;
+    set
+        <string> options;
     /// Contains the parameter/value pairs
     map<string, string> parameters;
     /// Logger for this class
     static Logger logger;
-    
+
     /**
       Resets the list of required Parameters.
     */
     void resetRequiredParameters();
-    
+
 };
 
 #endif

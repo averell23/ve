@@ -33,33 +33,33 @@ using namespace log4cplus;
 
 /**
 Convenience class that can be used to post VeEvents to listeners.
-
+ 
 @author Daniel Hahn,,,
 */
-class VeEventSource{
+class VeEventSource {
 public:
-    /** 
+    /**
       Creates a new VeEventSource.
     */
     VeEventSource();
-    
+
     /**
       Registers an event listener with this source. Each listener will 
       be notified of events from this source.
     */
     void addListener(VeEventListener *listener);
-    
+
     /**
       Posts an event to all registerd listeners.
     */
     void postEvent(VeEvent &e);
-    
+
 private:
     /// List of registered listeners.
     vector<VeEventListener*> listeners;
     /// Logger for this class
     static Logger logger;
-    
+
 };
 
 #endif

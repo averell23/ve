@@ -33,25 +33,25 @@ CORBAController::CORBAController()  : Thread() {
 
 void CORBAController::init(int argc, char** argv) {
     try {
-	orb = CORBA::ORB_init(argc, argv);
-	LOG4CPLUS_DEBUG(logger, "ORB init complete");
-	// Get root POA
-	CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
-	PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
-	// Print EOR FIXME: Using naming service instead
-	obj = positionSource->_this();
-	CORBA::String_var sior(orb->object_to_string(obj));
-	cout << "IOR of position updater object: " << sior << endl;
-	
-	// Activate the POA
-	PortableServer::POAManager_var pman = poa->the_POAManager();
-	pman->activate();
+        orb = CORBA::ORB_init(argc, argv);
+        LOG4CPLUS_DEBUG(logger, "ORB init complete");
+        // Get root POA
+        CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
+        PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
+        // Print EOR FIXME: Using naming service instead
+        obj = positionSource->_this();
+        CORBA::String_var sior(orb->object_to_string(obj));
+        cout << "IOR of position updater object: " << sior << endl;
+
+        // Activate the POA
+        PortableServer::POAManager_var pman = poa->the_POAManager();
+        pman->activate();
     } catch (CORBA::SystemException& e) {
-	LOG4CPLUS_ERROR(logger, "Caught CORBA::SystemException. CORBA init failed.");
-	return;
+        LOG4CPLUS_ERROR(logger, "Caught CORBA::SystemException. CORBA init failed.");
+        return;
     } catch (CORBA::Exception& e) {
-	LOG4CPLUS_ERROR(logger, "Caught CORBA::Exception. CORBA init failed.");
-	return;
+        LOG4CPLUS_ERROR(logger, "Caught CORBA::Exception. CORBA init failed.");
+        return;
     }
     LOG4CPLUS_INFO(logger, "CORBA initialized, starting CORBA handler.");
     this->start();
@@ -61,10 +61,10 @@ void CORBAController::run() {
     running = true;
     LOG4CPLUS_DEBUG(logger, "CORBA thread started.");
     while (running) {
-	if (orb->work_pending()) {
-	    orb->perform_work();
-	}
-	yield();
+        if (orb->work_pending()) {
+            orb->perform_work();
+        }
+        yield();
     }
 }
 
@@ -72,8 +72,7 @@ void CORBAController::addPositionEventListener(VeEventListener* listener) {
     positionSource->addListener(listener);
 }
 
-CORBAController::~CORBAController()
-{
+CORBAController::~CORBAController() {
     running = false;
     positionSource->_remove_ref();
     orb->destroy();

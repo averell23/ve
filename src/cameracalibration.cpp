@@ -23,76 +23,131 @@
  ***************************************************************************/
 #include "cameracalibration.h"
 
-CameraCalibration::CameraCalibration(VideoSource *input, 
-				     string filename, 
-				     CvSize patternDimension,
-				     CvSize chessSize)
-{
+Logger CameraCalibration::logger = Logger::getInstance("Ve.CameraCalibration");
+
+CameraCalibration::CameraCalibration(VideoSource *input,
+                                     string filename,
+                                     CvSize patternDimension,
+                                     CvSize chessSize) {
     CameraCalibration::input = input;
     CameraCalibration::filename = filename;
-	if (strcmp(filename.c_str(), "") == true) {
-		load(filename);
+    if (strcmp(filename.c_str(), "") == true) {
+        load(filename);
     }
     setPatternDimension(patternDimension);
     setChessSize(chessSize);
     useIntrisincGuess = false;
+    // init calibration values
+    distortions = new float[4];
+    calibrationMatrix = new float[3*3];
+    rotationMatrices = NULL;
+    translationVects = NULL;
 }
 
 bool CameraCalibration::takeSnapshot() {
     if (input == NULL) { 		// Basic sanity check
-		return false;
+        LOG4CPLUS_ERROR(logger, "Could not take snapshot, video source is NULL.");
+        return false;
     }
-    IplImage* capt = input->getImage();
+    IplImage* capt = input->waitAndGetImage();
     IplImage* grayTmp = cvCreateImage(cvSize( capt->width, capt->height ), IPL_DEPTH_8U, 1);
     cvCvtColor(capt, grayTmp, CV_BGR2GRAY);
-    images.push_back(grayTmp);
+    delete capt->imageData;
+    cvReleaseImageHeader(&capt);
+    CvPoint2D32f* corners = guessCorners(grayTmp);
+    if (corners != NULL) {
+	images.push_back(grayTmp);
+	guessedCorners.push_back(corners);
+	LOG4CPLUS_DEBUG(logger, "Snapshot taken.");
+    } else {
+	LOG4CPLUS_DEBUG(logger, "Snapshot not taken, not all corners found.");
+    }
     return true;
 }
 
-bool CameraCalibration::recalibrate() {
-    CvPoint2D32f* imagePoints = guessCorners();
-    CvPoint3D32f* objectPoints = generatePattern();
-    int* numPoints = new int[images.size()];
-    CvSize imageSize = cvSize(images[0]->width, images[0]->height);
-    if (&translationVects != NULL) {
-		delete &translationVects;
+void CameraCalibration::recalibrate() {
+    if (images.size() == 0) {
+        LOG4CPLUS_DEBUG(logger, "No snapshots available, cannot calibrate.");
+        return;
     }
-    if (&rotationMatrices != NULL) {
-		delete &rotationMatrices;
+    LOG4CPLUS_DEBUG(logger, "Trying to calibrate camera.");
+    int pointCount = patternDimension.width * patternDimension.height;
+    // Assemble the array of all guessed corners
+    CvPoint2D32f* imagePoints = new CvPoint2D32f[guessedCorners.size() * pointCount];
+    int absPointPos = 0;
+    for (int imgPos = 0 ; imgPos < guessedCorners.size() ; imgPos++) {
+	for (int pointPos = 0 ; pointPos < pointCount ; pointPos++) {
+	    imagePoints[absPointPos].x = guessedCorners[imgPos][pointPos].x;
+	    imagePoints[absPointPos].y = guessedCorners[imgPos][pointPos].y;
+	    absPointPos++;
+	}
+    }
+    // Get the chessboard pattern description
+    CvPoint3D32f* objectPoints = generatePattern();
+    // Initialize the number of point counter for each image
+    int* numPoints = new int[images.size()];
+    for (int i = 0 ; i < images.size() ; i++) {
+        numPoints[i] = pointCount;
+    }
+    // The image size
+    CvSize imageSize = cvSize(images[0]->width, images[0]->height);
+    // Initialize the result 
+    if (translationVects != NULL) {
+        delete translationVects;
+    }
+    if (rotationMatrices != NULL) {
+        delete rotationMatrices;
     }
     translationVects = new float[3 * images.size()];
     rotationMatrices = new float[3 * 3 * images.size()];
-    
+
+    LOG4CPLUS_DEBUG(logger, "About to call calibration routine.");
     cvCalibrateCamera(images.size(), numPoints, imageSize,
-		      imagePoints, objectPoints,
-		      distortions, calibrationMatrix,
-		      translationVects, rotationMatrices,
-		      useIntrisincGuess);
-		      
-    
+                      imagePoints, objectPoints,
+                      distortions, calibrationMatrix,
+                      translationVects, rotationMatrices,
+                      useIntrisincGuess);
+    LOG4CPLUS_DEBUG(logger, "Calibration routine complete");
+
+
     delete imagePoints;
     delete objectPoints;
     delete numPoints;
 
-	return true; // FIXME (later, since calibration errors are not reported by lib)
+    LOG4CPLUS_INFO(logger, "Camera calibrated.");
+    LOG4CPLUS_INFO(logger, "Focal length: " 
+		   << calibrationMatrix[0] << " " 
+		   << calibrationMatrix[4]);
+    LOG4CPLUS_INFO(logger, "Principal Point: "
+		   << calibrationMatrix[2] << " "
+		   << calibrationMatrix[5]);
+    LOG4CPLUS_INFO(logger, "Distortion: " 
+		   << distortions[0] << " "
+		   << distortions[1] << " "
+		   << distortions[2] << " "
+		   << distortions[3]);
 }
 
 bool CameraCalibration::load(string filename) {
-	return false;
+    return false;
 }
 
 void CameraCalibration::deleteSnapshots() {
     for ( int i = 0 ; i < images.size() ; i++) {
-	cvReleaseImage(&images[i]);
+        cvReleaseImage(&images[i]);
     }
     images.clear();
+    for ( int i = 0 ; i < guessedCorners.size() ; i++) {
+	delete guessedCorners[i];
+    }
+    guessedCorners.clear();
 }
 
 void CameraCalibration::setPatternDimension(CvSize dimension) {
     if (dimension.height < dimension.width) {
-		int temp = dimension.height;
-		dimension.height = dimension.width;
-		dimension.width = temp;
+        int temp = dimension.height;
+        dimension.height = dimension.width;
+        dimension.width = temp;
     }
     patternDimension = dimension;
 }
@@ -105,57 +160,49 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
     CvPoint3D32f* objPoints = new CvPoint3D32f[images.size() * patternDimension.width * patternDimension.height];
     int pointPosition = 0; // Position in the point list
     for (int imgNum = 0 ; imgNum < images.size() ; imgNum++) { // count through images
-		for (int heightPos = patternDimension.height - 1 ; heightPos >= 0 ; heightPos--) { // count through height
-			for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
-			objPoints[pointPosition].x = heightPos * chessSize.height;
-			objPoints[pointPosition].y = widthPos * chessSize.width;
-			objPoints[pointPosition].z = 0;
-			pointPosition++; // absolute count
-			} // for width
-		} // for height 
+        for (int heightPos = patternDimension.height - 1 ; heightPos >= 0 ; heightPos--) { // count through height
+            for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
+                objPoints[pointPosition].x = heightPos * chessSize.height;
+                objPoints[pointPosition].y = widthPos * chessSize.width;
+                objPoints[pointPosition].z = 0;
+                pointPosition++; // absolute count
+            } // for width
+        } // for height
     } // for images
-    
+
+    LOG4CPLUS_DEBUG(logger, "Calibration pattern created.");
+
     return objPoints;
 }
 
-CvPoint2D32f* CameraCalibration::guessCorners() { // FIXME: Could also remove "bad" images. Don't forget docu update if fixed
-    if (images.size() == 0) // Sanity check
-		return NULL; 
+CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     int pointCount = patternDimension.width * patternDimension.height;
-    int pointAbsPos = 0; // Position of current point in all images
-    CvPoint2D32f* cornerPoints = new CvPoint2D32f[images.size() * pointCount];
     CvPoint2D32f* tempPoints = new CvPoint2D32f[pointCount + 1];
     IplImage* threshTmp; // Temp Image for corner detection
     int cornerNum; // Number of corners found
-    threshTmp = cvCreateImage(cvSize(images[0]->width, images[0]->height), IPL_DEPTH_8U, 1);
-    CvSize searchWindow = cvSize(chessSize.width * 2, chessSize.height * 2); // Size of the search window for SubPix 
-                                                                             // FIXME: value's unit not understood
-    for (int imgPos = 0 ; imgPos < images.size() ; imgPos++) { // through images
-		int found = cvFindChessBoardCornerGuesses(images[imgPos], threshTmp,
-							0, patternDimension,
-							tempPoints,
-							&cornerNum);
-		if (found != 0) {
-			cvFindCornerSubPix(images[imgPos], tempPoints, cornerNum,			// FIXME: Last parameter not understood
-							searchWindow, cvSize(-1, -1),
-					cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
-					      
-		}
-		for (int pointPos = 0 ; pointPos < pointCount ; pointPos++) {
-			cornerPoints[pointAbsPos].x = tempPoints[pointPos].x;
-			cornerPoints[pointAbsPos].y = tempPoints[pointPos].y;
-			pointAbsPos++;
-		}
-    } // for images
-  
+    threshTmp = cvCreateImage(cvSize(image->width, image->height), IPL_DEPTH_8U, 1);
+    CvSize searchWindow = cvSize(chessSize.width * 2, chessSize.height * 2); // Size of the search window for SubPix
+    // FIXME: value's unit not understood
+    cornerNum = patternDimension.height * patternDimension.width;
+    int found = cvFindChessBoardCornerGuesses(image, threshTmp,
+                0, patternDimension,
+                tempPoints,
+                &cornerNum);
+
+    if (found != 0) {
+        cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
+                           searchWindow, cvSize(-1, -1),
+                           cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
+        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found);
+    } else {
+        LOG4CPLUS_WARN(logger, "Corner find unsuccessful, corner count: " << cornerNum);
+        tempPoints = NULL;
+    }
+
     cvReleaseImage(&threshTmp);
-    delete tempPoints;
-    return cornerPoints;
+    return tempPoints;
 }
 
-CameraCalibration::~CameraCalibration()
-{
+CameraCalibration::~CameraCalibration() {
     deleteSnapshots();
 }
-
-

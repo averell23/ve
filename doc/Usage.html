@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Ve Usage Guide</title>
+  <style type="text/css">
+  <!--
+  .code { 
+      font-family:monospace;
+      font-weight:bold;
+  }
+  .listing {
+      font-family:monospace;
+      font-weight:bold;
+      margin-left:5ex;
+      margin-right:10ex;
+      margin-top:1ex;
+      margin-bottom:2ex;
+      padding:2ex;
+      background-color:beige;
+      width:auto;
+  }
+  .steps {
+      margin-left:5ex;
+      margin-bottom:2ex;
+      background-color:beige;
+      padding:2ex;
+  }
+  .directory { 
+      font-family:monospace;
+      font-weight:bold;
+      margin-left:5ex;
+      margin-right:5ex;
+      padding:2ex;
+      background-color:lavender; 
+  }
+  .dirdesc { 
+      font-weight:normal;
+      font-family:sans-serif;
+      padding-left:1ex;
+  }
+  -->
+  </style>
+  </head>
+  <body>
+    <h1>Usage guide for the Ve software</h1>
+    The ve package contains the ve executable, which is an AR application that
+    uses the ve framework.
+    
+    <h2>Command line parameters</h2>
+    The ve program accepts the following command line parameters and options:
+    <div class="steps">
+    <ul>
+    	<li><b>-source</b> Specifies the image source that should be used. Valid
+	options are "epix", for the use of an EPIX Inc. frame grabber card and
+	"dummy" for a collection of dummy images.</li>
+	<li><b>-epixconf</b> Specifiy a parameter file that should be loaded
+	upon opening the EPIX frame grabber library. This parameter only takes
+	effect when the "epix" video source is selected.</li>
+	<li><b>-debug</b> This forces an specific debug level to be used for
+	all logging output, overruling the settings in the property file. Valid
+	settings are: "trace","debug","info","warn","error" and "fatal". This
+	option will only take effect <b>after</b> the command line has been
+	parsed.</li>
+	<li><b>-help</b> Causes usage information to be printed out.</li>
+    </ul>
+    </div>    
+    <h2>Configuration files</h2>
+    Currently the only configuration file used by the application is the
+    log4cplus configuration, supposed to be found in <span
+    class="code">../logger.properties</span>. 
+    <h2>Keyboard commands</h2>
+    When running, the application may be controlled by keystroke commands:
+    <div class="steps">
+    <ul>
+    	<li><b>Status Display</b></li>
+	<ul>
+		<li><b>space</b> Toggle on/off</li>
+	</ul>
+	<li><b>Offset Correction</b></li>
+	<ul>
+		<li><b>i</b> Acquire an offset correction image from a black
+		             camera image</li>
+		<li><b>o</b> Toggle offset correction on/off</li>
+	</ul>
+	<li><b>Brigthness Control</b> (May not work for all video sources)</li>
+	<ul>
+		<li><b>1</b> Decrease left eye brightness by 5%</li>
+		<li><b>2</b> Increase left eye brightness by 5%</li>
+		<li><b>3</b> Decrease right eye brightness by 5%</li>
+		<li><b>4</b> Increase right eye brightness by 5%</li>
+	</ul>
+    </ul>
+    </div>
+  </body>
+</html>

@@ -38,7 +38,7 @@ public:
     DummyOverlay(bool display = true);
 
     ~DummyOverlay();
-    
+
     /** Call the OpenGL commands that draw the overlay */
     void drawOverlay();
 

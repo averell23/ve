@@ -21,20 +21,59 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENTLISTENER_H
-#define VEEVENTLISTENER_H
+#ifndef CALIBRATIONOVERLAY_H
+#define CALIBRATIONOVERLAY_H
 
+#include "overlay.h"
 #include "veevent.h"
+#include "veeventlistener.h"
+#include "fontmanager.h"
+#include "cameracalibration.h"
+#include "ve.h"
+#include <log4cplus/logger.h>
+
+using namespace log4cplus;
 
 /**
-Use to allow child classes to listen for VeEvents.
+Provides an interface to the camera calibration routines.
  
 @author Daniel Hahn,,,
 */
-class VeEventListener {
+class CalibrationOverlay : public Overlay, public VeEventListener {
 public:
-    /// Called when recieving an event.
-    virtual void recieveEvent(VeEvent &e) = 0;
+
+    CalibrationOverlay(bool display);
+
+    ~CalibrationOverlay();
+
+    /// Recieves events
+    void recieveEvent(VeEvent &e);
+
+    void drawOverlay();
+
+    static const int LEFT_EYE = 0;
+    static const int RIGHT_EYE = 1;
+
+private:
+    /// Pointer to the font object
+    FTGLTextureFont* font;
+    /**
+      Draws the picture for one eye.
+    */
+    void drawOneEye();
+    /// Buffers for text rendering
+    char* text[1];
+    /// Calbibration mode: LEFT_EYE or RIGHT_EYE
+    int calibrationMode;
+    /// Logger for this class
+    static Logger logger;
+    /// If the image of the eye that is NOT calibrated should be blanked
+    bool blankEye;
+    /// Blanks the unused eye
+    void blankOtherEye();
+    /// Current calibration object
+    CameraCalibration* cCalibrationObject;
+
 };
 
 #endif

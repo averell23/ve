@@ -25,17 +25,17 @@
 #ifndef POSITION_H
 #define POSITION_H
 
-/** 
+/**
   Simple storage class for a 3D (x,y,z) position.
 */
 class Position {
 public:
     Position(float x = 0, float y = 0, float z = 0) {
-	Position::x = x;
-	Position::y = y;
-	Position::z = z;
+        Position::x = x;
+        Position::y = y;
+        Position::z = z;
     }
-    
+
     float x,y,z;
 };
 

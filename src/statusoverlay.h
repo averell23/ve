@@ -34,23 +34,25 @@
 
 /**
 Overlay to display system status information.
-
+ 
 @author Daniel Hahn,,,
 */
-class StatusOverlay : public Overlay, public VeEventListener
-{
+class StatusOverlay : public Overlay, public VeEventListener {
 public:
     StatusOverlay(bool display);
 
     ~StatusOverlay();
-    
+
     void drawOverlay();
-    
+
+    /// Recieves events
+    void recieveEvent(VeEvent &e);
+
 private:
     /// Various timers
     Stopwatch *rightTimer, *leftTimer, *videoTimer;
-	/// Pointers to the video sources
-	VideoSource *rightSource, *leftSource;
+    /// Pointers to the video sources
+    VideoSource *rightSource, *leftSource;
     /// Logger for this class
     static Logger logger;
     /// The font used for status display
@@ -59,9 +61,8 @@ private:
     char *text, *text2;
     /// Contains the drawing code for a single eye.
     void drawOneEye();
-    
-    /// Recieves events 
-    void recieveEvent(VeEvent &e);
+
+
 
 };
 

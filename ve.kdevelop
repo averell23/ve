@@ -12,25 +12,26 @@
     </keywords>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <ignoreparts/>
     <secondaryLanguages/>
   </general>
   <kdevautoproject>
     <general>
       <activetarget>src/ve</activetarget>
-      <useconfiguration>default</useconfiguration>
+      <useconfiguration>debug</useconfiguration>
     </general>
     <run>
       <mainprogram>src/ve</mainprogram>
       <terminal>true</terminal>
-      <programargs/>
+      <programargs>-source dummy</programargs>
       <autocompile>true</autocompile>
       <envvars/>
       <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
       <runarguments>
         <ve/>
+        <corbatest/>
       </runarguments>
     </run>
     <configurations>
@@ -44,17 +45,25 @@
       <debug>
         <configargs>--enable-debug=full</configargs>
         <builddir>debug</builddir>
-        <ccompiler>GccOptions</ccompiler>
-        <cxxcompiler>GppOptions</cxxcompiler>
-        <f77compiler>G77Options</f77compiler>
+        <ccompiler>kdevgccoptions</ccompiler>
+        <cxxcompiler>kdevgppoptions</cxxcompiler>
+        <f77compiler>kdevpgf77options</f77compiler>
         <cxxflags>-O0 -g3</cxxflags>
+        <topsourcedir/>
+        <cppflags/>
+        <ldflags/>
+        <ccompilerbinary/>
+        <cxxcompilerbinary/>
+        <f77compilerbinary/>
+        <cflags/>
+        <f77flags/>
       </debug>
       <default>
         <configargs/>
         <builddir/>
         <topsourcedir/>
         <cppflags/>
-        <ldflags>-lccgnu2 -lGL -lglut -llog4cplus -lopencv -lm -lfreetype -lGLEW -lftgl -lomniORB4 /usr/local/xclib/xclibi86.a</ldflags>
+        <ldflags/>
         <ccompiler>kdevgccoptions</ccompiler>
         <cxxcompiler>kdevgppoptions</cxxcompiler>
         <f77compiler>kdevpgf77options</f77compiler>
@@ -62,7 +71,7 @@
         <cxxcompilerbinary/>
         <f77compilerbinary/>
         <cflags/>
-        <cxxflags>-I/usr/include/freetype2 -I/usr/local/include/opencv -I/usr/local/xclib -I/usr/include/cc++2</cxxflags>
+        <cxxflags/>
         <f77flags/>
       </default>
     </configurations>
@@ -74,7 +83,7 @@
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin/>
+      <makebin></makebin>
     </make>
   </kdevautoproject>
   <kdevfilecreate>
@@ -88,7 +97,6 @@
     <groups>
       <group pattern="*.h" name="Header files" />
       <group pattern="*.cpp" name="Source files" />
-      <hidenonprojectfiles>false</hidenonprojectfiles>
     </groups>
     <tree>
       <hidenonprojectfiles>false</hidenonprojectfiles>
@@ -98,9 +106,9 @@
   </kdevfileview>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
-    <commitoptions></commitoptions>
-    <addoptions></addoptions>
-    <logoptions></logoptions>
+    <commitoptions/>
+    <addoptions/>
+    <logoptions/>
     <updateoptions>-dP</updateoptions>
     <removeoptions>-f</removeoptions>
     <revertoptions>-C -d -P</revertoptions>
@@ -125,7 +133,7 @@
   <kdevdoctreeview>
     <projectdoc>
       <userdocDir>html/</userdocDir>
-      <apidocDir>html/</apidocDir>
+      <apidocDir>doc/classdoc/html/</apidocDir>
     </projectdoc>
     <ignoreqt_xml/>
     <ignoredoxygen/>
@@ -149,16 +157,16 @@
   </kdevclassview>
   <kdevdebugger>
     <general>
-      <programargs/>
-      <gdbpath/>
-      <dbgshell/>
+      <programargs></programargs>
+      <gdbpath></gdbpath>
+      <dbgshell></dbgshell>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
       <runappinappdirectory>true</runappinappdirectory>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
     </general>
     <display>
       <staticmembers>false</staticmembers>

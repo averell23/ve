@@ -23,18 +23,15 @@
  ***************************************************************************/
 #include "stopwatch.h"
 
-Stopwatch::Stopwatch()
-{
+Stopwatch::Stopwatch() {
     running = false;
-	counter = 0;
+    counter = 0;
     ftime(&startStamp);
     ftime(&stopStamp);
 }
 
 
-Stopwatch::~Stopwatch()
-{
-}
+Stopwatch::~Stopwatch() {}
 
 void Stopwatch::start() {
     ftime(&startStamp);
@@ -47,19 +44,19 @@ void Stopwatch::stop() {
 }
 
 void Stopwatch::count(int number) {
-   counter += number; 
+    counter += number;
 }
 
 long Stopwatch::getSeconds() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
     return stopStamp.time - startStamp.time;
 }
 
 long Stopwatch::getMilis() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
     return abs(stopStamp.millitm - startStamp.millitm);
 }
@@ -70,11 +67,11 @@ long Stopwatch::getCount() {
 
 float Stopwatch::getFramerate() {
     if (running) {
-		ftime(&stopStamp);
+        ftime(&stopStamp);
     }
-    
+
     long seconds = stopStamp.time - startStamp.time;
     long milis = abs(stopStamp.millitm - startStamp.millitm);
-		
-    return counter / ((double) ((seconds * 1000) + milis) / 1000.0f);   
+
+    return counter / ((double) ((seconds * 1000) + milis) / 1000.0f);
 }

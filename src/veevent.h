@@ -26,10 +26,10 @@
 
 /**
 Simple Event class for Ve's internal event handling.
-
+ 
 @author Daniel Hahn,,,
 */
-class VeEvent{
+class VeEvent {
 public:
     /**
       Creates an event with the given event code.
@@ -37,17 +37,17 @@ public:
     VeEvent(int type, long code);
 
     ~VeEvent();
-    
+
     /**
       Returns the event code.
     */
     long getCode();
-    
+
     /**
       Returns the event type.
     */
     int getType();
-    
+
     /// Pre-defined event types
     static const int MISC_EVENT = 0;
     static const int KEYBOARD_EVENT = 1;

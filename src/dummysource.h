@@ -30,7 +30,7 @@
 #include <cv.hpp>
 #include <log4cplus/logger.h>
 
-#define NUM_IMAGES 50
+#define NUM_IMAGES 1
 
 using namespace std;
 using namespace log4cplus;
@@ -40,7 +40,8 @@ typedef struct {
     int width;
     int height;
     unsigned char *data;
-} textureImage;
+}
+textureImage;
 
 /**
 Dummy video source that loads images from disk and retrieves them
@@ -48,19 +49,18 @@ in a circular fashion.
   
 @author Daniel Hahn,,,
 */
-class DummySource : public VideoSource
-{
+class DummySource : public VideoSource {
 public:
     DummySource();
 
     ~DummySource();
-    
+
     int loadBMP(char *filename, IplImage **image);
-    
+
     IplImage* getImage();
 
-	IplImage *waitAndGetImage();
-    
+    IplImage *waitAndGetImage();
+
     char* copyBuffer(char* buffer, int size);
 
 private:

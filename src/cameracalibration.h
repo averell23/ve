@@ -30,19 +30,24 @@
 #include <cstdlib>		// STL string class
 #include <vector>
 #include <iostream>
+#include <log4cplus/logger.h>
 
 using namespace std;
+using namespace log4cplus;
+
+// Forward declaration
+class VideoSource;
 
 /**
 This contains all calibration data for a camera. The camera can be calibrated 
 by using pictures of a simple chessboard pattern. 
 The data is acquired either by calibrating the camera using OpenCV, 
 or by loading the data from disk. 
-
+ 
 @author Daniel Hahn,,,
 @see OpenCV documentation for more infos
 */
-class CameraCalibration{
+class CameraCalibration {
 public:
     /** Create a new calibration object.
        @param input The video source that will be calibrated. 
@@ -54,11 +59,11 @@ public:
        @see setPatternDimension
        @see setChessSize
     */
-    CameraCalibration(VideoSource *input, 
-		      string filename = "", 
-		      CvSize patternDimension = cvSize(6,8),
-		      CvSize chessSize = cvSize(2,2));
-    
+    CameraCalibration(VideoSource *input,
+                      string filename = "",
+                      CvSize patternDimension = cvSize(5,7),
+                      CvSize chessSize = cvSize(2,2));
+
     /**
       Take a snapshot from the video source. The snapshots are
       stored internally as greyscale images and are used for 
@@ -67,18 +72,17 @@ public:
       @return true if the snapshot is successfully taken.
       */
     bool takeSnapshot();
-    
+
     /**
       Delete the internally stored snapshots.
     */
     void deleteSnapshots();
-    
-     /**string
-       Recalibrate the camera from the internal snapshots.
-       
-       @return true if the calibration was successful.
-     */
-    bool recalibrate();
+
+    /**string
+      Recalibrate the camera from the internal snapshots.
+      
+    */
+    void recalibrate();
 
     /**
       Returns the camera calibration matrix.
@@ -86,14 +90,14 @@ public:
       @return The calibration matrix in OpenCV format
     */
     CvMatr32f getCalibrationMatrix();
-    
+
     /**
       Returns the distortion coefficients.
       
       @return The coefficients in OpenCV format
     */
-    CvVect32f getDistortion(); // 
-    
+    CvVect32f getDistortion(); //
+
     /**
       Saves the calibration to a file.
       
@@ -101,15 +105,15 @@ public:
       @return bool true if the calibration was successfully saved.
     */
     bool save(string filename = "");
-    
-    /** 
+
+    /**
       Loads the calibration from a file. 
       
       @param filename Name of the calibration file. Defaults to the "current" file.
       @return bool true if the calibration was successfully loaded.
     */
     bool load(string filename = "");
-    
+
     /**
       Sets the number of inner corners of the chessboard pattern. The larger number
       of the dimension is automatically assumed to be the height (number of rows).
@@ -117,15 +121,22 @@ public:
       @param dimesion Size of the the chessboard in rows/columns.
     */
     void setPatternDimension(CvSize dimension);
-    
+
     /**
       Sets the size of one chessboard field. The unit used for the size
       will also be the unit for the calibration parameters (e.g. focal length).
     */
     void setChessSize(CvSize size);
-    
+
+    /**
+      Gets the number of snapshots.
+    */
+    int getSnapshotCount() {
+        return images.size();
+    }
+
     ~CameraCalibration();
-    
+
 private:
     /** The video source to be calibrated. */
     VideoSource *input;
@@ -133,6 +144,8 @@ private:
     string filename;
     /** Vector with pointers to the stored calibration images. */
     vector<IplImage*> images;
+    /** Vector with pointers to the points found in each image. */
+    vector<CvPoint2D32f*> guessedCorners;
     /** Calibration Matrix */
     CvMatr32f calibrationMatrix;
     /** Distortion Coefficients */
@@ -147,7 +160,7 @@ private:
     CvSize chessSize;
     /** If an intrisinc guess is used for the calibration. @see OpenCV documentation */
     bool useIntrisincGuess;
-    
+
     /**
       Creates a pattern that describes the (3D) positions of the chessboard
       corners. This will use the internal size for the chessboard fields, 
@@ -158,17 +171,16 @@ private:
       @return Pointer to the pattern point positions. 
     */
     CvPoint3D32f* generatePattern();
-    
+
     /**
-      Tries to guess the positions of the chessboard corners in the captured
-      images. (If a full chessboard could not be found in the picture, points
-      may still be created. This inherits the behaviour of 
-      FindChessBoardCornerGuesses from the OpenCV, and is thus undefined for us.)
+      Tries to guess the positions of the chessboard corners in the image. 
       
-      @return Pointer to the corner positions found.
+      @return The detected corner positions, or NULL if not all corners were 
+              successfully created.
     */
-    CvPoint2D32f* guessCorners();
-    
+    CvPoint2D32f* guessCorners(IplImage* image);
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

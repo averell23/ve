@@ -38,36 +38,40 @@ using namespace ost;
 Static class that controls the operations of the CORBA subsystem.
 This is a singleton class that will run the CORBA processing in
 a separate thread once it is initialized.
-
+ 
 @author Daniel Hahn,,,
 */
 class CORBAController : public Thread {
 public:
-    
+
     /**
       Gets the singleton instance of this class.
     */
-    static CORBAController& getInstance() { return myInstance; }
-    
+    static CORBAController& getInstance() {
+        return myInstance;
+    }
+
     /**
       Initializes the CORBA subsystem
     */
     void init(int argc, char** argv);
-    
+
     /**
       Adds a listener for position events.
     */
     void addPositionEventListener(VeEventListener* listener);
-    
+
     /**
       Indicates if the CORBA controller thread is running;
     */
-    bool isRunning() { return running; }
-    
+    bool isRunning() {
+        return running;
+    }
+
     void run();
-    
+
     ~CORBAController();
-    
+
 private:
     /// The CORBA ORB
     CORBA::ORB_var orb;

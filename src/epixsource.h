@@ -40,49 +40,48 @@ using namespace log4cplus;
 /**
 @author Daniel Hahn,,,
 */
-class EpixSource : public VideoSource
-{
+class EpixSource : public VideoSource {
 public:
-    
+
     /**
       Creates a new EpixSource. FIXME: Error handling
       
       @param unit Number of the unit from which to read.
       @param configfile Name of an XCAP Video configuration file.
-	  @param cameraModel Model code of the camera connected to this source
+    @param cameraModel Model code of the camera connected to this source
     */
     EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
 
     virtual IplImage *getImage();
 
-	virtual IplImage *waitAndGetImage();
-	
+    virtual IplImage *waitAndGetImage();
+
     ~EpixSource();
 
     bool timerSupported();
 
-	void setBrightness(int brightness);
+    void setBrightness(int brightness);
 
     const static int CAMERA_DEFAULT = 0;
     const static int CAMERA_1280F = 1;
-    
+
 private:
     /// Unit number from which this source reads
     int unit;
     // The thread that reads from the frame grabber
     EpixReaderThread* readerThread;
-	// Camera model
-	int cameraModel;
-	// Serial port handle for Camera Link connections
-	void* serialRef;
-	/// Logger for this class
-	static Logger logger;
-	/// Mutex for waitAndGetImage()
-	Mutex tMutex;
-	/// Camera controller for this source
-	EpixCameraController* controller;
-	
-    
+    // Camera model
+    int cameraModel;
+    // Serial port handle for Camera Link connections
+    void* serialRef;
+    /// Logger for this class
+    static Logger logger;
+    /// Mutex for waitAndGetImage()
+    Mutex tMutex;
+    /// Camera controller for this source
+    EpixCameraController* controller;
+
+
 };
 
 #endif

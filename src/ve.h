@@ -43,7 +43,7 @@
 
 using namespace log4cplus;
 
-/** 
+/**
   This is the program's main class that includes the basic application framework.
 */
 class Ve {
@@ -53,7 +53,7 @@ public:
       be called in the order in which they were added.
      */
     static void addOverlay(Overlay* ol);
-    
+
     /**
       Intializes the Ve application and data structures. This
       should be called after initGL().
@@ -68,21 +68,27 @@ public:
     */
     static void start();
 
-	/**
-		Get the right video source (e.g. for fps calculations)
-	*/
-	static VideoSource* getRightSource() { return rightEye; }
+    /**
+    	Get the right video source (e.g. for fps calculations)
+    */
+    static VideoSource* getRightSource() {
+        return rightEye;
+    }
 
-	/**
-		Get the left video source (e.g. for fps calculations);
-	*/
-	static VideoSource* getLeftSource()  { return leftEye; }
+    /**
+    	Get the left video source (e.g. for fps calculations);
+    */
+    static VideoSource* getLeftSource()  {
+        return leftEye;
+    }
 
-	/**
-		Get the main timer.
-	 */
-	static Stopwatch* getTimer() { return timer; }
-	
+    /**
+    	Get the main timer.
+     */
+    static Stopwatch* getTimer() {
+        return timer;
+    }
+
     /**
       Registers an event listner with the main event source.
     */
@@ -90,8 +96,8 @@ public:
 
     /** OpenGL initilization */
     static void initGL( int argc, char** argv );
-    
-    
+
+
     /** Reshape (viewport) callback */
     static void reshape ( int w, int h );
 
@@ -106,17 +112,17 @@ public:
 
     /** Drawing function */
     static void glDraw();
-    
+
     static Stopwatch *timer;
     static VideoCanvas *mainVideo;
     static VideoSource *rightEye;
     static VideoSource *leftEye;
     /// The overlays that will be displayed
     static vector<Overlay*> overlays;
-    
+
     /// Event source used for events from the main framework
     static VeEventSource eventSource;
-    
+
     // Logger for this class
     static Logger logger;
 };

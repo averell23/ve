@@ -23,8 +23,7 @@
  ***************************************************************************/
 #include "veevent.h"
 
-VeEvent::VeEvent(int type, long code)
-{
+VeEvent::VeEvent(int type, long code) {
     VeEvent::code = code;
     VeEvent::type = type;
 }
@@ -37,8 +36,6 @@ int VeEvent::getType() {
     return type;
 }
 
-VeEvent::~VeEvent()
-{
-}
+VeEvent::~VeEvent() {}
 
 

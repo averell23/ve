@@ -27,43 +27,47 @@
 #include <stdio.h>
 #include <cv.hpp>
 #include "stopwatch.h"
+#include "cameracalibration.h"
+
+// Forward declaration
+class CameraCalibration;
 
 /**
 Wrapper class for a source of video images.
-
+ 
 @author Daniel Hahn,,,
 */
-class VideoSource{
+class VideoSource {
 public:
-    /** 
+    /**
         Retrieve the next image for this video source. The class should
-		expect the IplImage to be consumed (read: deleted) by the 
-		subsequent processing, so it should not be expected to exist
-		after getImage() was called.
-		
-		This should return NULL if no new image was created/acquired 
-		since the last getImage() call, in order to avoid unecessary
-		display updates.
-		
-		Child methods should update the internal timer whenever a 
-		none-NULL image is returned.
+    expect the IplImage to be consumed (read: deleted) by the 
+    subsequent processing, so it should not be expected to exist
+    after getImage() was called.
 
-		@see waitAndGetImage();
+    This should return NULL if no new image was created/acquired 
+    since the last getImage() call, in order to avoid unecessary
+    display updates.
+
+    Child methods should update the internal timer whenever a 
+    none-NULL image is returned.
+
+    @see waitAndGetImage();
     */
     virtual IplImage *getImage() = 0;
 
-	/**
-		Works like getImage(), except that this function will block
-		until a new image is available from the source. It's not 
-		recommended to use this function for the regular display
-		updates.
+    /**
+    	Works like getImage(), except that this function will block
+    	until a new image is available from the source. It's not 
+    	recommended to use this function for the regular display
+    	updates.
 
-		Until this function is finished, getImage() should not block,
-		but should always return  NULL.
+    	Until this function is finished, getImage() should not block,
+    	but should always return  NULL.
 
-		@see getImage()
-	*/
-	virtual IplImage *waitAndGetImage() = 0;
+    	@see getImage()
+    */
+    virtual IplImage *waitAndGetImage() = 0;
 
 
     /** Gets the image width for this video source */
@@ -73,7 +77,7 @@ public:
     /** Indicates whether the child class correctly updates the
         internal timer. */
     virtual bool timerSupported();
-    
+
     /**
       Gets an handle to the internal timer. The timer will be stopped,
       so measurements taken after this called are no longer accurate.
@@ -83,13 +87,15 @@ public:
     */
     Stopwatch* getAndStopTimer();
 
-	/**
-		Gets an handle to the internal timer.
-	 */
-	Stopwatch* getTimer() { return timer; }
-    
+    /**
+    	Gets an handle to the internal timer.
+     */
+    Stopwatch* getTimer() {
+        return timer;
+    }
+
     VideoSource();
-    
+
     /**
       Set the source's brightness. The behaviour of this method will
       depend on the underlying video source: Brightness may be changed
@@ -100,21 +106,30 @@ public:
       video sources, or has a different granularity for different sources.
       
       @param brightness The brightness in percent of the brightness range.
-	                    The internal brightness value should always be
-						clamped to [0,100]. Subclasses can do this
-						by calling VideoSource::setBrightness() first
-						in their own setBrightness() function, and then
-						use VideoSource::brightness as the brightness 
-						value.
+                        The internal brightness value should always be
+    clamped to [0,100]. Subclasses can do this
+    by calling VideoSource::setBrightness() first
+    in their own setBrightness() function, and then
+    use VideoSource::brightness as the brightness 
+    value.
     */
     virtual void setBrightness(int brightness);
 
-	/**
-		Returns the current brightness setting.
+    /**
+      Returns the camera calibration object connected to this source.
+    */
+    CameraCalibration* getCalibration() {
+        return calibrationObject;
+    }
 
-		@see setBrightness
-	*/
-	virtual int getBrightness() { return brightness; }
+    /**
+    	Returns the current brightness setting.
+
+    	@see setBrightness
+    */
+    virtual int getBrightness() {
+        return brightness;
+    }
 
     virtual ~VideoSource();
 
@@ -123,8 +138,10 @@ protected:
     int width, height;
     /// Internal timer for performance measures.
     Stopwatch* timer;
-	/// Current brightness setting
-	int brightness;
+    /// Current brightness setting
+    int brightness;
+    /// Internal calibration Object
+    CameraCalibration* calibrationObject;
 };
 
 #endif

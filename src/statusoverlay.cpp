@@ -26,16 +26,15 @@
 Logger StatusOverlay::logger = Logger::getInstance("Ve.StatusOverlay");
 
 StatusOverlay::StatusOverlay(bool display)
- : Overlay(display)
-{
-	rightSource = Ve::getRightSource();
-	leftSource = Ve::getLeftSource();
+: Overlay(display) {
+    rightSource = Ve::getRightSource();
+    leftSource = Ve::getLeftSource();
     rightTimer = Ve::getRightSource()->getTimer();
-	leftTimer = Ve::getLeftSource()->getTimer();
-	videoTimer = Ve::getTimer();
-	text = new char[256];
-	text2 = new char[256];
-	LOG4CPLUS_INFO(logger, "Status overlay created");
+    leftTimer = Ve::getLeftSource()->getTimer();
+    videoTimer = Ve::getTimer();
+    text = new char[256];
+    text2 = new char[256];
+    LOG4CPLUS_INFO(logger, "Status overlay created");
 }
 
 void StatusOverlay::drawOverlay() {
@@ -46,45 +45,46 @@ void StatusOverlay::drawOverlay() {
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
-    
-	// glTranslatef(0.0f, 0.0f, 1.0f); // In front of everything
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-	sprintf(text, "%f/%f/%f", leftTimer->getFramerate(), rightTimer->getFramerate(), videoTimer->getFramerate());
-	sprintf(text2, "Video Brightness: %d%%/%d%%", leftSource->getBrightness(), rightSource->getBrightness());
-    
-	glTranslatef(-0.96f, 0.0f, 0.0f);
+    sprintf(text, "%f/%f/%f", leftTimer->getFramerate(), rightTimer->getFramerate(), videoTimer->getFramerate());
+    sprintf(text2, "Video Brightness: %d%%/%d%%", leftSource->getBrightness(), rightSource->getBrightness());
+
+    glTranslatef(-1.0f, 0.0f, 0.0f);
     drawOneEye();
     glLoadIdentity();
+    glTranslatef(0.0f, 0.0f,  1.0f);
     drawOneEye();
-    
+
     // Restore Matrices
     glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );		
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
 }
 
 void StatusOverlay::drawOneEye() {
     font = FontManager::getFont();
-    if (font == NULL) return; // Sanity check
-    
+    if (font == NULL)
+        return; // Sanity check
+
     glTranslatef(0.05f, 0.8f, 0.0f);
     font->Render(text);
-	glTranslatef(0.0f, -1.4f, 0.0f);
-	font->Render(text2);
+    glTranslatef(0.0f, -1.4f, 0.0f);
+    font->Render(text2);
     glTranslatef(0.0f, -0.1f, 0.0f);
     font->Render("Status Display active");
 }
 
 void StatusOverlay::recieveEvent(VeEvent &e) {
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 32)) {
-		toggleDisplay();
-		LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
+        toggleDisplay();
+        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
     }
 }
 
-StatusOverlay::~StatusOverlay()
-{
+StatusOverlay::~StatusOverlay() {
+    delete text;
+    delete text2;
 }
 
 

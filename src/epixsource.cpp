@@ -26,42 +26,40 @@
 Logger EpixSource::logger = Logger::getInstance("Ve.EpixSource");
 
 EpixSource::EpixSource(int unit, int cameraModel, string configfile)
- : VideoSource()
-{
+: VideoSource() {
     int result;
-	if (!XCLIBController::isOpen()) {
-		result = XCLIBController::openLib(configfile);
-	}
+    if (!XCLIBController::isOpen()) {
+        result = XCLIBController::openLib(configfile);
+    }
     if (XCLIBController::isOpen()) {
-	    height = pxd_imageYdim();
-	    width = pxd_imageXdim();
+        height = pxd_imageYdim();
+        width = pxd_imageXdim();
     }
     EpixSource::cameraModel = cameraModel;
     switch (cameraModel) {
-	case CAMERA_1280F: 
-	    LOG4CPLUS_INFO(logger, "Trying to set up controller for SF1280 camera.");
-	    controller = new SF1280Controller(unit);
-	    break;
-	case CAMERA_DEFAULT: 
-	    LOG4CPLUS_INFO(logger, "Trying to set up default (dummy) camera controller.");
-	    controller = new EpixCameraController(unit);
-	    break;
-	default:
-	    LOG4CPLUS_WARN(logger, "Unknown camera model. Trying default (dummy) camera controller");
-	    controller = new EpixCameraController(unit);
-	    break;
+    case CAMERA_1280F:
+        LOG4CPLUS_INFO(logger, "Trying to set up controller for SF1280 camera.");
+        controller = new SF1280Controller(unit);
+        break;
+    case CAMERA_DEFAULT:
+        LOG4CPLUS_INFO(logger, "Trying to set up default (dummy) camera controller.");
+        controller = new EpixCameraController(unit);
+        break;
+    default:
+        LOG4CPLUS_WARN(logger, "Unknown camera model. Trying default (dummy) camera controller");
+        controller = new EpixCameraController(unit);
+        break;
     }
     controller->initCamera();
     EpixSource::unit = unit;
     XCLIBController::goLive(unit);
     readerThread = new EpixReaderThread(unit);
-	timer->start();
+    timer->start();
     readerThread->start();
 }
 
 
-EpixSource::~EpixSource()
-{
+EpixSource::~EpixSource() {
     readerThread->stop();
     XCLIBController::goUnLive(unit);
     delete controller;
@@ -73,52 +71,52 @@ IplImage* EpixSource::getImage() {
     CvSize size;
     size.height = height;
     size.width = width;
-    
+
     image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
-	if (! tMutex.tryEnterMutex()) {
-		LOG4CPLUS_TRACE(logger, "Returning null image, currently waiting for image.");
-		return image;
-	}
-	uchar* buffer = readerThread->getBuffer();
-	tMutex.leaveMutex();
+    if (! tMutex.tryEnterMutex()) {
+        LOG4CPLUS_TRACE(logger, "Returning null image, currently waiting for image.");
+        return image;
+    }
+    uchar* buffer = readerThread->getBuffer();
+    tMutex.leaveMutex();
     if (buffer != NULL) {
-		image->imageData = (char*) buffer;
-		timer->count();
-	} else {
-		image->imageData = NULL;
-	}
+        image->imageData = (char*) buffer;
+        timer->count();
+    } else {
+        image->imageData = NULL;
+    }
 
     return image;
 }
 
 bool EpixSource::timerSupported() {
-	return true;
+    return true;
 }
 
 
 IplImage* EpixSource::waitAndGetImage() {
-	IplImage* image;
+    IplImage* image;
     CvSize size;
     size.height = height;
     size.width = width;
-    
+
     image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
-	uchar* buffer = NULL;
-	tMutex.enterMutex();
-	while (buffer == NULL) {
-		buffer = readerThread->getBuffer();
-	}
-	tMutex.leaveMutex();
-	
-	image->imageData = (char*) buffer;
-	timer->count();
+    uchar* buffer = NULL;
+    tMutex.enterMutex();
+    while (buffer == NULL) {
+        buffer = readerThread->getBuffer();
+    }
+    tMutex.leaveMutex();
+
+    image->imageData = (char*) buffer;
+    timer->count();
 
     return image;
 }
 
 void EpixSource::setBrightness(int brightness) {
-	VideoSource::setBrightness(brightness);
-	if (cameraModel == CAMERA_1280F) {
-		controller->setGain(VideoSource::brightness);
-	}
+    VideoSource::setBrightness(brightness);
+    if (cameraModel == CAMERA_1280F) {
+        controller->setGain(VideoSource::brightness);
+    }
 }

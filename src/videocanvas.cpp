@@ -25,67 +25,71 @@
 
 Logger VideoCanvas::logger = Logger::getInstance("Ve.VideoCanvas");
 
-VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
-{
+VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool yRot, bool zRot) {
     if (left == NULL || right == NULL) {
-	LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
-	return;
+        LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
+        return;
     }
     leftEye = left;
     rightEye = right;
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
-	LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
+        LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
-	GLint maxTexSize;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-	LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
-	int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
-	LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
-	
-	bool accomodated = false;
-	textureSize = 2;
-	while (textureSize <= maxTexSize && (!accomodated)) {
-	    textureSize = textureSize * 2;
-	    if (textureSize >= vidSize) accomodated = true;
-	    LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
-	}
+        GLint maxTexSize;
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+        LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
+        int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
+        LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
 
-	LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
-	glGenTextures(2, textures);   /* create the texture names */
+        bool accomodated = false;
+        textureSize = 2;
+        while (textureSize <= maxTexSize && (!accomodated)) {
+            textureSize = textureSize * 2;
+            if (textureSize >= vidSize)
+                accomodated = true;
+            LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
+        }
 
-	glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
-	LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
-		     GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	LOG4CPLUS_DEBUG(logger, "Texture image bound.");
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
+        glGenTextures(2, textures);   /* create the texture names */
 
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
-		     GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	LOG4CPLUS_DEBUG(logger, "Texture image bound");
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	LOG4CPLUS_DEBUG(logger, "Texture bind successful");
-	
-	// Calculate the size factors
-	widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
-	heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
-	LOG4CPLUS_DEBUG(logger, "widthFactor = 1.0 - (" << imageWidth << " / " 
-			<< textureSize << " ) = " << widthFactor);
-	LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / " 
-			<< textureSize << ") = " << heightFactor);
+        glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
+        LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+                     GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        LOG4CPLUS_DEBUG(logger, "Texture image bound.");
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, textures[1]);
+        LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+                     GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        LOG4CPLUS_DEBUG(logger, "Texture image bound");
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        LOG4CPLUS_DEBUG(logger, "Texture bind successful");
+
+        // Calculate the size factors
+        widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
+        heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
+        LOG4CPLUS_DEBUG(logger, "widthFactor = 1.0 - (" << imageWidth << " / "
+                        << textureSize << " ) = " << widthFactor);
+        LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / "
+                        << textureSize << ") = " << heightFactor);
     }
 
-	leftBrightness = 50;
-	rightBrightness = 50;
-    
-	rightEye->setBrightness(rightBrightness);
-	leftEye->setBrightness(leftBrightness);
+    leftBrightness = 50;
+    rightBrightness = 50;
+
+    rightEye->setBrightness(rightBrightness);
+    leftEye->setBrightness(leftBrightness);
+
+    VideoCanvas::xRot = xRot;
+    VideoCanvas::yRot = yRot;
+    VideoCanvas::zRot = zRot;
 
     LOG4CPLUS_INFO(logger, "Video Canvas created.");
 }
@@ -93,9 +97,9 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 
 void VideoCanvas::draw() {
     if (leftEye == NULL || rightEye == NULL) { 	// Sanity check
-		return;
+        return;
     }
-    
+
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
@@ -103,85 +107,95 @@ void VideoCanvas::draw() {
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
-    
-	glRotatef(180.0f, 0.0f, 0.0f, 1.0f);  // FIXME: Flipping not standard
-	glRotatef(180.0f, 0.0f, 1.0f, 0.0f);  // FIXME: Check lef/right
+
+
+    if (xRot) {
+        glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+    }
+    if (yRot) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
+    if (zRot) {
+        glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+    }
 
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-	IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
-	if (!leftImage->imageData == NULL) {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-			GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
-		delete leftImage->imageData;
-	    } else {
-		LOG4CPLUS_TRACE(logger, "Got empty image for left eye"); 
-	    }
-	cvReleaseImageHeader(&leftImage);
+    IplImage* leftImage = leftEye->getImage();	// FIXME: Check for image properties
+    if (!leftImage->imageData == NULL) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+                        GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
+        delete leftImage->imageData;
+    } else {
+        LOG4CPLUS_TRACE(logger, "Got empty image for left eye");
+    }
+    cvReleaseImageHeader(&leftImage);
     glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
-	glVertex3i(-1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);		/* Bottom right */
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);		/* Top right */
-	glVertex3i(0, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);		/* Top left */
-	glVertex3i(-1, 1, 1);
-    glEnd();
-    
-    // Right Quad
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
-	IplImage* rightImage = rightEye->getImage();
-	if (!rightImage->imageData == NULL) {
-		 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
-		delete rightImage->imageData;
-	} else {
-		LOG4CPLUS_TRACE(logger, "Got empty image for right eye"); 
-	}
-	cvReleaseImageHeader(&rightImage);
-    glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);
-	glVertex3i(1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
-	glVertex3i(1, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);
-	glVertex3i(0, 1, 1);
+    glTexCoord2d(0.0f, 0.0f);	// Bottom left
+    glVertex3i(-1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);		// Bottom right
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);		// Top right
+    glVertex3i(0, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);		// Top left
+    glVertex3i(-1, 1, 0);
     glEnd();
 
-    glBindTexture(GL_TEXTURE_2D, NULL); 
-    
+    // Right Quad
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    IplImage* rightImage = rightEye->getImage();
+    if (!rightImage->imageData == NULL) {
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+                        GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
+        delete rightImage->imageData;
+    } else {
+        LOG4CPLUS_TRACE(logger, "Got empty image for right eye");
+    }
+    cvReleaseImageHeader(&rightImage);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0f, 0.0f);
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);
+    glVertex3i(1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+    glVertex3i(1, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);
+    glVertex3i(0, 1, 0);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
     // Restore Matrices
     glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );		
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
+
 }
 
 void VideoCanvas::recieveEvent(VeEvent &e) {
-	LOG4CPLUS_DEBUG(logger, "Event encountered.");
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 49)) {
-		// If 1 is pressed, decrease left brightness
-		leftEye->setBrightness(leftEye->getBrightness() - 5);
-	}
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 50)) {
-		// If 2 pressed, increase left brightness
-		leftEye->setBrightness(leftEye->getBrightness() + 5);
-	}
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 51)) {
-		// If 3 is pressed, decrease right brightness
-		rightEye->setBrightness(rightEye->getBrightness() - 5);
-	}
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 52)) {
-		// If 4 is pressed, increase right brightness
-		if (leftBrightness <= 95) leftBrightness +=5;
-		rightEye->setBrightness(rightEye->getBrightness() + 5);
-	}
+    LOG4CPLUS_DEBUG(logger, "Event encountered.");
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 49)) {
+        // If 1 is pressed, decrease left brightness
+        leftEye->setBrightness(leftEye->getBrightness() - 5);
+    }
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 50)) {
+        // If 2 pressed, increase left brightness
+        leftEye->setBrightness(leftEye->getBrightness() + 5);
+    }
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 51)) {
+        // If 3 is pressed, decrease right brightness
+        rightEye->setBrightness(rightEye->getBrightness() - 5);
+    }
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 52)) {
+        // If 4 is pressed, increase right brightness
+        if (leftBrightness <= 95)
+            leftBrightness +=5;
+        rightEye->setBrightness(rightEye->getBrightness() + 5);
+    }
 }
 
-VideoCanvas::~VideoCanvas()
-{
+VideoCanvas::~VideoCanvas() {
     delete rightEye;
     delete leftEye;
 }

@@ -34,10 +34,10 @@ using namespace log4cplus;
 
 /**
 This is the base overlay class. Each overlay is a layer upon the main VideoCanvas that displays part of the UI. The overlay is implemented by overwriting the draw() class and calling OpenGL functions from it.
-
+ 
 @author Daniel Hahn,,,
 */
-class Overlay{
+class Overlay {
 public:
     /**
       Constructs a new overlay with the given display state.
@@ -45,28 +45,34 @@ public:
     Overlay(bool display = true);
 
     ~Overlay();
-    
+
     /**
       Displays this overlay.
     */
-    virtual void display() { displayState = true; }
-    
+    virtual void display() {
+        displayState = true;
+    }
+
     /*
       Un-Displays this overlay
     */
-    virtual void unDisplay() { displayState = false; }
-    
+    virtual void unDisplay() {
+        displayState = false;
+    }
+
     /**
       Toggles this overlay's display status.
     */
-    virtual void toggleDisplay() { displayState = ! displayState; }
+    virtual void toggleDisplay() {
+        displayState = ! displayState;
+    }
 
     /*
       Wrapper for the main drawing routine.
       
       @see drawOverlay
     */
-    void draw(); 
+    void draw();
 
 protected:
     /// Indicates wether this overlay is to be displayed

@@ -34,18 +34,17 @@
 /**
 	Tries to correct camera artefacts by applying an offset correction 
 	texture.
-
+ 
 	@author Daniel Hahn,,,
 */
-class OffsetOverlay : public Overlay, public VeEventListener
-{
+class OffsetOverlay : public Overlay, public VeEventListener {
 public:
     OffsetOverlay(bool display);
 
     ~OffsetOverlay();
-    
+
     void drawOverlay();
-    
+
     void recieveEvent(VeEvent &e);
 
 
@@ -54,7 +53,7 @@ private:
     int imageWidth, imageHeight;
     /** The video sources for this canvas */
     VideoSource *leftEye, *rightEye;
-    /** The texture size used by this canvas. This may be large 
+    /** The texture size used by this canvas. This may be large
         than the image size */
     int textureSize;
     /** Textures for OpenGL */
@@ -65,25 +64,25 @@ private:
     static Logger logger;
     /// Buffers for the overlay textures
     char *offsetTexLeft, *offsetTexRight;
-	/**
-		Indicates wether the offset/gain texture should
-		be displayed. This is independent of the general
-		"display" variable.
-	*/
-	bool displayOffset, displayGain;
-    
+    /**
+    	Indicates wether the offset/gain texture should
+    	be displayed. This is independent of the general
+    	"display" variable.
+    */
+    bool displayOffset, displayGain;
+
     /**
       Tries to create the offset textures from the pictures in the video
       source. The textures are immediately applied if successful.
       
       @return true if the creation of the textures was successful
     */
-	bool createOffsetTextures();
+    bool createOffsetTextures();
 
-	/// Draws the right quad of the display
-	void drawRightQuad();
-	/// Draws the left quad of the display
-	void drawLeftQuad();
+    /// Draws the right quad of the display
+    void drawRightQuad();
+    /// Draws the left quad of the display
+    void drawLeftQuad();
 
 };
 

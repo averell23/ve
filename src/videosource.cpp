@@ -23,15 +23,14 @@
  ***************************************************************************/
 #include "videosource.h"
 
-VideoSource::VideoSource()
-{
+VideoSource::VideoSource() {
+    calibrationObject = new CameraCalibration(this);
     timer = new Stopwatch();
     timer->start();
 }
 
 
-VideoSource::~VideoSource()
-{
+VideoSource::~VideoSource() {
     delete timer;
 }
 
@@ -49,14 +48,14 @@ Stopwatch* VideoSource::getAndStopTimer() {
 }
 
 bool VideoSource::timerSupported() {
-	return false;
+    return false;
 }
 
 void VideoSource::setBrightness(int brightness) {
-	if (brightness > 100) {
-		brightness = 100;
-	} else if (brightness < 0) {
-		brightness = 0;
-	}
-	VideoSource::brightness = brightness;
+    if (brightness > 100) {
+        brightness = 100;
+    } else if (brightness < 0) {
+        brightness = 0;
+    }
+    VideoSource::brightness = brightness;
 }

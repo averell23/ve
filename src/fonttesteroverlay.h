@@ -41,14 +41,14 @@ public:
     FontTesterOverlay(bool display = true);
 
     ~FontTesterOverlay();
-    
+
     void drawOverlay();
 
 private:
-    
+
     FTGLTextureFont* font;
     Stopwatch *rightTimer, *leftTimer, *gTimer;
-	char* text;
+    char* text;
 };
 
 #endif

@@ -21,13 +21,12 @@ using namespace log4cplus;
 
 /**
 Does the actual reading/copy operations for the EPIX card, to keep them out of the main update cycle.
-
+ 
 @author Daniel Hahn,,,
 */
-class EpixReaderThread : public Thread
-{
+class EpixReaderThread : public Thread {
 public:
-    
+
     /**
       Creates a new EpixReaderThread.
       
@@ -35,14 +34,14 @@ public:
     */
     EpixReaderThread(int unit);
     ~EpixReaderThread();
-    
+
     void run();
-    
+
     /**
       Gets the image which is currently in the buffer.
     */
     uchar* getBuffer();
-    
+
     /**
       Requests the reader to stop after the current iteration.
     */

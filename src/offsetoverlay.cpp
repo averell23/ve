@@ -26,185 +26,196 @@
 Logger OffsetOverlay::logger = Logger::getInstance("Ve.OffsetOverlay");
 
 OffsetOverlay::OffsetOverlay(bool display)
- : Overlay(display), VeEventListener()
-{
+: Overlay(display), VeEventListener() {
     // Check for imaging subset first
     if (!GLEW_ARB_imaging) {
-		LOG4CPLUS_ERROR(logger, "Can not use overlay, imaging extension not supported.");
-		return;
-    } 
+        LOG4CPLUS_ERROR(logger, "Can not use overlay, imaging extension not supported.");
+        return;
+    }
     leftEye = Ve::getLeftSource();
     rightEye = Ve::getRightSource();
     if (leftEye == NULL || rightEye == NULL) {
-		LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
-		return;
+        LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
+        return;
     }
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
-		LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
+        LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
-		GLint maxTexSize;
-		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-		LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
-		int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
-		LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
-		
-		bool accomodated = false;
-		textureSize = 2;
-		while (textureSize <= maxTexSize && (!accomodated)) {
-			textureSize = textureSize * 2;
-			if (textureSize >= vidSize) accomodated = true;
-			LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
-		}
+        GLint maxTexSize;
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+        LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
+        int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
+        LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
 
-		LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
-		glGenTextures(2, textures);   /* create the texture names */
+        bool accomodated = false;
+        textureSize = 2;
+        while (textureSize <= maxTexSize && (!accomodated)) {
+            textureSize = textureSize * 2;
+            if (textureSize >= vidSize)
+                accomodated = true;
+            LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
+        }
 
-		glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
-		LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
-				GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		LOG4CPLUS_DEBUG(logger, "Texture image bound.");
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
+        glGenTextures(2, textures);   /* create the texture names */
 
-		glBindTexture(GL_TEXTURE_2D, textures[1]);
-		LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
-				GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		LOG4CPLUS_DEBUG(logger, "Texture image bound");
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		LOG4CPLUS_DEBUG(logger, "Texture bind successful");
+        glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
+        LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+                     GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        LOG4CPLUS_DEBUG(logger, "Texture image bound.");
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		// Calculate the size factors
-		widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
-		heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
-		LOG4CPLUS_DEBUG(logger, "widthFactor = 1.0 - (" << imageWidth << " / " 
-				<< textureSize << " ) = " << widthFactor);
-		LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / " 
-				<< textureSize << ") = " << heightFactor);
+        glBindTexture(GL_TEXTURE_2D, textures[1]);
+        LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+                     GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        LOG4CPLUS_DEBUG(logger, "Texture image bound");
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        LOG4CPLUS_DEBUG(logger, "Texture bind successful");
+
+        // Calculate the size factors
+        widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
+        heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
+        LOG4CPLUS_DEBUG(logger, "widthFactor = 1.0 - (" << imageWidth << " / "
+                        << textureSize << " ) = " << widthFactor);
+        LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / "
+                        << textureSize << ") = " << heightFactor);
     }
-    
+
     offsetTexLeft = NULL;
     offsetTexRight = NULL;
-     
+
     LOG4CPLUS_INFO(logger, "Offset Overlay created.");
 }
 
 void OffsetOverlay::drawOverlay() { // FIXME: Could use Multitexturing if supported
-	LOG4CPLUS_TRACE(logger, "Entering drawOverlay()");
-	if (!GLEW_ARB_imaging) { // FIXME: Should rather show on-screen message
-		LOG4CPLUS_TRACE(logger, "Offset unusable: Imaging subset not available");
-		return;
-	} 
-        
-    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    LOG4CPLUS_TRACE(logger, "Entering drawOverlay()");
+    if (!GLEW_ARB_imaging) { // FIXME: Should rather show on-screen message
+        LOG4CPLUS_TRACE(logger, "Offset unusable: Imaging subset not available");
+        return;
+    }
+
+    glColor3f(1.0f, 1.0f, 1.0f);		// Set normal color
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glLoadIdentity();				// ...and load the Identity Matrix instead
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
- 
-    glTranslatef(0.0f, 0.0f, 0.1f);	  // In front of Video picture
-    glRotatef(180.0f, 0.0f, 0.0f, 1.0f);  // FIXME: Flipping not standard/should be global
-    glRotatef(180.0f, 0.0f, 1.0f, 0.0f);  // FIXME: Check left/right
 
-	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT); 
-	glBlendFunc(GL_ONE, GL_ONE);
-	// Left Quad
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	drawLeftQuad();
-	// Right Quad
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	drawRightQuad();
+    glTranslatef(0.0f, 0.0f, 1.0f);	  // go to zFar
 
-    glBindTexture(GL_TEXTURE_2D, NULL);
-    
+    if (Ve::mainVideo->xRot) {
+        glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+    }
+    if (Ve::mainVideo->yRot) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
+    if (Ve::mainVideo->zRot) {
+        glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+    }
+
+    glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+    glBlendFunc(GL_ONE, GL_ONE);
+    // Left Quad
+    glBindTexture(GL_TEXTURE_2D, textures[0]);
+    drawLeftQuad();
+    // Right Quad
+    glBindTexture(GL_TEXTURE_2D, textures[1]);
+    drawRightQuad();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     // Restore standard blending FIXME: Do in a central location?
-	glBlendEquation(GL_FUNC_ADD);
+    glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Restore Matrices
     glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );		
+    glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
 }
 
 bool OffsetOverlay::createOffsetTextures() {
-	IplImage* rightImage = rightEye->waitAndGetImage();
-	IplImage* leftImage = leftEye->waitAndGetImage();
-    
+    IplImage* rightImage = rightEye->waitAndGetImage();
+    IplImage* leftImage = leftEye->waitAndGetImage();
+
     if ((leftImage->imageData == NULL) || (rightImage->imageData == NULL)) {
-		LOG4CPLUS_ERROR(logger, "Unable to acquire calibration image.");
-		return false;
+        LOG4CPLUS_ERROR(logger, "Unable to acquire calibration image.");
+        return false;
     }
- 
-    if (offsetTexRight != NULL) delete offsetTexRight;
-    if (offsetTexLeft != NULL) delete offsetTexLeft;
-    
-	offsetTexRight = rightImage->imageData;
-	offsetTexLeft = leftImage->imageData;
-    
+
+    if (offsetTexRight != NULL)
+        delete offsetTexRight;
+    if (offsetTexLeft != NULL)
+        delete offsetTexLeft;
+
+    offsetTexRight = rightImage->imageData;
+    offsetTexLeft = leftImage->imageData;
+
     LOG4CPLUS_DEBUG(logger, "Texture buffers created.");
-    
+
     glBindTexture(GL_TEXTURE_2D, textures[1]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, offsetTexRight);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+                    GL_RGB, GL_UNSIGNED_BYTE, offsetTexRight);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, offsetTexLeft);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+                    GL_RGB, GL_UNSIGNED_BYTE, offsetTexLeft);
     LOG4CPLUS_DEBUG(logger, "Assigned new textures for overlay");
-    
+
     cvReleaseImageHeader(&rightImage);
     cvReleaseImageHeader(&leftImage);
-    
+
     LOG4CPLUS_INFO(logger, "Texture creation complete");
-    
+
     return true;
 }
 
 void OffsetOverlay::recieveEvent(VeEvent &e) {
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && ((e.getCode() == 79) || (e.getCode() == 111))) {
-		toggleDisplay();
-		LOG4CPLUS_DEBUG(logger, "Toggling offset correction");
+        toggleDisplay();
+        LOG4CPLUS_DEBUG(logger, "Toggling offset correction");
     }
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && ((e.getCode() == 73) || (e.getCode() == 105))) {
-		LOG4CPLUS_DEBUG(logger, "Trying to assign offset correction textures.");
-		createOffsetTextures();
+        LOG4CPLUS_DEBUG(logger, "Trying to assign offset correction textures.");
+        createOffsetTextures();
     }
 }
 
-OffsetOverlay::~OffsetOverlay()
-{
-	if (offsetTexRight != NULL) delete offsetTexRight;
-    if (offsetTexLeft != NULL) delete offsetTexLeft;
+OffsetOverlay::~OffsetOverlay() {
+    if (offsetTexRight != NULL)
+        delete offsetTexRight;
+    if (offsetTexLeft != NULL)
+        delete offsetTexLeft;
 }
 
 void OffsetOverlay::drawLeftQuad() {
-	glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);
-	glVertex3i(-1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);	
-	glVertex3i(0, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);
-	glVertex3i(-1, 1, 1);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0f, 0.0f);
+    glVertex3i(-1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+    glVertex3i(0, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);
+    glVertex3i(-1, 1, 0);
     glEnd();
 }
 
 void OffsetOverlay::drawRightQuad() {
-	glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);
-	glVertex3i(1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
-	glVertex3i(1, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);
-	glVertex3i(0, 1, 1);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0f, 0.0f);
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);
+    glVertex3i(1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+    glVertex3i(1, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);
+    glVertex3i(0, 1, 0);
     glEnd();
 }

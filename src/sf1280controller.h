@@ -31,25 +31,24 @@ using namespace std;
 
 /**
 Controller for the Silicon Imaging SF1280F Camera.
-
+ 
 @author Daniel Hahn,,,
 */
-class SF1280Controller : public EpixCameraController
-{
+class SF1280Controller : public EpixCameraController {
 public:
-    
+
     bool initCamera();
-    
+
     bool setGain(int gain);
-    
+
     SF1280Controller(int unit);
 
     ~SF1280Controller();
-    
+
 private:
     /// Logger for this class
     static Logger logger;
-    
+
 };
 
 #endif

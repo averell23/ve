@@ -1,0 +1,6 @@
+This directory will contain the Doxygen generated class documentation.
+In order to avoid stale versions, the documentation is not included in
+the CVS repository, but must be created from the sources.
+
+The Doxygen software can be downloaded from:
+http://www.doxygen.org/

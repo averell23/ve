@@ -35,14 +35,14 @@ using namespace log4cplus;
 /**
 Simple Font Manager Class for FTGL fon#include <FTGLTextureFont.h>ts. Currently, only a single
 font is supported.
-
+ 
 @author Daniel Hahn,,,
 */
-class FontManager{
+class FontManager {
 public:
-    
+
     ~FontManager();
-    
+
     /**
       Returns the single instance of the managed font. 
       
@@ -57,21 +57,21 @@ public:
       @return The font object, or NULL if it could not be created.
     */
     static FTGLTextureFont* getFont();
-    
+
 private:
     /**
       Private for singleton class.
     */
     FontManager();
-    
+
     /**
       This actually creates the font object.
     */
     static void createFont();
-    
+
     /// The font managed by this class
     static FTGLTextureFont* font;
-    
+
     /// Logger for this class
     static Logger logger;
 
