@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
     Ve::initGL(argc, argv);
     CORBAController corba = CORBAController::getInstance();
     corba.init(argc, argv);
+	corba.start();
 
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");

@@ -26,15 +26,18 @@
 Logger CORBAController::logger = Logger::getInstance("Ve.CORBAController");
 CORBAController CORBAController::myInstance;
 
-CORBAController::CORBAController()  : Thread() {
+CORBAController::CORBAController() : Thread() {
     positionSource = new PositionConnector_Impl();
+	LOG4CPLUS_DEBUG(logger, "Object created.");
+	cout << "aaaaaaaaaaaaaaaarg" << endl;
+	x = 27;
     running = false;
 }
 
 void CORBAController::init(int argc, char** argv) {
     try {
         orb = CORBA::ORB_init(argc, argv);
-        LOG4CPLUS_DEBUG(logger, "ORB init complete");
+        LOG4CPLUS_DEBUG(logger, "ORB init complete " << x);
         // Get root POA
         CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
         PortableServer::POA_var poa = PortableServer::POA::_narrow(obj);
@@ -52,20 +55,21 @@ void CORBAController::init(int argc, char** argv) {
     } catch (CORBA::Exception& e) {
         LOG4CPLUS_ERROR(logger, "Caught CORBA::Exception. CORBA init failed.");
         return;
-    }
+	} 
+		x = 17;
     LOG4CPLUS_INFO(logger, "CORBA initialized, starting CORBA handler.");
-    this->start();
+	// CORBAController::start();
 }
 
 void CORBAController::run() {
     running = true;
-    LOG4CPLUS_DEBUG(logger, "CORBA thread started.");
-    while (running) {
+    LOG4CPLUS_DEBUG(logger, "CORBA thread started." << x);
+    /* while (running) {
         if (orb->work_pending()) {
-            orb->perform_work();
+             orb->perform_work();
         }
-        yield();
-    }
+        yield(); 
+    } */
 }
 
 void CORBAController::addPositionEventListener(VeEventListener* listener) {
@@ -74,8 +78,7 @@ void CORBAController::addPositionEventListener(VeEventListener* listener) {
 
 CORBAController::~CORBAController() {
     running = false;
-    positionSource->_remove_ref();
-    orb->destroy();
+    /* positionSource->_remove_ref(); FIXME
+    orb->destroy(); */
 }
-
 

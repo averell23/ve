@@ -219,6 +219,32 @@ href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/pro
 			Link against <span class="code">glew32.lib</span>
 		</li>
     </div>
+    <h2>OmniORB4</h2>
+    <p>
+    You can download a copy of the OmniORB4 at 
+    <a href="http://omniorb.sourceforge.net/download.html">http://omniorb.sourceforge.net/download.html</a>,
+    a Windows binary distribution should be available.
+    </p>
+    <div class="steps">
+		<li>
+			Add the OmniORB <span class="code">include</span> directory to your
+			include search path.
+		</li>
+		<li>
+			Add the OmniORB <span class="code">lib/x86_win32</span> directory
+			to your library search path.
+		</li>
+		<li>
+			You must set the following preprocessor definitions:
+			<span class="code">__WIN32__,__x86__,_WIN32_WINNT=0x0400</span>
+		</li>
+		<li>
+			Link against <span class="code">omniORB4.lib</span>, 
+			<span class="code">omnithread.lib</span>,
+			<span class="code">msvcstub.lib</span> and 
+			<span class="code">WS2_32.LIB</span>
+		</li>
+    </div>
     <h2>Visual Studio Settings</h2>
   </body>
 </html>

@@ -17,15 +17,18 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
-				PreprocessorDefinitions="WIN32"
-				RuntimeLibrary="2"/>
+				Optimization="2"
+				AdditionalIncludeDirectories="&quot;D:\sources\omniORB-4.0.2\include&quot;;D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
+				PreprocessorDefinitions="WIN32;__WIN32__;__x86__;_WIN32_WINNT=0x0400"
+				RuntimeLibrary="2"
+				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib log4cplusd.lib glew32.lib"
-				AdditionalLibraryDirectories="D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
+				AdditionalDependencies="WS2_32.LIB omnithread.lib omniORB4.lib msvcstub.lib cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib log4cplusd.lib glew32.lib"
+				AdditionalLibraryDirectories="&quot;D:\sources\omniORB-4.0.2\lib\x86_win32&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"
+				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -65,10 +68,16 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\src\calibrationoverlay.cpp">
+			</File>
+			<File
 				RelativePath=".\src\cameracalibration.cpp">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.cpp">
+			</File>
+			<File
+				RelativePath=".\src\corbacontroller.cpp">
 			</File>
 			<File
 				RelativePath=".\src\dummyoverlay.cpp">
@@ -90,6 +99,9 @@
 			</File>
 			<File
 				RelativePath=".\src\fonttesteroverlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\gainoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\main.cpp">
@@ -119,6 +131,9 @@
 				RelativePath=".\src\veeventsource.cpp">
 			</File>
 			<File
+				RelativePath=".\src\vepositionevent.cpp">
+			</File>
+			<File
 				RelativePath=".\src\videocanvas.cpp">
 			</File>
 			<File
@@ -143,10 +158,16 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\src\calibrationoverlay.h">
+			</File>
+			<File
 				RelativePath=".\src\cameracalibration.h">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.h">
+			</File>
+			<File
+				RelativePath=".\src\corbacontroller.h">
 			</File>
 			<File
 				RelativePath=".\src\dummyoverlay.h">
@@ -170,10 +191,16 @@
 				RelativePath=".\src\fonttesteroverlay.h">
 			</File>
 			<File
+				RelativePath=".\src\gainoverlay.h">
+			</File>
+			<File
 				RelativePath=".\src\offsetoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\overlay.h">
+			</File>
+			<File
+				RelativePath=".\src\position.h">
 			</File>
 			<File
 				RelativePath=".\src\sf1280controller.h">
@@ -195,6 +222,9 @@
 			</File>
 			<File
 				RelativePath=".\src\veeventsource.h">
+			</File>
+			<File
+				RelativePath=".\src\vepositionevent.h">
 			</File>
 			<File
 				RelativePath=".\src\videocanvas.h">

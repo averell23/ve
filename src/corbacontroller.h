@@ -85,6 +85,7 @@ private:
     bool running;
     /// Event source/CORBA object for position events
     PositionConnector_Impl* positionSource;
+	int x;
 
 };
 
