@@ -28,6 +28,12 @@ Logger OffsetOverlay::logger = Logger::getInstance("Ve.OffsetOverlay");
 OffsetOverlay::OffsetOverlay(bool display)
  : Overlay(display), VeEventListener()
 {
+    // Check for imaging subset first
+    if (!GLExtensions::checkExtension("ARB_imaging")) {
+	LOG4CPLUS_ERROR(logger, "Can not use overlay, imaging extension not supported.");
+	usable = false;
+	return;
+    }
     leftEye = Ve::getLeftSource();
     rightEye = Ve::getRightSource();
     if (leftEye == NULL || rightEye == NULL) {
@@ -89,8 +95,13 @@ OffsetOverlay::OffsetOverlay(bool display)
 }
 
 void OffsetOverlay::drawOverlay() {
+    if (!usable) {
+	LOG4CPLUS_TRACE(logger, "Refusing to draw: Imaging subset not supported."); // FIXME: Use on-screen message instead
+    }
     // Set to subtractive blending
+    #ifdef GL_BLEND_EQUATION
     glBlendEquation(GL_FUNC_REVERSE_SUBTRACT); // FIXME: May not be present in driver
+    #endif
     glBlendFunc(GL_ONE, GL_ONE);
         
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */

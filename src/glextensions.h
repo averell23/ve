@@ -21,64 +21,57 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef OFFSETOVERLAY_H
-#define OFFSETOVERLAY_H
 
+/*
+  Header file to handle OpenGL stuff that is only available from extension. 
+  Since extensions are not very portable this section includes a lot of
+  preprocessor-stuff.
+  
+  Additionally, one should still check for extensions during run-time, before
+  using any of the functions defined here. 
+*/
+
+// Include GL extension headers for MS Windows
+#ifndef EXTENSIONS_H
+#define EXTENSIONS_H
+
+#include "GL/gl.h"
+#include <string.h>
 #include <log4cplus/logger.h>
-#include <GL/gl.h>
-#include <cv.hpp>
-#include "overlay.h"
-#include "veeventlistener.h"
-#include "videosource.h"
-#include "ve.h"
-#include "glextensions.h"
+
+#ifdef WIN32
+#include "GL/glext.h"
+#endif
+
+// These extension are part of OpenGL 1.2 and above
+#ifndef GL_VERSION_1_2
+// imaging subset functions
+PFNGLBLENDEQUATIONPROC glBlendEquation = NULL;
+#endif
 
 using namespace log4cplus;
 
 /**
-Tries to correct camera artefacts by applying an offset texture.
-
-@author Daniel Hahn,,,
+  Convenience class for handling OpenGL extension.
 */
-class OffsetOverlay : public Overlay, public VeEventListener
-{
+class GLExtensions {
 public:
-    OffsetOverlay(bool display);
-
-    ~OffsetOverlay();
+    /**
+      Checks wether a given OpenGL extension is supported
+      by the current rendering context.
+    */
+    static bool checkExtension(char* name);
     
-    void drawOverlay();
+    /** 
+      Initializes the functions pointers for the extension
+    */
+    static bool initExtensions();
     
-    void recieveEvent(VeEvent &e);
-
-
 private:
-    /** The width and height of the image to be displayed */
-    int imageWidth, imageHeight;
-    /** The video sources for this canvas */
-    VideoSource *leftEye, *rightEye;
-    /** The texture size used by this canvas. This may be large 
-        than the image size */
-    int textureSize;
-    /** Textures for OpenGL */
-    GLuint textures[2];
-    /** Size Factors to scale the image to screen */
-    double widthFactor, heightFactor;
+    /// Static class
+    GLExtensions();
     /// Logger for this class
     static Logger logger;
-    /// Buffers for the overlay textures
-    unsigned char *textureBufferLeft, *textureBufferRight;
-    /// Indicates if the offset can be used at all
-    bool usable;
-    
-    /**
-      Tries to create the texture from the pictures in the video
-      source. The textures are immediately applied if successful.
-      
-      @return true if the creation of the textures was successful
-    */
-    bool tryCreateTextures();
-
 };
 
 #endif

@@ -40,6 +40,7 @@
 #include "overlay.h"
 #include "veeventsource.h"
 #include "veeventlistener.h"
+#include "glextensions.h"
 
 using namespace log4cplus;
 

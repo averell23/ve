@@ -21,64 +21,45 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef OFFSETOVERLAY_H
-#define OFFSETOVERLAY_H
 
-#include <log4cplus/logger.h>
-#include <GL/gl.h>
-#include <cv.hpp>
-#include "overlay.h"
-#include "veeventlistener.h"
-#include "videosource.h"
-#include "ve.h"
 #include "glextensions.h"
 
-using namespace log4cplus;
+Logger GLExtensions::logger = Logger::getInstance("Ve.GLExtensions");
 
-/**
-Tries to correct camera artefacts by applying an offset texture.
-
-@author Daniel Hahn,,,
-*/
-class OffsetOverlay : public Overlay, public VeEventListener
-{
-public:
-    OffsetOverlay(bool display);
-
-    ~OffsetOverlay();
+bool GLExtensions::checkExtension(char* name) {
+    char* extension_list = (char*) glGetString(GL_EXTENSIONS);
+    char *end = extension_list + strlen(extension_list);
+    int extNameLen = strlen(name);
     
-    void drawOverlay();
+    while (extension_list < end) {
+	int pos = strcspn(extension_list, " ");
+	if ((extNameLen == pos) && (strncmp(name, extension_list, pos) == 0)) {
+	    return true;
+	}
+	extension_list += (pos + 1);
+    }
     
-    void recieveEvent(VeEvent &e);
+    return false;
+}
 
-
-private:
-    /** The width and height of the image to be displayed */
-    int imageWidth, imageHeight;
-    /** The video sources for this canvas */
-    VideoSource *leftEye, *rightEye;
-    /** The texture size used by this canvas. This may be large 
-        than the image size */
-    int textureSize;
-    /** Textures for OpenGL */
-    GLuint textures[2];
-    /** Size Factors to scale the image to screen */
-    double widthFactor, heightFactor;
-    /// Logger for this class
-    static Logger logger;
-    /// Buffers for the overlay textures
-    unsigned char *textureBufferLeft, *textureBufferRight;
-    /// Indicates if the offset can be used at all
-    bool usable;
+bool GLExtensions::initExtensions() {
+    bool retVal = true;
     
-    /**
-      Tries to create the texture from the pictures in the video
-      source. The textures are immediately applied if successful.
-      
-      @return true if the creation of the textures was successful
-    */
-    bool tryCreateTextures();
-
-};
-
-#endif
+    #ifdef WIN32
+    // Setup Windows function pointers here
+    #ifndef GL_VERSION_1_2
+    #ifdef GL_BLEND_EQUATION
+    if (GLExtension::checkExtension("ARB_imaging")) {
+	glBlendEquation = (PFNGLBLENDEQUATIONPROC) wglGetProcAddress("glBlendEquation");
+    } else {
+	LOG4CPLUS_ERROR("OpenGL imaging subset not supported by this driver/hardware.");
+	retVal = false;
+    }
+    #endif
+    #endif
+    // End of GL 1.2 stuff
+    #endif
+    // End of Win32 init
+    
+    return retVal;
+}
