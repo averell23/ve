@@ -48,14 +48,15 @@ int main(int argc, char *argv[]) {
     // Initialize all stuff that reads from the command line, before starting our
     // own command line parser
     Ve::initGL(argc, argv);
-    CORBAController corba = CORBAController::getInstance();
-    corba.init(argc, argv);
 
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
-    parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");
+    parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");	
+	parser.setupParameter("initA", false, "Initialization file for camera a (EPIX only)");
+	parser.setupParameter("initB", false, "Initialization file for camera b (EPIX only)");
+	parser.setupOption("nocorba", "Disable CORBA system");
     
 	bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
@@ -64,8 +65,12 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    bool option = parser.getOptionValue("help");
-    if (option) {
+	if (!parser.getOptionValue("nocorba")) { // FIXME: Incompatible with CORBA command line options
+		    CORBAController corba = CORBAController::getInstance();
+			corba.init(argc, argv);
+	}
+
+	if (parser.getOptionValue("help")) {
         cout << endl;
         parser.printUsage();
         exit(0);
@@ -113,12 +118,14 @@ int main(int argc, char *argv[]) {
         LOG4CPLUS_DEBUG(logger, "Left video source created");
     } else if (param == "epix") {
         param = parser.getParamValue("epixconf");
+		string init1 = parser.getParamValue("initA");
+		string init2 = parser.getParamValue("initB");
         LOG4CPLUS_INFO(logger, "Using epix video source");
         if (param == "")
            LOG4CPLUS_DEBUG(logger, "No epix config file given");
-	    right = new EpixSource(1, EpixSource::CAMERA_1280F, param);
+	    left = new EpixSource(1, EpixSource::CAMERA_1280F, param, init2);
         LOG4CPLUS_DEBUG(logger, "Right video source created");
-        left = new EpixSource(0, EpixSource::CAMERA_1280F, param);
+        right = new EpixSource(0, EpixSource::CAMERA_1280F, param, init1);
         LOG4CPLUS_DEBUG(logger, "Left video source created");
     } else {
         cout << "Unknown video source: " << param << endl;

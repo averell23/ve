@@ -131,6 +131,9 @@
 				RelativePath=".\src\capturecontroller.cpp">
 			</File>
 			<File
+				RelativePath=".\src\captureimagepair.cpp">
+			</File>
+			<File
 				RelativePath=".\src\capturereadthread.cpp">
 			</File>
 			<File
@@ -178,6 +181,9 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\src\bmpstruct.h">
+			</File>
+			<File
 				RelativePath=".\src\buffersource.h">
 			</File>
 			<File
@@ -188,6 +194,9 @@
 			</File>
 			<File
 				RelativePath=".\src\capturecontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\captureimagepair.h">
 			</File>
 			<File
 				RelativePath=".\src\captureinfo.h">

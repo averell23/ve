@@ -37,9 +37,9 @@ public:
     /// Pointer to image buffer b
     char* buffer_b;
     /// Image timestamp
-    long timestamp;
+    unsigned long timestamp;
     /// Image serial number (e.g. the video field count)
-    long serial;
+    unsigned long serial;
     
     /**
       Creates a new image pair by initializing the buffers

@@ -22,16 +22,17 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 #include "captureimagepair.h"
+#include <stdio.h>
 
 CaptureImagePair::CaptureImagePair(int size) {
+    serial = 0;
+    timestamp = 0;
     buffer_a = new char[size];
     buffer_b = new char[size];
 }
 
 CaptureImagePair::~CaptureImagePair()
 {
-    serial = 0;
-    timestamp = 0;
     delete buffer_a;
     delete buffer_b;
 }

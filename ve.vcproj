@@ -68,6 +68,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\src\arregistration.cpp">
+			</File>
+			<File
 				RelativePath=".\src\buffersource.cpp">
 			</File>
 			<File
@@ -75,6 +78,21 @@
 			</File>
 			<File
 				RelativePath=".\src\cameracalibration.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturebuffer.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturecontroller.cpp">
+			</File>
+			<File
+				RelativePath=".\src\captureimagepair.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturereadthread.cpp">
+			</File>
+			<File
+				RelativePath=".\src\capturewritethread.cpp">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.cpp">
@@ -171,6 +189,24 @@
 			</File>
 			<File
 				RelativePath=".\src\cameracalibration.h">
+			</File>
+			<File
+				RelativePath=".\src\capturebuffer.h">
+			</File>
+			<File
+				RelativePath=".\src\capturecontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\captureimagepair.h">
+			</File>
+			<File
+				RelativePath=".\src\captureinfo.h">
+			</File>
+			<File
+				RelativePath=".\src\capturereadthread.h">
+			</File>
+			<File
+				RelativePath=".\src\capturewritethread.h">
 			</File>
 			<File
 				RelativePath=".\src\commandlineparser.h">

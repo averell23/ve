@@ -41,6 +41,7 @@ extern "C" {
 
 using namespace log4cplus;
 
+// FIXME: Evil things with string.c_str() happen in this code. Check other classes as well.
 int main(int argc, char *argv[]) {
     cout << "Ve capture utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
 
@@ -106,13 +107,17 @@ int main(int argc, char *argv[]) {
     param = parser.getParamValue("size");
     int size = atoi(param.c_str());
 
-    param = parser.getParamValue("timestamp");
-    if (param == "") {
-	info.writeTimestamp = false;
-	info.timstampPrefix = "";
+
+	string filePrefix = parser.getParamValue("prefix");
+    info.filePrefix = (char*) filePrefix.c_str();
+
+    string timeString = parser.getParamValue("timestamp");
+    if (timeString == "") {
+		info.writeTimestamp = false;
+		info.timstampPrefix = "";
     } else {
-	info.writeTimestamp = true;
-	info.timstampPrefix = (char*) param.c_str();
+		info.writeTimestamp = true;
+		info.timstampPrefix = (char*) timeString.c_str();
     }
     
     if (size < 1) {
@@ -120,8 +125,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    string filePrefix = parser.getParamValue("prefix");
-    info.filePrefix = (char*) filePrefix.c_str();
+
 
     char* config; // config file name
     param = parser.getParamValue("epixconf");
@@ -169,6 +173,16 @@ int main(int argc, char *argv[]) {
             scanf("%c", &key);
         }
         controller.stopLiveCapture();
+		info.readTimer.stop();
+		info.writeTimer.stop();
+		LOG4CPLUS_INFO(logger, "Read " << info.readTimer.getCount() 
+			<< " images in " << info.readTimer.getSeconds() 
+			<< "s" << info.readTimer.getMilis() << "ms, framerate: "
+			<< info.readTimer.getFramerate());
+		LOG4CPLUS_INFO(logger, "Wrote " << info.writeTimer.getCount() 
+			<< " images in " << info.writeTimer.getSeconds() 
+			<< "s" << info.writeTimer.getMilis() << "ms, framerate: "
+			<< info.writeTimer.getFramerate());
     } else {
         controller.captureToBuffers();
         controller.writeBuffers();

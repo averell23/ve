@@ -29,7 +29,7 @@ CaptureBuffer::CaptureBuffer(int images, int size) {
     queueEnd = 0;
     buffer = new CaptureImagePair*[images];
     for (int i=0 ; i < images ; i++) {
-	buffer[i] = new CaptureImagePair(size);
+		buffer[i] = new CaptureImagePair(size);
     }
 }
 
@@ -59,10 +59,10 @@ CaptureImagePair* CaptureBuffer::getQueueFirst() {
     CaptureImagePair* retVal;
     mutex.enterMutex();
     if (queueEnd == queueBegin) {
-	// Queue is empty
-	retVal = NULL;
+		// Queue is empty
+		retVal = NULL;
     } else {
-	retVal = buffer[queueBegin];
+		retVal = buffer[queueBegin];
     }
     mutex.leaveMutex();
     return retVal;

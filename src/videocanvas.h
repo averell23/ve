@@ -36,7 +36,11 @@
 #include <stdio.h>		// STD input/output headers
 #include <iostream>
 #include <log4cplus/logger.h>
+#include <cv.hpp>
 #include "veeventlistener.h"
+#include "captureinfo.h"
+#include "captureimagepair.h"
+#include "capturecontroller.h"
 
 using namespace std;
 using namespace log4cplus;
@@ -84,6 +88,8 @@ protected:
     static Logger logger;
     /// Brightness setting for the sources
     int leftBrightness, rightBrightness;
+	/// FIXME: Counter for quick image save hack
+	int imagesSaved;
 
 };
 

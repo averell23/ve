@@ -49,18 +49,23 @@ void CaptureWriteThread::run() {
 }
 
 void CaptureWriteThread::writeImages() {
-    CaptureImagePair* buf = buffer->getQueueFirst();
-    // Wait for both buffers to have data
-    while (buf == NULL) {
-	buf = buffer->getQueueFirst();
-    }
-    // Names for the image files
-    char name1[256], name2[256];
-    sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
-    sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
-    CaptureController::writeRAWFiles(name1, name2, buf, info);
-    
-    buffer->removeQueueFirst();
+	CaptureImagePair* buf = buffer->getQueueFirst();
+	// Wait for both buffers to have data
+	while (buf == NULL) {
+		buf = buffer->getQueueFirst();
+	}
+	// Names for the image files
+	char name1[256], name2[256];
+	sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
+	sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
+	CaptureController::writeRAWFiles(name1, name2, buf, info);
+	if (info->writeTimestamp) {
+		char stampFile[256];
+		sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, counter);
+		CaptureController::writeMetaStamp(stampFile, buffer->getBufferAt(counter));
+	} 
+
+	buffer->removeQueueFirst();
 }
 
 void CaptureWriteThread::quit() {

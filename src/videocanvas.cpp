@@ -34,6 +34,7 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     rightEye = right;
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
+	imagesSaved = 0;
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
         LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
@@ -193,6 +194,25 @@ void VideoCanvas::recieveEvent(VeEvent &e) {
             leftBrightness +=5;
         rightEye->setBrightness(rightEye->getBrightness() + 5);
     }
+	// FIXME: Quick hack for saving images
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'a'))  {
+		char name1[256], name2[256];
+		sprintf(name1,"quicksaved_left_%d.raw", imagesSaved);
+        sprintf(name2,"quicksaved_right_%d.raw", imagesSaved);
+		IplImage* image2 = rightEye->waitAndGetImage();
+		IplImage* image1 = leftEye->waitAndGetImage();
+		CaptureImagePair imgPair(0);
+		imgPair.buffer_a = image1->imageData;
+		imgPair.buffer_b = image2->imageData;
+		CaptureInfo info;
+		info.height = image1->height;
+		info.width = image1->width;
+		info.imgSize = image1->height * image1->width * 3;
+		info.planes = 3;
+		info.pixBytes = 1;
+		CaptureController::writeRAWFiles(name1, name2, &imgPair, &info);
+		imagesSaved++;
+	}
 }
 
 VideoCanvas::~VideoCanvas() {

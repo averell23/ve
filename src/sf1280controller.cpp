@@ -142,7 +142,8 @@ bool SF1280Controller::initCamera() {
                 p_on_c++;
                 j++;
             }
-            order[j]='\0';
+            order[j]='\r';
+			order[j+1] ='\0';
             LOG4CPLUS_DEBUG(logger, "Camera command read from file: " << order);
             retVal = XCLIBController::writeCamLinkSerial(unit,order);
             LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
