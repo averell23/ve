@@ -40,7 +40,13 @@
 using namespace log4cplus;
 
 /**
-This allows to track patterns in the video image by means of the ARToolkit.
+  This is an abstract base class for all overlays that need to use tracking
+  features. It will handle all position updates and the lists of objects
+  that are currently being tracked. If configured, the @see drawOverlay
+  method will draw some informative text about the tracking process. It
+  will call @see drawOneEye for each eye, with the video canvas configured
+  for the current eye. Additional event handling can be added in 
+  @see handleEvent to avoid overwriting @see recieveEvent
  
 @author Daniel Hahn,,,
 */
@@ -62,9 +68,14 @@ public:
 
     static char* paramFile;
 
-    void recieveEvent(VeEvent &e);
+    virtual void recieveEvent(VeEvent &e);
 
-private:
+protected:
+    /**
+      Additional event handling for subclasses.
+    */
+    virtual void handleEvent(VeEvent &e) = 0;
+    
     /**
       Contains the on-screen positions of objects in the left eye in 
       virtual coordinates.
@@ -101,7 +112,8 @@ private:
        @param positions Pointer to the map that contains the object
                         positions for the current eyes.
     */
-    void drawOneEye(map<int,Position>& positions);
+    virtual void drawOneEye(map<int,Position>& positions) = 0;
+    
     /// The font used for status display
     FTGLTextureFont* font;
     /// Text for display
@@ -128,10 +140,7 @@ private:
 
     /// Indicates if the text portion of the overlay should be drawn
     bool doText;
-    /// Indicates if a crosshair should be drawn on every marker
-    bool doCrosshairs;
-    /// Indicates if a highlight indicator should be drawn for the center marker
-    bool doHighlight;
+
     /// Width and height of video picture
     int width, height;
 

@@ -24,12 +24,11 @@
 #include "xmlmacros.h"
 
 Logger XMLMacros::logger = Logger::getInstance("Ve.XMLMacros");
+xercesc::XercesDOMParser XMLMacros::parser;
+xercesc::HandlerBase XMLMacros::errHandler; 
 
 xercesc::DOMDocument* XMLMacros::XMLReadFile(string filename) {
     XMLCh tmpStr[256];
-    
-    xercesc::XercesDOMParser parser;
-    xercesc::HandlerBase errHandler; // Dummy handler
     parser.setErrorHandler(&errHandler);
 
     try {

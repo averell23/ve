@@ -57,7 +57,8 @@ public:
       Attempts to open the XML file for reading. The file is
       opened and parsed into a DOM. If this isn't successful,
       for whatever reason, the error messages will be logged. A dummy error
-      handler is used for the parser.
+      handler is used for the parser. This uses an internal parser object,
+      which will be re-used the next time this function is called.
       
       @param filename Name of the XML file to open.
       
@@ -94,6 +95,10 @@ public:
 private:
     /// Logger for this class.
     static Logger logger;
+    /// Temporary parser object
+    static xercesc::XercesDOMParser parser;
+    /// Dummy Error Handler for parser.
+    static xercesc::HandlerBase errHandler; 
 	
 };
 

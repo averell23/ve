@@ -30,8 +30,6 @@ TrackerOverlay::TrackerOverlay(int leftSourceID, int rightSourceID, bool display
     expireT = 500;
     text = new char[256];
     doText = false;
-    doCrosshairs = true;
-    doHighlight = true;
     TrackerOverlay::leftSourceID = leftSourceID;
     TrackerOverlay::rightSourceID = rightSourceID;
     TrackerOverlay::displayState = display;
@@ -72,37 +70,6 @@ void TrackerOverlay::drawOverlay() {
     drawOneEye(rightPositions);
 
     GLMacros::revertMatrices();
-}
-
-
-void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
-    font = FontManager::getFont();
-    int size = positions.size();
-    map<int,Position>::iterator posIterator;
-    // Write static text
-    if (doText && (font != NULL)) { // Sanity check
-        glTranslatef(0.05f, 0.2f, 0.0f);
-        font->Render(text);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glTranslatef(-0.05f, -0.2f, 0.0f); // Translate back
-    }
-    map<int,Position>::iterator center = getCenterMarker(positions);
-    // Draw crosshairs on objects
-    if (doCrosshairs) {
-        for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
-            if (posIterator == center) {
-                glColor3f(1.0f, 0.2f, 0.2f);
-            } else {
-                glColor3f(1.0f, 1.0f, 1.0f);
-            }
-            GLMacros::drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y);
-            GLMacros::drawText((int) posIterator->second.x, (int) posIterator->second.y, "blah!", 60);
-        }
-        glColor3f(1.0f, 1.0f, 1.0f);
-    }
-    if (doHighlight && (positions.size() > 0)) {
-        drawHighlight((int) center->second.x, (int) center->second.y);
-    }
 }
 
 
@@ -171,7 +138,7 @@ void TrackerOverlay::cleanupSingleList(map<int,Position>& positions) {
         positions.erase(delElements[i]);
         LOG4CPLUS_TRACE(logger, "Erased element");
     }
-    mtx.leaveMutex();
+    mtx.leaveMutex(); 
 }
 
 double TrackerOverlay::centerDistanceSquared(double x, double y) {
@@ -183,14 +150,6 @@ double TrackerOverlay::centerDistanceSquared(double x, double y) {
 }
 
 void TrackerOverlay::recieveEvent(VeEvent &e) {
-    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'j')) {
-        doCrosshairs = !doCrosshairs;
-        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling crosshairs.");
-    }
-    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'k')) {
-        doHighlight = !doHighlight;
-        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
-    }
     if (e.getType() == VeEvent::POSITION_EVENT) {
         LOG4CPLUS_TRACE(logger, "Position event handler");
         Position pos = ((VePositionEvent&) e).getPosition();
