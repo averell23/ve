@@ -1,4 +1,4 @@
-# Doxyfile 1.3.4
+# Doxyfile 1.3.4-KDevelop
 
 #---------------------------------------------------------------------------
 # Project related configuration options
@@ -111,16 +111,16 @@ TREEVIEW_WIDTH         = 250
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = NO
-LATEX_OUTPUT           = latex
+GENERATE_LATEX         = YES
+LATEX_OUTPUT           = /home/daniel/sources/ve/doc/classdoc/latex/
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
 COMPACT_LATEX          = NO
 PAPER_TYPE             = a4wide
 EXTRA_PACKAGES         = 
 LATEX_HEADER           = 
-PDF_HYPERLINKS         = NO
-USE_PDFLATEX           = NO
+PDF_HYPERLINKS         = YES
+USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 #---------------------------------------------------------------------------

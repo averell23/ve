@@ -130,7 +130,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp epixcameracontroller.h epixcameracontroller.cpp sf1280controller.h sf1280controller.cpp vepositionevent.cpp corbacontroller.cpp calibrationoverlay.cpp corbathread.cpp corbathread.h
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp epixcameracontroller.h epixcameracontroller.cpp sf1280controller.h sf1280controller.cpp vepositionevent.cpp corbacontroller.cpp calibrationoverlay.cpp corbathread.cpp corbathread.h registrationoverlay.cpp arregistration.cpp
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/xclib $(all_includes) -I/usr/include/cc++2 -I/usr/local/include/opencv -I/usr/include/freetype2
@@ -139,8 +139,8 @@ INCLUDES = -I/usr/local/xclib $(all_includes) -I/usr/include/cc++2 -I/usr/local/
 ve_LDFLAGS = $(all_libraries) 
 
 SUBDIRS = stubs corbatest
-ve_LDADD = $(top_builddir)/src/stubs/libstubs.a /usr/local/xclib/xclibi86.a -lomniORB4 -lftgl -lGLEW -lfreetype -lm -lopencv -llog4cplus -lglut -lGL -lccgnu2
-noinst_HEADERS = vepositionevent.h position.h corbacontroller.h calibrationoverlay.h
+ve_LDADD = $(top_builddir)/src/stubs/libstubs.a -lgslcblas -lgsl /usr/local/xclib/xclibi86.a -lomniORB4 -lftgl -lGLEW -lfreetype -lm -lopencv -llog4cplus -lglut -lGL -lccgnu2
+noinst_HEADERS = vepositionevent.h position.h corbacontroller.h calibrationoverlay.h registrationoverlay.h arregistration.h
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -160,7 +160,8 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	offsetoverlay.$(OBJEXT) epixcameracontroller.$(OBJEXT) \
 	sf1280controller.$(OBJEXT) vepositionevent.$(OBJEXT) \
 	corbacontroller.$(OBJEXT) calibrationoverlay.$(OBJEXT) \
-	corbathread.$(OBJEXT)
+	corbathread.$(OBJEXT) registrationoverlay.$(OBJEXT) \
+	arregistration.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_DEPENDENCIES = $(top_builddir)/src/stubs/libstubs.a \
 	/usr/local/xclib/xclibi86.a
@@ -168,7 +169,8 @@ ve_DEPENDENCIES = $(top_builddir)/src/stubs/libstubs.a \
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/calibrationoverlay.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/arregistration.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/calibrationoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cameracalibration.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/commandlineparser.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/corbacontroller.Po \
@@ -182,6 +184,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/fonttesteroverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/main.Po ./$(DEPDIR)/offsetoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/overlay.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/registrationoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/sf1280controller.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/statusoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
@@ -266,6 +269,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arregistration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calibrationoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cameracalibration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commandlineparser.Po@am__quote@
@@ -281,6 +285,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/offsetoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/overlay.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/registrationoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sf1280controller.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statusoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stopwatch.Po@am__quote@

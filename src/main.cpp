@@ -30,6 +30,7 @@
 #include "statusoverlay.h"
 #include "offsetoverlay.h"
 #include "calibrationoverlay.h"
+#include "registrationoverlay.h"
 #include "commandlineparser.h"
 #include "corbacontroller.h"
 #include <log4cplus/logger.h>
@@ -141,6 +142,8 @@ int main(int argc, char *argv[]) {
     CalibrationOverlay* calibration = new CalibrationOverlay(false);
     Ve::addOverlay(calibration);
     Ve::addListener(calibration);
+    RegistrationOverlay* registration = new RegistrationOverlay(true);
+    Ve::addOverlay(registration);
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();

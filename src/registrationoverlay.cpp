@@ -21,72 +21,87 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "statusoverlay.h"
+#include "registrationoverlay.h"
 
-Logger StatusOverlay::logger = Logger::getInstance("Ve.StatusOverlay");
+Logger RegistrationOverlay::logger = Logger::getInstance("Ve.RegistrationOverlay");
 
-StatusOverlay::StatusOverlay(bool display)
-: Overlay(display) {
-    rightSource = Ve::getRightSource();
-    leftSource = Ve::getLeftSource();
-    rightTimer = Ve::getRightSource()->getTimer();
-    leftTimer = Ve::getLeftSource()->getTimer();
-    videoTimer = Ve::getTimer();
-    text = new char[256];
-    text2 = new char[256];
-    LOG4CPLUS_INFO(logger, "Status overlay created");
+
+RegistrationOverlay::~RegistrationOverlay()
+{
+    delete tmpSensorPoints;
 }
 
-void StatusOverlay::drawOverlay() {
+RegistrationOverlay::RegistrationOverlay(bool display) : Overlay(display) {
+    measureSize = 5;
+    measureCount = 0;
+    tmpSensorPoints = new CvPoint3D32f[measureSize];
+}
+
+void RegistrationOverlay::measurePoint(int x, int y) {
+    mutex.enterMutex();
+    measureCount = 0;
+    mutex.leaveMutex();
+    while (measureCount != measureSize) {
+	Thread::yield();
+    }
+    
+}
+
+void RegistrationOverlay::drawOverlay() {
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
-    glOrtho(-1000, 1000, -1000, 1000, 0, 1);	// ...and load the Identity Matrix instead
+    glOrtho(-1000, 1000, -1000, 1000, 0, 1);
     glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
     glPushMatrix();
     glLoadIdentity();
 
-    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-    sprintf(text, "%f/%f/%f", leftTimer->getFramerate(), rightTimer->getFramerate(), videoTimer->getFramerate());
-    sprintf(text2, "Video Brightness: %d%%/%d%%", leftSource->getBrightness(), rightSource->getBrightness());
-
     glTranslatef(-1.0f, 0.0f, 0.0f);
-    drawOneEye();
+    drawOneEye(); // left eye
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f,  1.0f);
-    drawOneEye();
-    
-    // Remove text textures
-    glBindTexture(GL_TEXTURE_2D, 0);
+    drawOneEye(); // right eye
+
     // Restore Matrices
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
 }
 
-void StatusOverlay::drawOneEye() {
-    font = FontManager::getFont();
-    if (font == NULL)
-        return; // Sanity check
-
-    glTranslatef(0.05f, 0.8f, 0.0f);
-    font->Render(text);
-    glTranslatef(0.0f, -1.4f, 0.0f);
-    font->Render(text2);
-    glTranslatef(0.0f, -0.1f, 0.0f);
-    font->Render("Status Display active");
+void RegistrationOverlay::drawOneEye() {
+    drawCrosshairs(500, 0);
 }
 
-void StatusOverlay::recieveEvent(VeEvent &e) {
-    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 32)) {
-        toggleDisplay();
-        LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
+void RegistrationOverlay::drawCrosshairs(int x, int y) {
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+    // vertical line
+    glVertex3i(x, -1000, 0);
+    glVertex3i(x, 1000, 0);
+    // horizontal line
+    glVertex3i(0, y, 0);
+    glVertex3i(1000, y, 0);
+    //  box
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glEnd();
+}
+
+void RegistrationOverlay::recieveEvent(VeEvent &e) {
+    mutex.enterMutex();
+    if ((e.getType() == VeEvent::POSITION_EVENT) && (measureCount < measureSize)) {
+	VePositionEvent& eP = (VePositionEvent&) e;
+	Position pos = eP.getPosition();
+	tmpSensorPoints[measureCount].x = pos.x;
+	tmpSensorPoints[measureCount].y = pos.y;
+	tmpSensorPoints[measureCount].z = pos.z;
+	LOG4CPLUS_DEBUG(logger, "Recieved position event (" << pos.x << "," << pos.y << "," << pos.z << ")");
+	measureCount++;
     }
+    mutex.leaveMutex();
 }
-
-StatusOverlay::~StatusOverlay() {
-    delete text;
-    delete text2;
-}
-
-

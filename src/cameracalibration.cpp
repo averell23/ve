@@ -210,3 +210,33 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
 CameraCalibration::~CameraCalibration() {
     deleteSnapshots();
 }
+
+CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {
+    CvPoint2D32f retPoint;
+    float r_square = pow(point.x,2) + pow(point.y,2);
+    float distortion_factor = distortions[0] * r_square;
+    retPoint.x = point.x + (point.x * distortion_factor);
+    retPoint.y = point.y + (point.y * distortion_factor);
+    
+    return retPoint;
+}
+
+
+
+CvPoint2D32f CameraCalibration::distortPoint(CvPoint2D32f point) {
+    CvPoint2D32f retPoint;
+    double a = (((double) pow(point.x,2) / (double) pow(point.y,2)) + 1.0f) * distortions[0];
+    double coeff_a = 0;
+    double coeff_b = 1.0f / a;
+    double coeff_c = - (point.y / a);
+    double *x1, *x2, *x3;
+    int result = gsl_poly_solve_cubic(coeff_a, coeff_b, coeff_c, x1, x2, x3);
+    if (result == 1) {
+	retPoint.y = *x1;
+    } else if (result == 3) {
+	retPoint.y = *x2; // Should be the "middle" according to GSL docu
+    }
+    retPoint.x = (point.x / point.y) * retPoint.y;
+    
+    return retPoint;
+}

@@ -24,6 +24,7 @@
 #ifndef CAMERACALIBRATION_H
 #define CAMERACALIBRATION_H
 
+#define INVERSE_DISTORTION_SIZE 1000
 
 #include <cv.hpp>		// OpenCV headers
 #include "videosource.h"
@@ -31,6 +32,8 @@
 #include <vector>
 #include <iostream>
 #include <log4cplus/logger.h>
+#include <math.h>
+#include <gsl/gsl_poly.h>
 
 using namespace std;
 using namespace log4cplus;
@@ -78,7 +81,7 @@ public:
     */
     void deleteSnapshots();
 
-    /**string
+    /**
       Recalibrate the camera from the internal snapshots.
       
     */
@@ -134,6 +137,34 @@ public:
     int getSnapshotCount() {
         return images.size();
     }
+    
+    /**
+      Distorts the given point with the calibrated distortion
+      coefficients.  
+      
+      Normally this function should be
+      the inverse of @see distortPoint, but the actual results
+      may vary since a lookup table is used for the inverse 
+      operation.
+      
+      @param point The point that will be undistorted. The x 
+      and y values will be clamped to [-1,1]
+      @return the undistorted ccordinates of the point.
+    */
+    CvPoint2D32f distortPoint(CvPoint2D32f point);
+    
+    /**
+      Undistorts the given point with the calibrated distortion
+      coefficients. This function uses
+      ONLY the coefficients of radial distortion.
+      If nothing was calibrated, the return
+      point is the same as the input.
+      
+      @param point The point that will be undistorted. The x 
+      and y values will be clamped to [-1,1]
+      @return the undistorted ccordinates of the point.
+    */
+    CvPoint2D32f unDistortPoint(CvPoint2D32f point);
 
     ~CameraCalibration();
 
@@ -160,6 +191,8 @@ private:
     CvSize chessSize;
     /** If an intrisinc guess is used for the calibration. @see OpenCV documentation */
     bool useIntrisincGuess;
+    /** A reverse lookup table for undistorting points */
+    CvPoint2D32f reverseDistortion[INVERSE_DISTORTION_SIZE][INVERSE_DISTORTION_SIZE];
 
     /**
       Creates a pattern that describes the (3D) positions of the chessboard
@@ -179,6 +212,7 @@ private:
               successfully created.
     */
     CvPoint2D32f* guessCorners(IplImage* image);
+    
     /// Logger for this class
     static Logger logger;
 };
