@@ -21,23 +21,43 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef IMAGEREADERSOURCE_H
-#define IMAGEREADERSOURCE_H
+#ifndef EPIXSOURCE_H
+#define EPIXSOURCE_H
 
 #include "videosource.h"
+#include "xclibcontroller.h"
+#include <iostream>
+
+using namespace std;
 
 /**
-Reads the images from files on disc. If multiple images are loaded into the source they will be supplied in a circular fashion.
-
 @author Daniel Hahn,,,
 */
-class ImageReaderSource : public VideoSource
+class EpixSource : public VideoSource
 {
 public:
-    ImageReaderSource();
+    EpixSource();
 
-    ~ImageReaderSource();
+    /**
+      Reconfigure the video library with the given file.
+      
+      @return The XCLIB return code of the open operation.
+    */
+    int reconfigure(string filename);
+    
+    /**
+      Selects the framgegrabber unit from which this source reads.
+      This automatically puts the selected unit into the "live" mode.
+    */
+    void selectUnit(int unit);
+    
+    virtual IplImage *getImage();
+	
+    ~EpixSource();
 
+private:
+    /// Unit number from which this source reads
+    int unit;
 };
 
 #endif

@@ -21,16 +21,53 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "imagereadersource.h"
+#include "epixsource.h"
 
-ImageReaderSource::ImageReaderSource()
+EpixSource::EpixSource()
  : VideoSource()
 {
+    int result;
+    if (!XCLIBController::isOpen()) 
+	result = XCLIBController::openLib();
+    if (XCLIBController::isOpen()) {
+	    height = pxd_imageYdim();
+	    width = pxd_imageXdim();
+    }
 }
 
+int EpixSource::reconfigure(string filename) {
+    if (XCLIBController::isOpen()) 
+	XCLIBController::closeLib();
+    int result = XCLIBController::openLib(filename);
+    if (result == 0) {
+	height = pxd_imageYdim();
+	width = pxd_imageXdim();
+    } else {
+	height = 0;
+	width = 0;
+    }
+    return result;
+}
 
-ImageReaderSource::~ImageReaderSource()
+EpixSource::~EpixSource()
 {
+    XCLIBController::goUnLive(unit);
 }
 
+void EpixSource::selectUnit(int unit) {
+    XCLIBController::goUnLive(EpixSource::unit);
+    EpixSource::unit = unit;
+    XCLIBController::goLive(EpixSource::unit);
+}
 
+IplImage* EpixSource::getImage() {
+    IplImage* image;
+    CvSize size;
+    size.height = height;
+    size.width = width;
+    
+    image = cvCreateImageHeader(size, IPL_DEPTH_16S, 3);
+    ushort** buffer;
+    int result = XCLIBController::getBufferCopy(unit, buffer);
+    image->imageData = (char*) *buffer;
+}

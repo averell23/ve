@@ -124,7 +124,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp glutCallbacks.h glutCallbacks.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp glutCallbacks.h glutCallbacks.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -142,7 +142,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	dummysource.$(OBJEXT) stopwatch.$(OBJEXT) \
 	glutCallbacks.$(OBJEXT) dummyoverlay.$(OBJEXT) \
-	cameracalibration.$(OBJEXT)
+	cameracalibration.$(OBJEXT) epixsource.$(OBJEXT) \
+	xclibcontroller.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -153,10 +154,12 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dummyoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dummysource.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/epixsource.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/glutCallbacks.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/videocanvas.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/videosource.Po
+@AMDEP_TRUE@	./$(DEPDIR)/videosource.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xclibcontroller.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -227,11 +230,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cameracalibration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummyoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummysource.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/epixsource.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glutCallbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stopwatch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ve.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/videocanvas.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/videosource.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xclibcontroller.Po@am__quote@
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
