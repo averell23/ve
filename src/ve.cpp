@@ -28,7 +28,7 @@ void Ve::init(VideoSource* left, VideoSource* right, bool swap,
         Ve::rightEye = left;
         Ve::leftEye = right;
     }
-    Ve::stereoCal = new StereoCalibration(left->getCalibration(), right->getCalibration());
+    Ve::stereoCal = new StereoCalibration(Ve::leftEye->getCalibration(), Ve::rightEye->getCalibration());
     Ve::mainVideo = new VideoCanvas(Ve::leftEye, Ve::rightEye, rotX, rotY, rotZ, leftBright, rightBright);
     Ve::addListener(Ve::mainVideo);
     LOG4CPLUS_INFO(logger, "Main video canvas created.");

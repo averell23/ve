@@ -231,11 +231,11 @@ int main(int argc, char *argv[]) {
 
     Ve::init(left, right, swap, xRot, yRot, zRot, leftBrightness, rightBrightness);
     CameraCalibration *calTmp = Ve::getLeftSource()->getCalibration();
-    calTmp->setPatternDimension(cvSize(6, 8));
-    calTmp->setChessSize(cvSize(28, 28));
+    calTmp->setPatternDimension(cvSize(6, 8)); // FIXME: loop here
+    calTmp->setChessSize(cvSize(2, 2));
     calTmp = Ve::getRightSource()->getCalibration();
     calTmp->setPatternDimension(cvSize(6, 8));
-    calTmp->setChessSize(cvSize(28, 28));
+    calTmp->setChessSize(cvSize(2, 2));
 
     LOG4CPLUS_DEBUG(logger, "Adding overlays");
     // Create overlays

@@ -104,6 +104,11 @@ public:
     */
     static void rotateImage();
 
+    /**
+        Converts the given virtual coordinates to actual screen
+        coordinates.
+    */
+
 private:
     /// Logger for this class
     static Logger logger;

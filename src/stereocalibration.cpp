@@ -123,7 +123,7 @@ void StereoCalibration::recalibrate() {
     LOG4CPLUS_DEBUG(logger, "Stereo calibration complete");
 }
 
-
+/**
 gsl_vector* StereoCalibration::getExtVector(CvMatr32f trans, CvMatr32f rot, int size) {
     gsl_vector* retVal = gsl_vector_alloc(size*16);
     for (int i = 0 ; i<size ; i++) {
@@ -165,9 +165,8 @@ gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int 
     gsl_matrix_free(extMat);
     LOG4CPLUS_DEBUG(logger, "External matrix created as parameter matrix");
     return retVal;
-}
+} **/
 
-/** Original version
 
 gsl_matrix* StereoCalibration::getExtMatrix(CvMatr32f trans, CvMatr32f rot, int size) {
     gsl_matrix* retVal = gsl_matrix_calloc(16*size, 16);
@@ -211,4 +210,3 @@ gsl_vector* StereoCalibration::getExtVector(CvMatr32f trans, CvMatr32f rot, int 
     LOG4CPLUS_DEBUG(logger, "External matrix created as vector.");
     return retVal;
 }
-*/

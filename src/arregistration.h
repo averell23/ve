@@ -95,6 +95,13 @@ public:
     */
     gsl_matrix* get3DTransformation() { return T_orig; }
 
+    /**
+        Reset the registration matrix.
+        FIXME: Kludge
+    */
+    void resetCalibration();
+
+
 
 private:
     /// Vector for the image plane calibration points
@@ -116,12 +123,12 @@ private:
     gsl_matrix* T_orig;
     /// The video source connected to this registration object
     VideoSource* source;
+
     /**
       Retrieve the calibration matrix and copy it into a GSL 
       matrix struct.
     */
     gsl_matrix* getCalibrationMatrix();
-
 
 
 };

@@ -27,8 +27,10 @@ Logger ARRegistration::logger = Logger::getInstance("Ve.ARRegistration");
 
 ARRegistration::ARRegistration(VideoSource* source) {
     this->source = source;
-    Trans = gsl_matrix_calloc(3,4);
-    T_orig = gsl_matrix_calloc(4,4);
+    Trans = gsl_matrix_alloc(3,4);
+    gsl_matrix_set_identity(Trans);
+    T_orig = gsl_matrix_alloc(4,4);
+    gsl_matrix_set_identity(T_orig);
 }
 
 ARRegistration::~ARRegistration() {
@@ -36,7 +38,7 @@ ARRegistration::~ARRegistration() {
         gsl_matrix_free(Trans);
     }
     if (T_orig != NULL) {
-	gsl_matrix_free(T_orig);
+	    gsl_matrix_free(T_orig);
     }
 }
 
@@ -134,6 +136,10 @@ void ARRegistration::reRegister() {
     gsl_matrix_view T_sub_vw = gsl_matrix_submatrix(T_orig, 0, 0, 3, 4);
     gsl_matrix_view T_vec_vw = gsl_matrix_view_vector(T_vec, 3, 4);
     gsl_matrix_memcpy(&T_sub_vw.matrix, &T_vec_vw.matrix);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        cout << "Original registration matrix is: " << endl;
+        MatrixUtils::printMatrix(T_orig);
+    }
     // calculate the final transformation matrix
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
     /* FIXME: Numerical Stability kludge
@@ -142,7 +148,7 @@ void ARRegistration::reRegister() {
     gsl_matrix_set(Trans, 2, 2, 0);
      FIXME: Kludge Ends */
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
-	cout << "Registration matrix is now: " << endl;
+	    cout << "Registration matrix is now: " << endl;
 	    MatrixUtils::printMatrix(Trans);
     }
     // Clean up
@@ -154,6 +160,14 @@ void ARRegistration::reRegister() {
     gsl_matrix_free(params);
     gsl_matrix_free(cov);
     LOG4CPLUS_INFO(logger, "Re-Registered Sensors.");
+}
+
+void ARRegistration::resetCalibration() {
+    gsl_matrix* c = getCalibrationMatrix();
+    gsl_matrix_set_identity(T_orig);
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T_orig, 0.0, Trans);
+    gsl_matrix_free(c);
+    LOG4CPLUS_INFO(logger, "Registration reset.");
 }
 
 gsl_matrix* ARRegistration::getCalibrationMatrix() {

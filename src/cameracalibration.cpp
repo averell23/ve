@@ -206,11 +206,12 @@ void CameraCalibration::deleteSnapshots() {
 }
 
 void CameraCalibration::setPatternDimension(CvSize dimension) {
+    /** FXIME: Huh?
     if (dimension.height < dimension.width) {
         int temp = dimension.height;
         dimension.height = dimension.width;
         dimension.width = temp;
-    }
+    } */
     patternDimension = dimension;
 }
 
@@ -222,10 +223,10 @@ CvPoint3D32f* CameraCalibration::generatePattern() {
     CvPoint3D32f* objPoints = new CvPoint3D32f[images.size() * patternDimension.width * patternDimension.height];
     int pointPosition = 0; // Position in the point list
     for (int imgNum = 0 ; imgNum < images.size() ; imgNum++) { // count through images
-        for (int widthPos = patternDimension.width - 1 ; widthPos >= 0 ; widthPos--) { // count through width
-            for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
+        for (int heightPos = 0 ; heightPos < patternDimension.height ; heightPos++) { // count through height
+            for (int widthPos = 0 ; widthPos < patternDimension.width ; widthPos++) { // count through width
                 objPoints[pointPosition].y = heightPos * chessSize.height;
-                objPoints[pointPosition].x = widthPos * chessSize.width;
+                objPoints[pointPosition].x = (patternDimension.width - 1 - widthPos) * chessSize.width;
                 objPoints[pointPosition].z = 0;
                 pointPosition++; // absolute count
             } // for width

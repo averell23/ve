@@ -29,7 +29,7 @@ char* TrackerOverlay::paramFile = "../config/camera.param";
 TrackerOverlay::TrackerOverlay(int leftSourceID, int rightSourceID, bool display) {
     expireT = 500;
     text = new char[256];
-    doText = false;
+    doText = true;
     TrackerOverlay::leftSourceID = leftSourceID;
     TrackerOverlay::rightSourceID = rightSourceID;
     TrackerOverlay::displayState = display;

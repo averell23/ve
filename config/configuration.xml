@@ -7,8 +7,8 @@
 	<parameter name="tracking">audio</parameter>
 	<parameter name="leftBright">0</parameter>
 	<parameter name="rightBright">0</parameter>
-	<option name="swap" value="false" />
-	<option name="rotX" value="false" />
+	<option name="swap" value="true" />
+	<option name="rotX" value="true" />
 	<option name="rotY" value="false" />
 	<option name="rotZ" value="false" />
 	<option name="statusoverlay" value="true" />

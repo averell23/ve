@@ -182,6 +182,10 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
     }
     if (e.getType() == VeEvent::KEYBOARD_EVENT) {
         switch (e.getCode()) {
+        case 'q':
+        case 'Q':
+            Ve::getRightSource()->getRegistration()->resetCalibration();
+            Ve::getLeftSource()->getRegistration()->resetCalibration();
         case 'r':
         case 'R':
             toggleDisplay();
