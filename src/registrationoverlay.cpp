@@ -185,6 +185,7 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
         float alpha = 180.0; // FIXME: This is evil. Fix it.
         float beta = 0.0;
         float gamma = 180.0;
+        double xTrans = 0; // Fixme: Evil kludge
         switch (e.getCode()) {
         case 'q':
         case 'Q':
