@@ -70,6 +70,14 @@ int main(int argc, char *argv[]) {
                           "Calibration parameter file for left camera");
     parser.setupParameter("calibrationR", false,
                           "Calibration parameter file for right camera");
+    parser.setupParameter("artthreshold", false, 
+                          "Threshold for AR Toolkit detection");
+    parser.setupParameter("tracking", false,
+                          "Use tracking system: (audio|artoolkit)");
+    parser.setupOption("statusoverlay", "Use the status overlay");
+    parser.setupOption("textoverlay", "User text augmentation overlay");
+    parser.setupOption("trackingoverlay", "Use Tracker test overlay");
+    parser.setupOption("dummyoverlay", "Use the dummy (demo) overlay");
     parser.setupOption("nocorba", "Disable CORBA system");
 
     bool result = parser.parseCommandLine(argc, argv);
@@ -187,25 +195,76 @@ int main(int argc, char *argv[]) {
     OffsetOverlay offset(false);
     Ve::addOverlay(&offset);
     Ve::addListener(&offset);
-    // Ve::addOverlay(new DummyOverlay(true));
-    MarkerPositionTracker* leftTrack = new MarkerPositionTracker(left,1);
-    MarkerPositionTracker* rightTrack = new MarkerPositionTracker(right, 2);
-    TextTrackerOverlay tracker(1,2);
-    leftTrack->addListener(&tracker);
-    rightTrack->addListener(&tracker);
-    Ve::addOverlay(&tracker);
-    Ve::addListener(&tracker); 
+    if (parser.getOptionValue("dummyoverlay")) {
+        LOG4CPLUS_DEBUG(logger, "Using dummy overlay");
+        Ve::addOverlay(new DummyOverlay(true));
+    }
+    string trackParam = parser.getParamValue("tracking");
+
+    VeEventSource* leftTrack;
+    VeEventSource* rightTrack;
+    bool trackingActive = false;
+    if (trackParam == "artoolkit") {
+        param = parser.getParamValue("artthreshold");
+        int artthresh = 100;
+        if (param != "") {
+            artthresh = atoi(param.c_str());
+            if (artthresh < 0) artthresh = 0;
+            if (artthresh > 100) artthresh = 100;
+            LOG4CPLUS_DEBUG(logger, "ARToolkit threshold set to " << artthresh);
+        }
+        LOG4CPLUS_INFO(logger, "Using AR Toolkit tracking functions");
+        leftTrack = new MarkerPositionTracker(left,1, artthresh);
+        rightTrack = new MarkerPositionTracker(right, 2, artthresh);
+        trackingActive = true;
+    } else if (trackParam == "audio") {
+        LOG4CPLUS_ERROR(logger, "Audio tracking not implemented yet");
+    } else {
+        LOG4CPLUS_WARN(logger, "No tracking option given, no tracker was initialized.");
+    }
+    if (trackingActive) {
+        TrackerTestOverlay testTracker(1,2);
+        if (parser.getOptionValue("trackingoverlay")) {
+            LOG4CPLUS_DEBUG(logger, "Using test overlay for tracker.");
+            leftTrack->addListener(&testTracker);
+            rightTrack->addListener(&testTracker);
+            Ve::addOverlay(&testTracker);
+            Ve::addListener(&testTracker); 
+        }
+        TextTrackerOverlay tracker(1,2);
+        if (parser.getOptionValue("textoverlay")) {
+            LOG4CPLUS_DEBUG(logger, "Using text augmentation");
+            leftTrack->addListener(&tracker);
+            rightTrack->addListener(&tracker);
+            Ve::addOverlay(&tracker);
+            Ve::addListener(&tracker); 
+        }
+    } else {
+        LOG4CPLUS_INFO(logger, "Tracker dependent overlays skipped: No tracker active");
+    }
     StatusOverlay status(true);	
-    Ve::addOverlay(&status);
+    if (parser.getOptionValue("statusoverlay")) {
+        LOG4CPLUS_DEBUG(logger, "Initializing adding Status overlay.");
+        Ve::addOverlay(&status);
+    } else {
+        LOG4CPLUS_DEBUG(logger, "Status not requested, skipping.");
+    }
     Ve::addListener(&status);
     CalibrationOverlay calibration(false);
     Ve::addOverlay(&calibration);
     Ve::addListener(&calibration);
     RegistrationOverlay registration(false);
-    CORBAController corba = CORBAController::getInstance();
-    corba.addPositionEventListener(&registration);
-    Ve::addListener(&registration);
-    Ve::addOverlay(&registration);
+    if (trackParam == "audio") {
+        LOG4CPLUS_DEBUG(logger, "Tracking method " << trackParam
+                        << " requires registration, setting up overlay.");
+        CORBAController corba = CORBAController::getInstance();
+        corba.addPositionEventListener(&registration);
+        Ve::addListener(&registration);
+        Ve::addOverlay(&registration);
+    } else {
+        LOG4CPLUS_DEBUG(logger, "Registration overlay skipped: Tracking method"
+                        << trackParam << " does not require registration");
+    }
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();

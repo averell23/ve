@@ -3,4 +3,10 @@
 	<parameter name="epixconf">../config/camSubS.fmt</parameter>
 	<parameter name="initA">../config/caminit.txt</parameter>
 	<parameter name="initB">../config/caminit.txt</parameter>
+	<parameter name="artthreshold">255</parameter>
+	<parameter name="tracking">none</parameter>
+	<option name="statusoverlay" value="false" />
+	<option name="textoverlay" value="true" />
+	<option name="trackingoverlay" value="true" />
+	<option name="dummyoverlay" value="false" />
 </config>

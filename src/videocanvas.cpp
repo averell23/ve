@@ -38,23 +38,9 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right, bool xRot, bool 
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
         LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
-        GLint maxTexSize;
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-        LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
-        int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
-        LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
-
-        bool accomodated = false;
-        textureSize = 2;
-        while (textureSize <= maxTexSize && (!accomodated)) {
-            textureSize = textureSize * 2;
-            if (textureSize >= vidSize)
-                accomodated = true;
-            LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
-        }
-
-        if (textureSize > maxTexSize) {
-            LOG4CPLUS_FATAL(logger, "Can not accomodate texture, shutting down.");
+        textureSize = GLMacros::checkTextureSize();
+        if (textureSize == 0) {
+            LOG4CPLUS_FATAL(logger, "Cannot accomodate texture, shutting down.");
             exit(1);
         }
 

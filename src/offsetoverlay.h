@@ -29,6 +29,7 @@
 #include "veeventlistener.h"
 #include "videosource.h"
 #include "ve.h"
+#include "glmacros.h"
 
 
 /**

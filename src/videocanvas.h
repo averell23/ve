@@ -42,6 +42,7 @@
 #include "captureimagepair.h"
 #include "capturecontroller.h"
 #include "ve.h"
+#include "glmacros.h"
 
 using namespace std;
 using namespace log4cplus;

@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "glmacros.h"
 
-
+Logger GLMacros::logger = Logger::getInstance("Ve.GLMacros");
 
 void GLMacros::initVirtualCoords() {
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);		/* Set normal color */
@@ -68,6 +68,23 @@ void GLMacros::drawCrosshairs(int x, int y) {
     glVertex3i(x+10, y+10, 0);
     glEnd();
 }
+void GLMacros::drawMarker(int x, int y) {
+    int xsize = Ve::getVirtualSize().x;
+    int ysize = Ve::getVirtualSize().y;
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+    //  box
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glEnd();
+}
+
 
 void GLMacros::drawText(int x, int y, char* text, int fontSize) {
     if (fontSize < 2) return; // Sanity check
@@ -104,4 +121,30 @@ void GLMacros::blankRightEye() {
     glVertex3i(0, ysize, 0);
     glEnd();
     glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+int GLMacros::checkTextureSize() {
+    int imageWidth = Ve::getLeftSource()->getWidth();
+    int imageHeight = Ve::getLeftSource()->getHeight();
+    GLint maxTexSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
+    LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
+    int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
+    LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
+
+    bool accomodated = false;
+    int textureSize = 2;
+    while (textureSize <= maxTexSize && (!accomodated)) {
+        textureSize = textureSize * 2;
+        if (textureSize >= vidSize)
+            accomodated = true;
+        LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
+    }
+
+    if (textureSize > maxTexSize) {
+        LOG4CPLUS_WARN(logger, "Image larger than maximum texture size.");
+        return 0;
+    }
+
+    return textureSize;
 }

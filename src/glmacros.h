@@ -28,8 +28,11 @@
 #include <windows.h>
 #endif
 #include <GL/glew.h>
+#include <log4cplus/logger.h>
 #include "ve.h"
 #include "fontmanager.h"
+
+using namespace log4cplus;
 
 /**
 A collection of OpenGL macros for common tasks
@@ -58,11 +61,25 @@ public:
     static void drawCrosshairs(int x, int y);
 
     /**
+      Draws a small rectangular marker at the given virtual coordinates.
+    */
+    static void drawMarker(int x, int y);
+
+    /**
       Draws the text at the given virtual coordinates.
       
       @param size FaceSize of the text font.
     */
     static void drawText(int x, int y, char* text, int fontSize);
+
+    /**
+        Calculates the texture size needed for a full image.
+        This uses the dimensions of Ve::getLeftSource() as the
+        image size. This returns the minimum texture size to
+        accomodate the image, or zero if the image is larger
+        as the maximum texture size. 
+    */
+    static int checkTextureSize();
 
     /**
       Blanks the left eye by drawing a black square in front of 
@@ -75,6 +92,10 @@ public:
       all existing elements. 
     */
     static void blankRightEye();
+
+private:
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

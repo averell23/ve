@@ -30,6 +30,7 @@
 #include "fontmanager.h"
 #include "cameracalibration.h"
 #include "ve.h"
+#include "glmacros.h"
 #include <log4cplus/logger.h>
 
 using namespace log4cplus;
@@ -69,12 +70,26 @@ private:
     int calibrationMode;
     /// Logger for this class
     static Logger logger;
-    /// If the image of the eye that is NOT calibrated should be blanked
-    bool blankEye;
-    /// Blanks the unused eye
-    void blankOtherEye();
+    /**
+        Draws the image of the last snapshot to the
+        other eye.
+    */
+    void drawOtherEye();
     /// Current calibration object
     CameraCalibration* cCalibrationObject;
+    /** Texture for OpenGL */
+    GLuint textures[1];
+    /** The texture size used by this overlay. */
+    int textureSize;    
+    /// Draws the right quad of the display
+    void drawRightQuad();
+    /// Draws the left quad of the display
+    void drawLeftQuad();
+    /** Size Factors to scale the image to screen */
+    double widthFactor, heightFactor;
+    /** The width and height of the image to be displayed */
+    int imageWidth, imageHeight;
+
 
 };
 

@@ -179,6 +179,13 @@ public:
 
     ~CameraCalibration();
 
+    /// Results of the last corner guess 
+    CvPoint2D32f* lastCorners;
+    /// Last snapshot image
+    IplImage* lastSnapshot;
+    /// Corner count of last guess
+    int lastCornerCount;
+
 private:
     /** The video source to be calibrated. */
     VideoSource *input;

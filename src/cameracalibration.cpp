@@ -37,8 +37,18 @@ CameraCalibration::CameraCalibration(VideoSource *input,
     calibrationMatrix = new float[CALIB_MATRIX_SIZE*CALIB_MATRIX_SIZE];
     rotationMatrices = NULL;
     translationVects = NULL;
+    lastCorners = NULL;
+    lastSnapshot = NULL;
 }
 
+
+CameraCalibration::~CameraCalibration() {
+    if (lastSnapshot) {
+        delete lastSnapshot->imageData;
+        cvReleaseImageHeader(&lastSnapshot);
+    }
+    deleteSnapshots();
+}
 void CameraCalibration::setFilename(string filename) {
     CameraCalibration::filename = filename;
 }
@@ -72,10 +82,17 @@ bool CameraCalibration::takeSnapshot() {
     input->releaseImage();
 
     LOG4CPLUS_TRACE(logger, "Converted Image");
-    if (blackOffset != NULL) {
+    if (blackOffset) {
         delete capt->imageData;
         cvReleaseImageHeader(&capt);
     }
+
+    if (!lastSnapshot) {
+        lastSnapshot = cvCreateImageHeader(cvSize(grayTmp->width, grayTmp->height), IPL_DEPTH_8U, 3);
+        lastSnapshot->imageData = new char[grayTmp->width * grayTmp->height * 3 * IPL_DEPTH_8U];
+    }
+    cvCvtColor(grayTmp, lastSnapshot, CV_GRAY2BGR);
+    LOG4CPLUS_TRACE(logger, "New internal snapshot created.");
 
     CvPoint2D32f* corners = guessCorners(grayTmp);
     if (corners != NULL) {
@@ -210,6 +227,10 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
                 tempPoints,
                 &cornerNum);
 
+    if (lastCorners) delete lastCorners; // tempPoints from last round deleted here!
+    lastCorners = tempPoints;
+    lastCornerCount = (found !=0)?found:cornerNum;
+
     if (found != 0) {
         cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
                            searchWindow, cvSize(-1, -1),
@@ -225,9 +246,6 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
 }
 
 
-CameraCalibration::~CameraCalibration() {
-    deleteSnapshots();
-}
 
 CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {
     CvPoint2D32f retPoint;
@@ -312,6 +330,8 @@ bool CameraCalibration::save(string filename) {
     }
 
     XMLMacros::getInstance().XMLSaveFile(filename, root);
+
+    LOG4CPLUS_INFO(logger, "Calibration matrix saved to " << filename);
 
     return true;
 }
@@ -415,9 +435,9 @@ bool CameraCalibration::readCalibrationMatrix(xercesc::DOMNodeList* nodeList) {
         } // if
     } // for
     if (retVal) {
-        LOG4CPLUS_INFO(logger, "Calibration saved to " << filename);
+        LOG4CPLUS_TRACE(logger, "Calibration matrix read. " << filename);
     } else {
-        LOG4CPLUS_WARN(logger, "Calibration not saved to " << filename);
+        LOG4CPLUS_WARN(logger, "Could not read calibration matrix." << filename);
     }
     return retVal;
 }
@@ -461,3 +481,4 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
     }
     return retVal;
 }
+

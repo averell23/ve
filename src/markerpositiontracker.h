@@ -48,8 +48,9 @@ public:
       @param source VideoSource in which the markers are detected.
       @param sourceID Source ID code that will be used for the 
                       @see Position objects.
+      @param threshold Threshold for the marker detection process
     */
-    MarkerPositionTracker(VideoSource* source, int sourceID);
+    MarkerPositionTracker(VideoSource* source, int sourceID, int threshold = 100);
 
     ~MarkerPositionTracker();
 

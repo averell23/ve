@@ -184,15 +184,15 @@ void CommandLineParser::readConfigFile(string filename) {
 	    if ((legalParameters.find(paramName) != legalParameters.end()) &&
 		(parameters.find(paramName) == parameters.end()))
 	    {
-		if (requiredParameters.find(paramName) != requiredParameters.end()) {
-		    requiredParameters[paramName] = true;
-		    LOG4CPLUS_DEBUG(logger, "Found required parameter in config file: " << paramName << endl);
-		}
-		const XMLCh* content = XMLMacros::getInstance().getTextChild(curNode);
-		char* paramVal = xercesc::XMLString::transcode(content);
-		parameters[paramName] = paramVal;
-		LOG4CPLUS_DEBUG(logger, "Set parameter from config file: " << paramName << " to " << paramVal);
-		xercesc::XMLString::release(&paramVal);
+		    if (requiredParameters.find(paramName) != requiredParameters.end()) {
+		        requiredParameters[paramName] = true;
+		        LOG4CPLUS_DEBUG(logger, "Found required parameter in config file: " << paramName << endl);
+		    }
+		    const XMLCh* content = XMLMacros::getInstance().getTextChild(curNode);
+		    char* paramVal = xercesc::XMLString::transcode(content);
+		    parameters[paramName] = paramVal;
+		    LOG4CPLUS_DEBUG(logger, "Set parameter from config file: " << paramName << " to " << paramVal);
+		    xercesc::XMLString::release(&paramVal);
 	    }
 	    xercesc::XMLString::release(&paramName);
 	}

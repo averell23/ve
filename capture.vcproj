@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;&quot;D:\sources\gsl-1.4+-win\lib&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;&quot;D:\sources\gsl-1.4+-win\include&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"

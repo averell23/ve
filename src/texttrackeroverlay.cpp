@@ -64,6 +64,7 @@ void TextTrackerOverlay::handleEvent(VeEvent &e) {
 }
 
 void TextTrackerOverlay::drawOneEye(map<int,Position>& positions) {
+    glColor3f(1.0f, 0.2f, 0.2f);
     int size = positions.size();
     map<int,Position>::iterator posIterator;
     int i=0;

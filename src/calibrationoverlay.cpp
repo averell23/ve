@@ -27,22 +27,37 @@ Logger CalibrationOverlay::logger = Logger::getInstance("Ve.CalibrationOverlay")
 
 CalibrationOverlay::CalibrationOverlay(bool display) : Overlay(display) {
     text[0] = new char[256];
-    blankEye = false;
     calibrationMode = LEFT_EYE;
     cCalibrationObject = Ve::getLeftSource()->getCalibration();
+    
+    // Init textur
+    textureSize = GLMacros::checkTextureSize();
+    if (textureSize == 0) {
+        LOG4CPLUS_FATAL(logger, "Cannot accomodate texture, shutting down.");
+        exit(1);
+    }
+
+    LOG4CPLUS_DEBUG( logger, "Assigning Texture of size " << textureSize);
+    glGenTextures(1, textures);   /* create the texture names */
+
+    glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
+    LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+                    GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    LOG4CPLUS_DEBUG(logger, "Texture image bound.");
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // Calculate the size factors
+    imageHeight = Ve::getLeftSource()->getHeight();
+    imageWidth = Ve::getLeftSource()->getWidth();
+    widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
+    heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
 }
 
 CalibrationOverlay::~CalibrationOverlay() {}
 
 void CalibrationOverlay::drawOverlay() {
-    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
-    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
-    glPushMatrix();				// ...push the Matrix for backup...
-    glOrtho(-1000, 1000, -1000, 1000, 0, 1);
-    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
-    glPushMatrix();
-    glLoadIdentity();
-
+    GLMacros::initVirtualCoords();
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
     if (calibrationMode == LEFT_EYE) {
@@ -58,9 +73,11 @@ void CalibrationOverlay::drawOverlay() {
     glLoadIdentity();
     drawOneEye(); // right eye
 
+    glMatrixMode( GL_MODELVIEW );
+    glPopMatrix();
+    glMatrixMode( GL_PROJECTION );
 
-    if (blankEye)
-        blankOtherEye();
+    drawOtherEye();
 
     // Restore Matrices
     glPopMatrix();
@@ -68,25 +85,48 @@ void CalibrationOverlay::drawOverlay() {
     glPopMatrix();
 }
 
-void CalibrationOverlay::blankOtherEye() {
+void CalibrationOverlay::drawOtherEye() {
     glLoadIdentity();
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    if (calibrationMode == LEFT_EYE) {
-        glBegin(GL_QUADS);
-        glVertex3i(-1000, -1000, 0);
-        glVertex3i(0, -1000, 0);
-        glVertex3i(0, 1000, 0);
-        glVertex3i(-1000, 1000, 0);
-        glEnd();
+    glColor3f(1.0f, 1.0f, 1.0f);
+    IplImage* img = cCalibrationObject->lastSnapshot;
+    if (img) {
+        glBindTexture(GL_TEXTURE_2D, textures[0]);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+            GL_RGB, GL_UNSIGNED_BYTE, img->imageData);
     } else {
-        glBegin(GL_QUADS);
-        glVertex3i(0, -1000, 0);
-        glVertex3i(1000, -1000, 0);
-        glVertex3i(1000, 1000, 0);
-        glVertex3i(0, 1000, 0);
-        glEnd();
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
+    if (Ve::mainVideo->xRot) {
+        glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+    }
+    if (Ve::mainVideo->yRot) {
+        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+    }
+    if (Ve::mainVideo->zRot) {
+        glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+    }
+    if (calibrationMode == RIGHT_EYE) {
+        drawLeftQuad();
+    } else {
+        drawRightQuad();
+    }
+    glBindTexture(GL_TEXTURE_2D, 0);
+    // Now draw the found corners
+    GLMacros::initVirtualCoords();
+    CvPoint vCoords = Ve::getVirtualSize();
+    float xFac = vCoords.x / (float) imageWidth;
+    float yFac = - vCoords.y / (float) imageHeight;
+    int yOff = Ve::getVirtualSize().y;
+    int count = cCalibrationObject->lastCornerCount;
+    if (calibrationMode == RIGHT_EYE) {
+        glTranslatef(-1.0f, 0.0f, 0.0f);
+    }
+    for (int i=0 ; i<cCalibrationObject->lastCornerCount ; i++) {
+        int x = (int) (cCalibrationObject->lastCorners[i].x * xFac);
+        int y = (int) ((cCalibrationObject->lastCorners[i].y * yFac * 2) + yOff);
+        GLMacros::drawMarker(x, y);
+    } 
+    GLMacros::revertMatrices();
 }
 
 void CalibrationOverlay::drawOneEye() {
@@ -113,15 +153,6 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
         return;
 
     switch (e.getCode()) {
-    case 'b':
-    case 'B':
-        blankEye = ! blankEye;
-        if (blankEye) {
-            LOG4CPLUS_DEBUG(logger, "Blanking other eye");
-        } else {
-            LOG4CPLUS_DEBUG(logger, "Unblanking other eye");
-        }
-        break;
     case 'v':
     case 'V':
         if (calibrationMode == LEFT_EYE) {
@@ -156,4 +187,30 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
         break;
     }
 
+}
+
+void CalibrationOverlay::drawLeftQuad() {
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0f, 0.0f);
+    glVertex3i(-1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+    glVertex3i(0, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);
+    glVertex3i(-1, 1, 0);
+    glEnd();
+}
+
+void CalibrationOverlay::drawRightQuad() {
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0f, 0.0f);
+    glVertex3i(0, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 0.0f);
+    glVertex3i(1, -1, 0);
+    glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+    glVertex3i(1, 1, 0);
+    glTexCoord2d(0.0f, 1.0f - heightFactor);
+    glVertex3i(0, 1, 0);
+    glEnd();
 }

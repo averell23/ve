@@ -26,12 +26,12 @@
 Mutex MarkerPositionTracker::mtx;
 Logger MarkerPositionTracker::logger = Logger::getInstance("Ve.MarkderPositionTracker");
 
-MarkerPositionTracker::MarkerPositionTracker(VideoSource* source, int sourceID)
+MarkerPositionTracker::MarkerPositionTracker(VideoSource* source, int sourceID, int threshold)
 : VeEventSource() {
     MarkerPositionTracker::sourceID = sourceID;
     MarkerPositionTracker::source = source;
     initARToolkit();
-    thresh = 100;
+    thresh = threshold;
     LOG4CPLUS_INFO(logger, "Created Tracker with source ID " << sourceID);
     start();
     LOG4CPLUS_DEBUG(logger, "Tracker started.");
