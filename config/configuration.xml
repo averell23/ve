@@ -4,7 +4,7 @@
 	<parameter name="initA">../config/caminit.txt</parameter>
 	<parameter name="initB">../config/caminit.txt</parameter>
 	<parameter name="artthreshold">255</parameter>
-	<parameter name="tracking">artoolkit</parameter>
+	<parameter name="tracking">audio</parameter>
 	<option name="statusoverlay" value="true" />
 	<option name="textoverlay" value="false" />
 	<option name="trackingoverlay" value="true" />

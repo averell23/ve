@@ -110,8 +110,18 @@ void ARRegistration::reRegister() {
     gsl_matrix* cov = gsl_matrix_alloc(12,12);
     double chisq;
     gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(sensorPoints.size()*3, 12);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        cout << "Observation vector is:" << endl;
+        printVector(y);
+        cout << "Parameter matrix is:" << endl;
+        printMatrix(params);
+    }
     gsl_multifit_linear(params, y, T_vec, cov, &chisq, work);
     LOG4CPLUS_DEBUG(logger, "Least squares returned, chi squared is " << chisq);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+        cout << "Covariance is:" << endl;
+        printMatrix(cov);
+    }
     gsl_multifit_linear_free(work);
     // Recreate the transformation matrix
     gsl_matrix* T = gsl_matrix_calloc(4,4);
@@ -123,7 +133,7 @@ void ARRegistration::reRegister() {
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
 	cout << "Calibration matrix is now: " << endl;
-	printMatrix(Trans);
+	    printMatrix(Trans);
     }
     // Clean up
     gsl_matrix_free(c);

@@ -54,6 +54,7 @@ RegistrationOverlay::RegistrationOverlay(bool display) : Overlay(display) {
     sprintf(text[0], "No position updates recieved.");
     this->registration = Ve::getLeftSource()->getRegistration();
     measuring = false;
+    LOG4CPLUS_INFO(logger, "Registration overlay created.");
 }
 
 void RegistrationOverlay::measurePoint(int x, int y) {
@@ -91,6 +92,10 @@ void RegistrationOverlay::measurePoint(int x, int y) {
     sensorPoint.x = gsl_vector_get(result, 0);
     sensorPoint.y = gsl_vector_get(result, 1);
     sensorPoint.z = gsl_vector_get(result, 2);
+    LOG4CPLUS_DEBUG(logger, "Adding pair: Sensor point ("
+        << sensorPoint.x << "," << sensorPoint.y << "," << sensorPoint.z 
+        << ")" << " Image point ("
+        << imagePoint.x << "," << imagePoint.y << ")");
     registration->addCalibrationPair(imagePoint, sensorPoint);
     // Cleanup
     gsl_vector_free(observations);
@@ -135,7 +140,7 @@ void RegistrationOverlay::drawOverlay() {
 
 
 void RegistrationOverlay::recieveEvent(VeEvent &e) {
-    if (measuring && e.getType() == VeEvent::POSITION_EVENT) {
+     if (measuring && e.getType() == VeEvent::POSITION_EVENT) {
         VePositionEvent& eP = (VePositionEvent&) e;
         Position pos = eP.getPosition();
         tmpSensorPoints[measureCount].x = pos.x;
