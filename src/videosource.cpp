@@ -100,24 +100,12 @@ void VideoSource::clearBlackOffset() {
 }
 
 void VideoSource::lockImage() {
-	tmpMutex.enterMutex();
-	if (imgLock) { // Someone else already locked this
-		tmpMutex.leaveMutex();
-		return; 
-	}
-	imgLock = true;
-	tmpMutex.leaveMutex();
 	imgMutex.enterMutex();
+	LOG4CPLUS_TRACE(logger, "Locked Image");
 }
 
 void VideoSource::releaseImage() {
-	tmpMutex.enterMutex();
-	if (!imgLock) { // The image isn't locked
-		tmpMutex.leaveMutex();
-		return;
-	}
-	imgLock = false;
-	tmpMutex.leaveMutex();
 	imgMutex.leaveMutex();
+	LOG4CPLUS_TRACE(logger, "Released Image");
 }
 

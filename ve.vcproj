@@ -126,13 +126,22 @@
 				RelativePath=".\src\fonttesteroverlay.cpp">
 			</File>
 			<File
+				RelativePath=".\src\glmacros.cpp">
+			</File>
+			<File
 				RelativePath=".\src\main.cpp">
+			</File>
+			<File
+				RelativePath=".\src\markerpositiontracker.cpp">
 			</File>
 			<File
 				RelativePath=".\src\offsetoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\overlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\position.cpp">
 			</File>
 			<File
 				RelativePath=".\src\registrationoverlay.cpp">
@@ -244,6 +253,12 @@
 			</File>
 			<File
 				RelativePath=".\src\fonttesteroverlay.h">
+			</File>
+			<File
+				RelativePath=".\src\glmacros.h">
+			</File>
+			<File
+				RelativePath=".\src\markerpositiontracker.h">
 			</File>
 			<File
 				RelativePath=".\src\offsetoverlay.h">

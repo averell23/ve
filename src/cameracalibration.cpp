@@ -45,6 +45,7 @@ CameraCalibration::CameraCalibration(VideoSource *input,
 }
 
 bool CameraCalibration::takeSnapshot() {
+	LOG4CPLUS_DEBUG(logger, "Taking calibration snapshot");
     if (input == NULL) { 		// Basic sanity check
         LOG4CPLUS_ERROR(logger, "Could not take snapshot, video source is NULL.");
         return false;

@@ -152,7 +152,13 @@
 				RelativePath=".\src\epixcameracontroller.cpp">
 			</File>
 			<File
+				RelativePath=".\src\glmacros.cpp">
+			</File>
+			<File
 				RelativePath=".\src\overlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\position.cpp">
 			</File>
 			<File
 				RelativePath=".\src\sf1280controller.cpp">
@@ -224,6 +230,9 @@
 			</File>
 			<File
 				RelativePath=".\src\epixcameracontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\glmacros.h">
 			</File>
 			<File
 				RelativePath=".\src\overlay.h">

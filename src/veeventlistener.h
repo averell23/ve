@@ -42,7 +42,7 @@ public:
 	*/
 	void callEvent(VeEvent &e);
 
-private:
+protected:
     /**
 		Called when recieving an event. This method must be
 		overwritten by child implementations.

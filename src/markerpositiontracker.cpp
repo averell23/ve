@@ -23,6 +23,7 @@
  ***************************************************************************/
 #include "markerpositiontracker.h"
 
+Mutex MarkerPositionTracker::mtx;
 Logger MarkerPositionTracker::logger = Logger::getInstance("Ve.MarkderPositionTracker");
 
 MarkerPositionTracker::MarkerPositionTracker(VideoSource* source, int sourceID)
@@ -32,6 +33,9 @@ MarkerPositionTracker::MarkerPositionTracker(VideoSource* source, int sourceID)
     MarkerPositionTracker::source = source;
     initARToolkit();
     thresh = 100;
+	LOG4CPLUS_INFO(logger, "Created Tracker with source ID " << sourceID);
+	start();
+	LOG4CPLUS_DEBUG(logger, "Tracker started.");
 }
 
 
@@ -40,6 +44,7 @@ MarkerPositionTracker::~MarkerPositionTracker()
 }
 
 void MarkerPositionTracker::run() {
+	LOG4CPLUS_DEBUG(logger, "Running tracker with source ID " << sourceID);
     ARUint8* imageData;
     ARMarkerInfo* markerInfo;
     int markerNum;
@@ -50,23 +55,25 @@ void MarkerPositionTracker::run() {
     
     running = true;
     while (running) {
-	imageData = getImageData();
-	mtx.enterMutex();
-	arDetectMarker(imageData, thresh, &markerInfo, &markerNum);
-	LOG4CPLUS_TRACE(logger, "Detected " << markerNum << " markers in image.");
-	for (int i=0 ; i<markerNum ; i++) {
-	    int x = markerInfo[i].pos[0] * xFac;
-	    int y = markerInfo[i].pos[1] * yFac;
-	    Position pos(i, sourceID, x, y, 0);
-	    VePositionEvent e(pos);
-	    postEvent(e);
-	}
-	mtx.leaveMutex();
-	delete imageData;
+		LOG4CPLUS_TRACE(logger, "Entering");
+		imageData = getImageData();
+		mtx.enterMutex();
+		arDetectMarker(imageData, thresh, &markerInfo, &markerNum);
+		LOG4CPLUS_TRACE(logger, "Detected " << markerNum << " markers in image.");
+		for (int i=0 ; i<markerNum ; i++) {
+			int x = markerInfo[i].pos[0] * xFac;
+			int y = markerInfo[i].pos[1] * yFac * 2;
+			Position pos(i, sourceID, x, y, 0);
+			VePositionEvent e(pos);
+			postEvent(e);
+		} 
+		mtx.leaveMutex();
+		delete imageData;
     }
 }
 
 void MarkerPositionTracker::initARToolkit() {
+	mtx.enterMutex();
     // Hardcoded pattern file positions
     char* paramFile = "../config/camera.param";
     int pattNum = 1;
@@ -95,7 +102,7 @@ void MarkerPositionTracker::initARToolkit() {
 	    LOG4CPLUS_DEBUG(logger, "Pattern loaded: " << pattFiles[i]);
 	}
     }
-    
+	mtx.leaveMutex();
 }
 
 ARUint8* MarkerPositionTracker::getImageData() {
@@ -105,27 +112,29 @@ ARUint8* MarkerPositionTracker::getImageData() {
     source->lockImage();
     origImage = source->getImage();
     offset = source->getBlackOffset();
+	if (offset == NULL) LOG4CPLUS_TRACE(logger, "Got NULL offset");
     int imageDimension = origImage->width * origImage->height;
     ARUint8* retImage = new ARUint8[imageDimension * 4];
     
     if ((origImage->nChannels == 3) && (origImage->depth == 8)) {
-	for (int i=0 ; i < imageDimension ; i++) {
-		// FIXME: Original image is always assumed to have RGB order
-		retImage[i*4] = 255; // Alpha channel
-		if (offset != NULL) {
-			retImage[(i*4)+1] = origImage->imageData[(i*3)+2] - offset->imageData[(i*3)+2];
-			retImage[(i*4)+2] = origImage->imageData[(i*3)+1] - offset->imageData[(i*3)+1];
-			retImage[(i*4)+3] = origImage->imageData[i*3] - offset->imageData[i*3];
-		} else{
-			retImage[(i*4)+1] = origImage->imageData[(i*3)+2];
-			retImage[(i*4)+2] = origImage->imageData[(i*3)+1];
-			retImage[(i*4)+3] = origImage->imageData[i*3];
-		}
+		for (int i=0 ; i < imageDimension ; i++) {
+			// FIXME: Original image is always assumed to have RGB order
+			retImage[i*4] = 255; // Alpha channel
+			if (offset != NULL) {
+				retImage[(i*4)+1] = origImage->imageData[(i*3)+2] - offset->imageData[(i*3)+2];
+				retImage[(i*4)+2] = origImage->imageData[(i*3)+1] - offset->imageData[(i*3)+1];
+				retImage[(i*4)+3] = origImage->imageData[i*3] - offset->imageData[i*3];
+			} else{
+				retImage[(i*4)+1] = origImage->imageData[(i*3)+2];
+				retImage[(i*4)+2] = origImage->imageData[(i*3)+1];
+				retImage[(i*4)+3] = origImage->imageData[i*3];
+			}
 	    }
     } else {
-	LOG4CPLUS_WARN(logger, "Wront image format for conversion to ARToolkit AGBR.");
+		LOG4CPLUS_WARN(logger, "Wront image format for conversion to ARToolkit AGBR.");
     }
     source->releaseImage();
+	LOG4CPLUS_TRACE(logger, "Released image");
 
     return retImage;
 }

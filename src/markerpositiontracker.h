@@ -24,7 +24,7 @@
 #ifndef MARKERPOSITIONTRACKER_H
 #define MARKERPOSITIONTRACKER_H
 
-#include <veeventsource.h>
+#include "veeventsource.h"
 #include <cc++/thread.h>
 #include <log4cplus/logger.h> 	// Log4cplus
 #include <AR/ar.h>		// ARToolkit
@@ -75,7 +75,7 @@ private:
     /// Video source on which markers are being detected
     VideoSource* source;
     /// Mutex to synchronize ARToolkit access. (ARToolkit re-uses data structures!)
-    Mutex mtx;
+    static Mutex mtx;
     /// Indicates wether the thread is running
     bool running;
     /** Source ID that will be supplied with the @see Position objects */

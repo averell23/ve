@@ -54,13 +54,13 @@ void TrackerOverlay::drawOverlay() {
     
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
     if (doText) {
-	if (leftPositions.size() > 0) {
-	    sprintf(text, "%f/%f/%f", leftPositions.begin()->second.x, leftPositions.begin()->second.y,
-		    sqrt(centerDistanceSquared(leftPositions.begin()->second.x, leftPositions.begin()->second.y)));
-	} else {
-	    sprintf(text, "Detected %d/%d", leftPositions.size(), rightPositions.size());
-	} 
-    }
+		if (leftPositions.size() > 0) {
+			sprintf(text, "%f/%f/%f", leftPositions.begin()->second.x, leftPositions.begin()->second.y,
+				sqrt(centerDistanceSquared(leftPositions.begin()->second.x, leftPositions.begin()->second.y)));
+		} else {
+			sprintf(text, "Detected %d/%d", leftPositions.size(), rightPositions.size());
+		} 
+    } 
 	
 
     // The following draws the left eye
@@ -176,15 +176,24 @@ void TrackerOverlay::positionListCleanup() {
 
 void TrackerOverlay::cleanupSingleList(map<int,Position>& positions) {
     map<int,Position>::iterator posIter;
+	vector<map<int,Position>::iterator> delElements; // Vector for elements to be deleted
     timeb currentT, tmpT;
     ftime(&currentT);
+	mtx.enterMutex(); // Protect list operations against position updates
     for (posIter=positions.begin() ; posIter!=positions.end() ; posIter++) {
-	tmpT = posIter->second.timeStamp;
-	long age = ((currentT.time - tmpT.time) * 1000) + abs(currentT.millitm - tmpT.millitm);
-	if (age > expireT) {
-	    positions.erase(posIter);
-	}
+		LOG4CPLUS_TRACE(logger, "Position cleanup iteration");
+		tmpT = posIter->second.timeStamp;
+		long age = ((currentT.time - tmpT.time) * 1000) + abs(currentT.millitm - tmpT.millitm);
+		if (age > expireT) {
+			delElements.push_back(posIter);
+		}
     }
+	for (int i=0 ; i<delElements.size() ; i++) {
+		LOG4CPLUS_TRACE(logger, "Erasing element");
+		positions.erase(delElements[i]);
+		LOG4CPLUS_TRACE(logger, "Erased element");
+	}
+	mtx.leaveMutex();
 }
 
 double TrackerOverlay::centerDistanceSquared(double x, double y) {
@@ -205,13 +214,15 @@ void TrackerOverlay::recieveEvent(VeEvent &e) {
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
     }
 	if (e.getType() == VeEvent::POSITION_EVENT) {
+		LOG4CPLUS_TRACE(logger, "Position event handler");
 	    Position pos = ((VePositionEvent&) e).getPosition();
 	    if (pos.source == leftSourceID) { // Add position events to the list
-		leftPositions[pos.index] = pos;
+			leftPositions[pos.index] = pos;
 	    } else if (pos.source == rightSourceID) {
-		rightPositions[pos.index] = pos;
+			rightPositions[pos.index] = pos;
 	    } else {
-		LOG4CPLUS_DEBUG(logger, "Caught position event from unknown source.");
+			LOG4CPLUS_DEBUG(logger, "Caught position event from unknown source.");
 	    }
+		LOG4CPLUS_TRACE(logger, "Position event handler finished"); 
 	}
 }
