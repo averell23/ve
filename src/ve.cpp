@@ -19,6 +19,7 @@ VeEventSource Ve::eventSource;
 void Ve::init(VideoSource* left, VideoSource* right) {
     Ve::rightEye = right;
     Ve::leftEye = left;
+    Ve::stereoCal = new StereoCalibration(left->getCalibration(), right->getCalibration());
     Ve::mainVideo = new VideoCanvas(left, right, true, false, false); // FIXME: Should be configurable
     Ve::addListener(Ve::mainVideo);
     LOG4CPLUS_INFO(logger, "Main video canvas created.");

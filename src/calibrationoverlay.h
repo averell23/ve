@@ -28,7 +28,7 @@
 #include "veevent.h"
 #include "veeventlistener.h"
 #include "fontmanager.h"
-#include "cameracalibration.h"
+#include "stereocalibration.h"
 #include "ve.h"
 #include "glmacros.h"
 #include <log4cplus/logger.h>
@@ -66,19 +66,17 @@ private:
     void drawOneEye();
     /// Buffers for text rendering
     char* text[1];
-    /// Calbibration mode: LEFT_EYE or RIGHT_EYE
-    int calibrationMode;
     /// Logger for this class
     static Logger logger;
     /**
-        Draws the image of the last snapshot to the
-        other eye.
+        Draws the image of the last snapshot as a picture
+	into the current camera picture.
     */
-    void drawOtherEye();
+    void drawPiP();
     /// Current calibration object
-    CameraCalibration* cCalibrationObject;
+    StereoCalibration* cCalibrationObject;
     /** Texture for OpenGL */
-    GLuint textures[1];
+    GLuint textures[2];
     /** The texture size used by this overlay. */
     int textureSize;    
     /// Draws the right quad of the display
@@ -91,8 +89,6 @@ private:
     int imageWidth, imageHeight;
     /// Sets picture-in-picture coordinates
     void setPiPCoordinates();
-
-
 };
 
 #endif

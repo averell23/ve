@@ -41,6 +41,7 @@ using namespace log4cplus;
 
 // Forward declaration
 class VideoSource;
+class StereoCalibration;
 
 /**
 This contains all calibration data for a camera. The camera can be calibrated 
@@ -84,6 +85,11 @@ public:
       Delete the internally stored snapshots.
     */
     void deleteSnapshots();
+    
+    /**
+      Removes the last snapshot from the object.
+    */
+    void popSnapshot();
 
     /**
       Recalibrate the camera from the internal snapshots.
@@ -100,6 +106,24 @@ public:
         return calibrationMatrix;
     }
 
+    /**
+      Returns the translation vectors from the last calibration run.
+      WARNING: No assumption is made about the size of the returned
+      structure. There will be one 3-element translation vector for each 
+      snapshot that was used during the last calibration.
+    */
+    CvMatr32f getTranslations() { return translationVects; }
+    
+    /**
+      Returns the rotation matrices from the last calibration run.
+      WARNING: No assumption is made about the size of the returned
+      structure. There will be one 3*3 rotation matrix for each 
+      snapshot that was used during the last calibration.
+    */
+    CvMatr32f getRotations() { return rotationMatrices; }
+
+
+    
     /**
       Returns the distortion coefficients.
       

@@ -27,8 +27,7 @@ Logger CalibrationOverlay::logger = Logger::getInstance("Ve.CalibrationOverlay")
 
 CalibrationOverlay::CalibrationOverlay(bool display) : Overlay(display) {
     text[0] = new char[256];
-    calibrationMode = LEFT_EYE;
-    cCalibrationObject = Ve::getLeftSource()->getCalibration();
+    cCalibrationObject = Ve::getStereoCalibration();;
     
     // Init textur
     textureSize = GLMacros::checkTextureSize();
@@ -38,13 +37,15 @@ CalibrationOverlay::CalibrationOverlay(bool display) : Overlay(display) {
     }
 
     LOG4CPLUS_DEBUG( logger, "Assigning Texture of size " << textureSize);
-    glGenTextures(1, textures);   /* create the texture names */
+    glGenTextures(2, textures);   /* create the texture names */
 
-    glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
-    LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
-                    GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    LOG4CPLUS_DEBUG(logger, "Texture image bound.");
+    for (int i=0 ; i<2 ; i++) {
+	glBindTexture(GL_TEXTURE_2D, textures[i]); /* Bind texture[0] ??? */
+	LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+		     GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	LOG4CPLUS_DEBUG(logger, "Texture image bound.");
+    }
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // Calculate the size factors
@@ -60,16 +61,10 @@ void CalibrationOverlay::drawOverlay() {
     GLMacros::initVirtualCoords();
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-    if (calibrationMode == LEFT_EYE) {
-        sprintf(text[0], "Calibrating left eye (%i snaps)", cCalibrationObject->getSnapshotCount());
-    } else {
-        sprintf(text[0], "Calibrating right eye (%i snaps)", cCalibrationObject->getSnapshotCount());
-    }
+    sprintf(text[0], "Calibrating (%i snaps)", cCalibrationObject->getSnapshotCount());
 
     glTranslatef(-1.0f, 0.0f, 0.0f);
     drawOneEye(); // left eye
-    /// Current Calibration object
-    CameraCalibration* cCalibrationObject;
     glLoadIdentity();
     drawOneEye(); // right eye
 
@@ -77,7 +72,7 @@ void CalibrationOverlay::drawOverlay() {
     glPopMatrix();
     glMatrixMode( GL_PROJECTION );
 
-    drawOtherEye();
+    drawPiP();
 
     // Restore Matrices
     glPopMatrix();
@@ -85,56 +80,64 @@ void CalibrationOverlay::drawOverlay() {
     glPopMatrix();
 }
 
-void CalibrationOverlay::drawOtherEye() {
+void CalibrationOverlay::drawPiP() {
     glLoadIdentity();
 
     // Set Picture in Picture coordinates and transparency
     setPiPCoordinates();
     glColor4f(1.0f, 1.0f, 1.0f, 0.8f); 
 
-    IplImage* img = cCalibrationObject->lastSnapshot;
-    if (img) {
-        glBindTexture(GL_TEXTURE_2D, textures[0]);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
-            GL_RGB, GL_UNSIGNED_BYTE, img->imageData);
-    } else {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    if (Ve::mainVideo->xRot) {
-        glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
-    }
-    if (Ve::mainVideo->yRot) {
-        glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-    }
-    if (Ve::mainVideo->zRot) {
-        glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
-    }
-    if (calibrationMode == RIGHT_EYE) {
-        drawLeftQuad();
-    } else {
-        drawRightQuad();
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Now draw the found corners
-    GLMacros::initVirtualCoords();
-    // Back to Pip coordinates, red markers
-    setPiPCoordinates();
-    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+    for (int i=0 ; i<2 ; i++) {
+	CameraCalibration* calObj;
+	if (0 == i) {
+	    calObj = cCalibrationObject->getLeftCalibration();
+	} else {
+	    calObj = cCalibrationObject->getRightCalibration();
+	}
+	IplImage* img = calObj->lastSnapshot;
+	if (img) {
+	    glBindTexture(GL_TEXTURE_2D, textures[i]);
+	    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+			    GL_RGB, GL_UNSIGNED_BYTE, img->imageData);
+	} else {
+	    glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	if (Ve::mainVideo->xRot) {
+	    glRotatef(180.0f, 1.0f, 0.0f, 0.0f);
+	}
+	if (Ve::mainVideo->yRot) {
+	    glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+	}
+	if (Ve::mainVideo->zRot) {
+	    glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+	}
+	if (0 == i) {
+	    drawLeftQuad();
+	} else {
+	    drawRightQuad();
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	// Now draw the found corners
+	GLMacros::initVirtualCoords();
+	// Back to Pip coordinates, red markers
+	setPiPCoordinates();
+	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-    CvPoint vCoords = Ve::getVirtualSize();
-    float xFac = vCoords.x / (float) imageWidth;
-    float yFac = - vCoords.y / (float) imageHeight;
-    int yOff = Ve::getVirtualSize().y;
-    int count = cCalibrationObject->lastCornerCount;
-    if (calibrationMode == RIGHT_EYE) {
-        glTranslatef(-1.0f, 0.0f, 0.0f);
-    }
-    for (int i=0 ; i<cCalibrationObject->lastCornerCount ; i++) {
-        int x = (int) (cCalibrationObject->lastCorners[i].x * xFac);
-        int y = (int) ((cCalibrationObject->lastCorners[i].y * yFac * 2) + yOff);
-        GLMacros::drawMarker(x, y);
-    } 
-    GLMacros::revertMatrices();
+	CvPoint vCoords = Ve::getVirtualSize();
+	float xFac = vCoords.x / (float) imageWidth;
+	float yFac = - vCoords.y / (float) imageHeight;
+	int yOff = Ve::getVirtualSize().y;
+	int count = calObj->lastCornerCount;
+	if (1 == i) {
+	    glTranslatef(-1.0f, 0.0f, 0.0f);
+	}
+	for (int i=0 ; i<calObj->lastCornerCount ; i++) {
+	    int x = (int) (calObj->lastCorners[i].x * xFac);
+	    int y = (int) ((calObj->lastCorners[i].y * yFac * 2) + yOff);
+	    GLMacros::drawMarker(x, y);
+	} 
+	GLMacros::revertMatrices();
+    } // Both eyes for loop
 }
 
 void CalibrationOverlay::drawOneEye() {
@@ -166,16 +169,6 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
         return;
 
     switch (e.getCode()) {
-    case 'v':
-    case 'V':
-        if (calibrationMode == LEFT_EYE) {
-            calibrationMode = RIGHT_EYE;
-            cCalibrationObject = Ve::getRightSource()->getCalibration();
-        } else {
-            calibrationMode = LEFT_EYE;
-            cCalibrationObject = Ve::getLeftSource()->getCalibration();
-        }
-        break;
     case 'x':
     case 'X':
         cCalibrationObject->takeSnapshot();

@@ -233,8 +233,8 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
 
     if (found != 0) {
         cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
-                           searchWindow, cvSize(-1, -1),
-                           cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
+			   searchWindow, cvSize(-1, -1),
+			   cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
         LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found);
     } else {
         LOG4CPLUS_WARN(logger, "Corner find unsuccessful, corner count: " << cornerNum);
@@ -244,7 +244,6 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     cvReleaseImage(&threshTmp);
     return tempPoints;
 }
-
 
 
 CvPoint2D32f CameraCalibration::unDistortPoint(CvPoint2D32f point) {
@@ -480,5 +479,15 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
         } // if
     }
     return retVal;
+}
+
+void CameraCalibration::popSnapshot() {
+    int lastI = images.size() - 1; 
+    if (lastI >= 0) {
+	cvReleaseImage(&images[lastI]);
+	delete guessedCorners[lastI];
+	images.pop_back();
+	guessedCorners.pop_back();
+    }
 }
 

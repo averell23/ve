@@ -46,7 +46,7 @@ public:
       Create a new tracker, using the given left and right source id
     */
     CORBAPositionTracker(int leftId = 3, int rightId = 4);
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     ~CORBAPositionTracker();
 
     /**

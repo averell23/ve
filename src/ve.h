@@ -40,13 +40,14 @@
 #include "overlay.h"
 #include "veeventsource.h"
 #include "veeventlistener.h"
-#include "cameracalibration.h"
+#include "stereocalibration.h"
 
 using namespace log4cplus;
 
 // Forward declarations
 class VideoCanvas;
 class VideoSource;
+class StereoCalibration;
 
 /**
   This is the program's main class that includes the basic application framework.
@@ -80,12 +81,17 @@ public:
         return rightEye;
     }
 
-    /**void run();
+    /**
     	Get the left video source (e.g. for fps calculations);
     */
     static VideoSource* getLeftSource()  {
         return leftEye;
     }
+    
+    /** 
+      Get the stereo calibration object.
+    */
+    static StereoCalibration* getStereoCalibration() { return stereoCal; }
 
     /**
     	Get the main timer.
@@ -132,6 +138,8 @@ public:
     static VideoCanvas *mainVideo;
     static VideoSource *rightEye;
     static VideoSource *leftEye;
+    static StereoCalibration *stereoCal;
+    
     /// The overlays that will be displayed
     static vector<Overlay*> overlays;
 
