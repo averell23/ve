@@ -92,9 +92,6 @@
 				RelativePath=".\src\fonttesteroverlay.cpp">
 			</File>
 			<File
-				RelativePath=".\src\gainoverlay.cpp">
-			</File>
-			<File
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
@@ -161,9 +158,6 @@
 			</File>
 			<File
 				RelativePath=".\src\fonttesteroverlay.h">
-			</File>
-			<File
-				RelativePath=".\src\gainoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\offsetoverlay.h">
