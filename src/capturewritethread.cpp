@@ -26,14 +26,12 @@
 Logger CaptureWriteThread::logger = Logger::getInstance("Ve.CaptureWriteThread");
 
 
-CaptureWriteThread::CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex* mutex) {
-    this->buffer_a = buffer_a;
-    this->buffer_b = buffer_b;
-    this->mutex = mutex;
-	this->info = info;
+CaptureWriteThread::CaptureWriteThread(CaptureBuffer* buffer, CaptureInfo* info) {
+    this->buffer = buffer;
+    this->info = info;
     counter = 0;
     running = false;
-	info->writeTimer.reset();
+    info->writeTimer.reset();
 }
 
 void CaptureWriteThread::run() {
@@ -51,38 +49,18 @@ void CaptureWriteThread::run() {
 }
 
 void CaptureWriteThread::writeImages() {
-    mutex->enterMutex();
-    char* buf_a = buffer_a->getQueueFirst();
-    char* buf_b = buffer_b->getQueueFirst();
-    mutex->leaveMutex();
+    CaptureImagePair* buf = buffer->getQueueFirst();
     // Wait for both buffers to have data
-    while ((buf_a == NULL) || (buf_b == NULL)) {
-	mutex->enterMutex(); // FIXME: FRAGILE kludge
-	if (buf_a == NULL) buf_a = buffer_a->getQueueFirst();
-	if (buf_b == NULL) buf_b = buffer_b->getQueueFirst();
-	mutex->leaveMutex();
+    while (buf == NULL) {
+	buf = buffer->getQueueFirst();
     }
     // Names for the image files
     char name1[256], name2[256];
-    // File handles
-    FILE *file1, *file2;
     sprintf(name1,"%s_a_%d.img",info->filePrefix, counter);
     sprintf(name2,"%s_b_%d.img",info->filePrefix, counter);
-    // write to files
-    file1 = fopen(name1, "wb");
-    if (fwrite(buf_a, info->pixBytes, info->imgSize, file1) != info->imgSize)
-	LOG4CPLUS_ERROR(logger, "Error writing file for cam a");
-    fclose(file1);
-    file2 = fopen(name2, "wb");
-    if (fwrite(buf_b, info->pixBytes, info->imgSize, file2) != info->imgSize)
-	LOG4CPLUS_ERROR(logger, "Error writing file for cam b");
-    fclose(file2);
+    CaptureController::writeRAWFiles(name1, name2, buf, info);
     
-    // Remove buffers
-    mutex->enterMutex();
-    buffer_a->removeQueueFirst();
-    buffer_b->removeQueueFirst();
-    mutex->leaveMutex();
+    buffer->removeQueueFirst();
 }
 
 void CaptureWriteThread::quit() {

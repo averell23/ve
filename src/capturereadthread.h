@@ -33,6 +33,7 @@ extern "C" {
     #include "xcliball.h"
 }
 #include "capturebuffer.h"
+#include "capturecontroller.h"
 #include "captureinfo.h"
 
 using namespace ost;
@@ -54,37 +55,30 @@ public:
       @param buffer_b Buffers to store images from card b
       @param info Meta-Information for capturing
     */
-    CaptureReadThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex* mutex);
+    CaptureReadThread(CaptureBuffer* buffer, CaptureInfo* info);
     
     ~CaptureReadThread();
     
     void run();
-    
+
     /**
       Reads a pair of images to the buffers.
     */
     void readImages();
-    
-   /**
-     Reads a pair of images to the given buffers.
-   */
-   void readBuffer(char* buf_a, char* buf_b);
 
    int getCounter() { return counter; }
 
 private:
     /// Meta information for capture
     CaptureInfo* info;
-    /// Buffers to store images
-    CaptureBuffer *buffer_a, *buffer_b;
+    /// Buffer to store images
+    CaptureBuffer *buffer;
     /// Logger for this class
     static Logger logger;
-    /// Pointer to the global mutex FIXME: kludge
-    Mutex* mutex;
     /// Indicates if the thread is running
     bool running;
-	/// Image counter
-	int counter;
+    /// Image counter
+    int counter;
 };
 
 #endif

@@ -21,78 +21,19 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef CAPTUREBUFFER_H
-#define CAPTUREBUFFER_H
-#include <cc++/thread.h>
 #include "captureimagepair.h"
 
-using namespace ost;
+CaptureImagePair::CaptureImagePair(int size) {
+    buffer_a = new char[size];
+    buffer_b = new char[size];
+}
 
-/**
-Buffer for use by @see CaptureController. This can either be used as direct storage or as a queue/ring buffer for concurrent I/O
+CaptureImagePair::~CaptureImagePair()
+{
+    serial = 0;
+    timestamp = 0;
+    delete buffer_a;
+    delete buffer_b;
+}
 
-@author Daniel Hahn,,,
-*/
-class CaptureBuffer{
-public:
 
-    /**
-      Creates a new buffer.
-      
-      @param images Size of the new buffer in images.
-      @param size Size of each image in bytes.
-    */
-    CaptureBuffer(int images, int size);
-
-    /**
-      Returns a pointer to the buffer at the index.
-      No range checking is done, this can easily break
-      your code.
-    */
-    CaptureImagePair* getBufferAt(int index) { return buffer[index]; }
-    
-    /**
-      Returns the capacity of this buffer in images.
-    */
-    int capacity() { return images; }
-    
-    ~CaptureBuffer();
-    
-    /**
-      Add a buffer to the beginning of the queue and return a
-      pointer to it.
-      
-      @return Pointer to the new buffer, or NULL if no free buffer
-      is available.
-    */
-    CaptureImagePair* addQueueElement();
-    
-    /**
-      Get a pointer to the first element in the queue.
-      
-      @return Pointer to the first buffer in the queue or NULL,
-      if the queue is currently empty
-    */
-    CaptureImagePair* getQueueFirst();
-    
-    /**
-      Remove the first element of the queue. This has no effect if
-      the queue is currently empty.
-    */
-    void removeQueueFirst();
-
-private:
-    /// Buffers that contain the data
-    CaptureImagePair** buffer;
-    /// Size of the buffer in images
-    int images;
-    /// Points to the beginning of the queue
-    int queueBegin;
-    /// Points to the end of the queue 
-    int queueEnd;
-    /// Mutex for thread-safe operation
-    Mutex mutex;
-    
-};
-
-#endif

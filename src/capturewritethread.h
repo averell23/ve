@@ -34,6 +34,10 @@ extern "C" {
 }
 #include "capturebuffer.h"
 #include "captureinfo.h"
+#include "capturecontroller.h"
+
+// Forward declaration
+class CaptureController;
 
 using namespace ost;
 using namespace log4cplus;
@@ -53,7 +57,7 @@ public:
       @param buffer_b Buffers to read card b images from
       @param info Meta-Information for capturing
     */
-    CaptureWriteThread(CaptureBuffer* buffer_a, CaptureBuffer* buffer_b, CaptureInfo* info, Mutex *mutex);
+    CaptureWriteThread(CaptureBuffer* buffer, CaptureInfo* info);
     
     
     /**
@@ -70,13 +74,13 @@ public:
     
     void run();
 
-	int getCounter() { return counter; }
+    int getCounter() { return counter; }
     
 private:
     /// Meta information for capture
     CaptureInfo* info;
     /// Buffers to store images
-    CaptureBuffer *buffer_a, *buffer_b;
+    CaptureBuffer *buffer;
     /// Logger for this class
     static Logger logger;
     /// Pointer to global Mutex FIXME: kludge

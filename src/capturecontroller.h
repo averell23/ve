@@ -9,34 +9,34 @@ extern "C" {
     #include "xcliball.h"
 }
 #include <cc++/thread.h>
+#include <fstream>
 #include "stopwatch.h"
 #include "capturebuffer.h"
 #include "captureinfo.h"
 #include "capturereadthread.h"
 #include "capturewritethread.h"
+#include "bmpstruct.h"
+
+// Forward declarations
+class CaptureWriteThread;
+class CaptureReadThread;
 
 using namespace log4cplus;
 using namespace ost;
+using namespace std;
 
 class CaptureController
 {
 public:
-	static const int IMAGE_BAYER = 0;
-	static const int IMAGE_RGB = 1;
-	static const int IMAGE_GRAY = 2;
-
 	/**
 		Creates a new CaptureController with an internal image buffer.
 		
-		@param height Height of images
-		@param width Width of imagesfer_b->getBufferAt(i)
-		@param size Number of images in buffer
-		@param type The color model of the images. Valid types are the IMAGE_*
-		            constants, for the respective color model.
-		@param filePrefix The filename prefix (including path informtion) when 
-			saving files.
+		@param info The @see CaptureInfo metadata structure. It will
+		            be completely initialized in this constructur.
+			    FIXME: Another kludge, not object oriented...
+		@param size Size of the internal buffer in images.
 	*/
-	CaptureController(int height, int width, int size, int type, char* filePrefix = "image_");
+	CaptureController(CaptureInfo* info, int size);
 	~CaptureController(void);
 
 	/**
@@ -62,26 +62,59 @@ public:
 	  Stops a live capture started with @see startLiveCapture
 	*/
 	void stopLiveCapture();
+	
+	/**
+	   Writes the image data as RAW files (byte arrays)
+	   @param aFile Name of first file
+	   @param bFile Name of second file
+	   @param imgPair Image pair to be written to disk
+	   @param myInfo Meta information structure
+         */
+	static void writeRAWFiles(char* aFile, char* bFile, CaptureImagePair* imgPair, CaptureInfo* myInfo);
+	
+	/**
+	  Writes the image data as BMP files 
+	  @see writeRAWFiles
+	*/
+	static void writeBMPFiles(char* aFile, char* bFile, CaptureImagePair* imgPair, CaptureInfo* myInfo);
+	
+	/**
+	  Reads the contents of the frame buffer into the given memory
+	  locations.
+		
+	  @param imgPair Pointer to the @see CaptureImagePair that is to be 
+	                 written
+	  @param myInfo Meta info structure
+	*/
+	static void readBuffer(CaptureImagePair* imgPair, CaptureInfo* myInfo);
+	
+	/**
+	  Write a seperate timestamp/metadata file
+	  
+	  @param file Name of the file to write the timestamp to.
+	  @param imgPair Pointer to the image pair which's metatdata
+	                 is to be written
+	*/
+	static void writeMetaStamp(char* file, CaptureImagePair* imgPair);
+	
 private:
-	/// Pointer to the byte arrays that will contain the image data
-	CaptureBuffer *buffer_a, *buffer_b;
+	/// Pointer to the data buffer
+	CaptureBuffer *buffer;
 	/// Info structure for meta information
-	CaptureInfo info;
+	CaptureInfo* info;
 	/// Size of one buffer in images
 	int bufferSize;
-	/**
-		Reads the contents of the frame buffer into the given memory
-		buffer location.
-	*/
-	void readBuffer(int i);
 	/// Logger for this class
 	static Logger logger;
-	/// Mutex for global thread synchronization FIXME: kludge
-	Mutex *mutex;
 	/// Reader thread
 	CaptureReadThread* readThread;
 	/// Writer thread
 	CaptureWriteThread* writeThread;
+	/// Cache for the BMP header (for .bmp writing)
+	BMP_HEADER* bmpHeader;
+	/// Cache for the BMP info header (for .bmp writing)
+	BMP_INFOHEADER* bmpInfoHeader;
+
 };
 
 #endif

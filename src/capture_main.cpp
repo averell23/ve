@@ -41,126 +41,128 @@ extern "C" {
 
 using namespace log4cplus;
 
-int main(int argc, char *argv[])
-{ 
-	cout << "Ve capture utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
+int main(int argc, char *argv[]) {
+    cout << "Ve capture utility. (c) 2003 ISAS, author: Daniel Hahn, Kathrin Roberts" << endl;
 
-	PropertyConfigurator::doConfigure("../config/logger.properties");
-	Logger logger = Logger::getInstance("Ve.main");
+    PropertyConfigurator::doConfigure("../config/logger.properties");
+    Logger logger = Logger::getInstance("Ve.main");
 
-	CommandLineParser parser("ve");
-	parser.setupOption("help", "Show usage information");
-	parser.setupParameter("epixconf", false, "Epix config file");
-	parser.setupParameter("height", false, "Height of images");
-	parser.setupParameter("width", false, "Width of images");
-	parser.setupParameter("colors", true, "Color model (bayer|rgb|gray)");
-	parser.setupParameter("prefix", false, "File prefix, includeing path");
-	parser.setupParameter("size", true, "Buffer size in images (per imaging board)");
-	parser.setupParameter("adjust1", false, "camara order txt-file1");
-    parser.setupParameter("adjust2", false, "camara order txt-file2");
-	parser.setupOption("direct", "Write directly to disk (continous capture, q quits)");
+    CommandLineParser parser("ve");
+    parser.setupOption("help", "Show usage information");
+    parser.setupParameter("epixconf", false, "Epix config file");
+    parser.setupParameter("height", false, "Height of images");
+    parser.setupParameter("width", false, "Width of images");
+    parser.setupParameter("colors", true, "Color model (bayer|rgb|gray)");
+    parser.setupParameter("prefix", false, "File prefix, includeing path");
+    parser.setupParameter("size", true, "Buffer size in images (per imaging board)");
+    parser.setupParameter("initA", false, "Initialization file for camera A");
+    parser.setupParameter("initB", false, "Initialization file for camera B");
+    parser.setupOption("direct", "Write directly to disk (continous capture, q quits)");
+    parser.setupParameter("timestamp", false, "Create a separate timestamp file for each image with this parameter as prefix");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
         cout << endl;
         parser.printUsage();
         exit(1);
     }
-	bool option = parser.getOptionValue("help");
+    bool option = parser.getOptionValue("help");
     if (option) {
         cout << endl;
         parser.printUsage();
         exit(0);
     }
 
-	int colorMode; // Color mode 
-	string param = parser.getParamValue("colors");
-	if (param == "bayer") {
-		colorMode = CaptureController::IMAGE_BAYER;
-	} else if (param == "rgb") {
-		colorMode = CaptureController::IMAGE_RGB;
-	} else if (param == "gray") {
-		colorMode = CaptureController::IMAGE_GRAY;
-	} else {
-		cout << "Illegal value for colors parameter: " << param;
-		parser.printUsage();
-		exit(0);
-	}
+    CaptureInfo info;
+    
+    string param = parser.getParamValue("colors");
+    if (param == "bayer") {
+        info.colorType = CaptureInfo::IMAGE_BAYER;
+    } else if (param == "rgb") {
+        info.colorType = CaptureInfo::IMAGE_RGB;
+    } else if (param == "gray") {
+        info.colorType = CaptureInfo::IMAGE_GRAY;
+    } else {
+        cout << "Illegal value for colors parameter: " << param;
+        parser.printUsage();
+        exit(0);
+    }
 
-	param = parser.getParamValue("height");
-	int height = atoi(param.c_str());
-	param = parser.getParamValue("width");
-	int width = atoi(param.c_str());
-	param = parser.getParamValue("size");
-	int size = atoi(param.c_str());
+    param = parser.getParamValue("height");
+    info.height = atoi(param.c_str());
+    param = parser.getParamValue("width");
+    info.width = atoi(param.c_str());
+    param = parser.getParamValue("size");
+    int size = atoi(param.c_str());
 
-	if (size < 1) {
-		LOG4CPLUS_FATAL(logger, "Illegal size: " << size);
-		exit(0);
-	}
+    param = parser.getParamValue("timestamp");
+    if (param == "") {
+	info.writeTimestamp = false;
+	info.timstampPrefix = "";
+    } else {
+	info.writeTimestamp = true;
+	info.timstampPrefix = (char*) param.c_str();
+    }
+    
+    if (size < 1) {
+        LOG4CPLUS_FATAL(logger, "Illegal size: " << size);
+        exit(0);
+    }
 
-	string filePrefix = parser.getParamValue("prefix");
+    string filePrefix = parser.getParamValue("prefix");
+    info.filePrefix = (char*) filePrefix.c_str();
 
-	char* config; // config file name
-	param = parser.getParamValue("epixconf");
-	if (param == "") {
-		LOG4CPLUS_DEBUG(logger, "No epix config file given, using defaults.");
-	} else {
-		config = (char*) param.c_str();
-	}
+    char* config; // config file name
+    param = parser.getParamValue("epixconf");
+    if (param == "") {
+        LOG4CPLUS_DEBUG(logger, "No epix config file given, using defaults.");
+    } else {
+        config = (char*) param.c_str();
+    }
 
-	if (!XCLIBController::isOpen()) {
-		if (XCLIBController::openLib(config) != 0) {
-			LOG4CPLUS_FATAL(logger, "Unable to open XCLIB library.");
-			exit(0);
-		}
-	}
+    if (!XCLIBController::isOpen()) {
+        if (XCLIBController::openLib(config) != 0) {
+            LOG4CPLUS_FATAL(logger, "Unable to open XCLIB library.");
+            exit(0);
+        }
+    }
 
-    string param1 = parser.getParamValue("adjust1");
-	string param2 = parser.getParamValue("adjust2");
 
-	if (param1 != "" && param2 != ""){
-        EpixCameraController* cont0 = new SF1280Controller(0,param1);
-        LOG4CPLUS_DEBUG(logger, "Right video source created");
-        EpixCameraController* cont1 = new SF1280Controller(1,param2);
-        LOG4CPLUS_DEBUG(logger, "Left video source created");
-		cont0->initCamera();
-		cont1->initCamera();
-}
-	else {
-		EpixCameraController* cont0 = new SF1280Controller(0);
-        LOG4CPLUS_DEBUG(logger, "Right video source created");
-        EpixCameraController* cont1 = new SF1280Controller(1);
-        LOG4CPLUS_DEBUG(logger, "Left video source created");	
-		cont0->initCamera();
-		cont1->initCamera();
-	}
+    string param1 = parser.getParamValue("initA");
+    string param2 = parser.getParamValue("initB");
 
-	if ((height < 1) || (height > pxd_imageYdim()))  {
-		LOG4CPLUS_WARN(logger, "Illegal value for image height " << height << ", setting to " << pxd_imageYdim());
-		height = pxd_imageYdim();
-	}
+    EpixCameraController* cont0 = new SF1280Controller(0,param1);
+    LOG4CPLUS_DEBUG(logger, "Right video source created");
+    EpixCameraController* cont1 = new SF1280Controller(1,param2);
+    LOG4CPLUS_DEBUG(logger, "Left video source created");
+    cont0->initCamera();
+    cont1->initCamera();
 
-	if ((width < 1) || (width > pxd_imageXdim())) {
-		LOG4CPLUS_WARN(logger, "Illegal value for image width " << width << ", setting to " << pxd_imageXdim());
-		width = pxd_imageXdim();
-	}
+    if ((info.height < 1) || (info.height > pxd_imageYdim()))  {
+        LOG4CPLUS_WARN(logger, "Illegal value for image height " << info.height << ", setting to " << pxd_imageYdim());
+        info.height = pxd_imageYdim();
+    }
 
-	LOG4CPLUS_INFO(logger, "Creating controller with prefix: " << filePrefix);
-	CaptureController controller(height, width, size, colorMode, (char*) filePrefix.c_str());
+    if ((info.width < 1) || (info.width > pxd_imageXdim())) {
+        LOG4CPLUS_WARN(logger, "Illegal value for image width " << info.width << ", setting to " << pxd_imageXdim());
+        info.width = pxd_imageXdim();
+    }
 
-	if (parser.getOptionValue("direct")) {
-	    controller.startLiveCapture();
-		char key = 0;
-		while (key != 'q') {
-			 scanf("%c", &key);
-		}
-		controller.stopLiveCapture();
-	} else {
-	    controller.captureToBuffers();
-	    controller.writeBuffers();
-	}
+    LOG4CPLUS_INFO(logger, "Creating controller with prefix: " << info.filePrefix);
+    CaptureController controller(&info, size);
 
-	XCLIBController::closeLib();
-	
-	return EXIT_SUCCESS;
+    if (parser.getOptionValue("direct")) {
+        controller.startLiveCapture();
+        char key = 0;
+        while (key != 'q') {
+            scanf("%c", &key);
+        }
+        controller.stopLiveCapture();
+    } else {
+        controller.captureToBuffers();
+        controller.writeBuffers();
+    }
+
+    XCLIBController::closeLib();
+
+    return EXIT_SUCCESS;
 }

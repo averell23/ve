@@ -55,6 +55,17 @@ public:
 	Stopwatch readTimer;
 	/// Timer for writing (in continous mode) FIXME: kludge
 	Stopwatch writeTimer;
+	/// Color info type
+	int colorType;
+	/// Indicates wether as seperate timestamp should be written
+	bool writeTimestamp;
+	/// Prefix for the timestamp files (including path)
+	char* timstampPrefix;
+	
+	static const int IMAGE_BAYER = 0;
+	static const int IMAGE_RGB = 1;
+	static const int IMAGE_GRAY = 2;
+
 };
 
 #endif

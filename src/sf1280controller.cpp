@@ -31,15 +31,11 @@ SF1280Controller::SF1280Controller(int unit, string initFile)
         LOG4CPLUS_WARN(logger, "Unable to open Cam Link serial, controller not usable.");
         unit = -1;
     }
-
-	printf("Fkt sf1280 Controller vorbeigekommen\n\n");
-
-	if(initFile!="")
-	{specific = 1;
-	initFile_cam = initFile;  
-	}
-	else
-	 specific = 0;
+    if(initFile!="") {
+        specific = 1;
+        initFile_cam = initFile;
+    } else
+        specific = 0;
 }
 
 bool SF1280Controller::initCamera() {
@@ -49,113 +45,113 @@ bool SF1280Controller::initCamera() {
     }
     string retVal;
 
-	if (specific==0){
-    // retVal = XCLIBController::writeCamLinkSerial(unit, "s\r");
-    // LOG4CPLUS_DEBUG(logger, "Camera status message: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
-    LOG4CPLUS_DEBUG(logger, "Setting continuous/command mode, camera response: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "ly0005\r");
-    LOG4CPLUS_DEBUG(logger, "Setting rolling shutter mode, camera response: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "lc37cb8f\r");
-    LOG4CPLUS_DEBUG(logger, "Setting clock, camera response: " << retVal);
-    // retVal = XCLIBController::writeCamLinkSerial(unit, "ly3000\r");
-    // LOG4CPLUS_DEBUG(logger, "Setting exposure time: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "ly804c\r");
-    LOG4CPLUS_DEBUG(logger, "Setting gain, camera response: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "ly9041\r");
-    LOG4CPLUS_DEBUG(logger, "Setting Black offset, camera response: " << retVal);
-	// Setting full frame AOI FIXME: All this settings should be configurable
-	/*
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly127f\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI width, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly23fd\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI height offset, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly4000\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin column, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly5000\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly6000\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
-    LOG4CPLUS_DEBUG(logger, "Setting Continuous mode, camera response: " << retVal);
-	*/
-	// Sets the AOI
-	/*
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly113f\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI width, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly21df\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI height offset, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly40a0\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin column, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly5100\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly6100\r");
-    LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
-    LOG4CPLUS_DEBUG(logger, "Setting Continuous mode, camera response: " << retVal);
-	*/
-	// Sets XCAP-like AOI
-	
-	retVal = XCLIBController::writeCamLinkSerial(unit, "lc306886\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly7000\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly804e\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly9041\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "lya055\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly113f\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly21df\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly4000\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly5000\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly6000\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly0005\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	retVal = XCLIBController::writeCamLinkSerial(unit, "ly3000\r");
-    LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-	}
-	else
-	{  char s[30];
-	   char order[30];
-	   int j;
-	   char *p_on_c;
-	   char *p_on_fn;
-	   FILE *f1;
+    if (specific==0) {
+        // retVal = XCLIBController::writeCamLinkSerial(unit, "s\r");
+        // LOG4CPLUS_DEBUG(logger, "Camera status message: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
+        LOG4CPLUS_DEBUG(logger, "Setting continuous/command mode, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly0005\r");
+        LOG4CPLUS_DEBUG(logger, "Setting rolling shutter mode, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "lc37cb8f\r");
+        LOG4CPLUS_DEBUG(logger, "Setting clock, camera response: " << retVal);
+        // retVal = XCLIBController::writeCamLinkSerial(unit, "ly3000\r");
+        // LOG4CPLUS_DEBUG(logger, "Setting exposure time: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly804c\r");
+        LOG4CPLUS_DEBUG(logger, "Setting gain, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly9041\r");
+        LOG4CPLUS_DEBUG(logger, "Setting Black offset, camera response: " << retVal);
+        // Setting full frame AOI FIXME: All this settings should be configurable
+        /*
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly127f\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI width, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly23fd\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI height offset, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly4000\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin column, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly5000\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly6000\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
+           LOG4CPLUS_DEBUG(logger, "Setting Continuous mode, camera response: " << retVal);
+        */
+        // Sets the AOI
+        /*
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly113f\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI width, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly21df\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI height offset, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly40a0\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin column, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly5100\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly6100\r");
+           LOG4CPLUS_DEBUG(logger, "Setting AOI begin row, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
+           LOG4CPLUS_DEBUG(logger, "Setting Continuous mode, camera response: " << retVal);
+        */
+        // Sets XCAP-like AOI
 
-	   p_on_fn = &initFile_cam[0];	  
+        retVal = XCLIBController::writeCamLinkSerial(unit, "lc306886\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly7000\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly804e\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly9041\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "lya055\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly113f\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly21df\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly4000\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly5000\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly6000\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly0005\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        retVal = XCLIBController::writeCamLinkSerial(unit, "ly3000\r");
+        LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+    } else {
+        char s[30];
+        char order[30];
+        int j;
+        char *p_on_c;
+        char *p_on_fn;
+        FILE *f1;
 
-	   f1 = fopen(p_on_fn,"r");
-	   
-	   if(f1==NULL)
-       {printf("Datei %s nicht existent \n",p_on_fn);}
-      
-	   while(fgets(s,30,f1)!=NULL){
-		   j=0;
-	       p_on_c=&s[0];  /*zeigt auf ersten Buchstaben des dateinamens*/
-           while(*p_on_c!='\n')
-           {order[j]=*p_on_c;
-            p_on_c++;
-            j++;
-           }
-		   order[j]='\0';
-       printf("gelesener Befehl %s\n",order);
-	   retVal = XCLIBController::writeCamLinkSerial(unit,order);
-       LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
-    }/*end while*/
-	      
-		  
-	   fclose(f1);
-	}/*end else*/
-    
+        p_on_fn = &initFile_cam[0];
+
+        f1 = fopen(p_on_fn,"r");
+
+        if(f1==NULL) {
+            LOG4CPLUS_WARN(logger, "File " << p_on_fn << " could not be opened.");
+        }
+
+        while(fgets(s,30,f1)!=NULL) {
+            j=0;
+            p_on_c=&s[0];  /*zeigt auf ersten Buchstaben des dateinamens*/
+            while(*p_on_c!='\n') {
+                order[j]=*p_on_c;
+                p_on_c++;
+                j++;
+            }
+            order[j]='\0';
+            LOG4CPLUS_DEBUG(logger, "Camera command read from file: " << order);
+            retVal = XCLIBController::writeCamLinkSerial(unit,order);
+            LOG4CPLUS_DEBUG(logger, "Sent camera command, camera response: " << retVal);
+        }/*end while*/
+
+
+        fclose(f1);
+    }/*end else*/
+
     return true; /// FIXME: No error detection done
 }
 

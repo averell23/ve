@@ -129,8 +129,8 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-bin_PROGRAMS = ve benchmark capture
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp epixcameracontroller.h epixcameracontroller.cpp sf1280controller.h sf1280controller.cpp vepositionevent.cpp corbacontroller.cpp calibrationoverlay.cpp corbathread.cpp corbathread.h registrationoverlay.cpp arregistration.cpp buffersource.cpp buffersource.h capturebuffer.cpp
+bin_PROGRAMS = ve capture
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp offsetoverlay.h offsetoverlay.cpp epixcameracontroller.h epixcameracontroller.cpp sf1280controller.h sf1280controller.cpp vepositionevent.cpp corbacontroller.cpp calibrationoverlay.cpp corbathread.cpp corbathread.h registrationoverlay.cpp arregistration.cpp buffersource.cpp buffersource.h
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/xclib $(all_includes) -I/usr/include/cc++2 -I/usr/local/include/opencv -I/usr/include/freetype2
@@ -140,22 +140,17 @@ ve_LDFLAGS = $(all_libraries)
 
 SUBDIRS = stubs corbatest
 ve_LDADD = $(top_builddir)/src/stubs/libstubs.a -lgslcblas -lgsl /usr/local/xclib/xclibi86.a -lomniORB4 -lftgl -lGLEW -lfreetype -lm -lopencv -llog4cplus -lglut -lGL -lccgnu2
-noinst_HEADERS = vepositionevent.h position.h corbacontroller.h calibrationoverlay.h registrationoverlay.h arregistration.h capturebuffer.h capturereadthread.h capturewritethread.h captureinfo.h
-capture_SOURCES = cameracalibration.cpp cameracalibration.h capture_main.cpp capturebuffer.cpp capturebuffer.h capturecontroller.cpp capturecontroller.h commandlineparser.cpp commandlineparser.h epixcameracontroller.cpp epixcameracontroller.h epixsource.cpp epixsource.h overlay.cpp overlay.h position.h sf1280controller.cpp sf1280controller.h ve.cpp ve.h veevent.cpp veevent.h veeventlistener.h veeventsource.cpp veeventsource.h vepositionevent.cpp vepositionevent.h xclibcontroller.cpp xclibcontroller.h epixreaderthread.cpp epixreaderthread.h stopwatch.cpp stopwatch.h videocanvas.cpp videocanvas.h videosource.cpp videosource.h capturereadthread.cpp capturewritethread.cpp captureinfo.h
+noinst_HEADERS = vepositionevent.h position.h corbacontroller.h calibrationoverlay.h registrationoverlay.h arregistration.h capturebuffer.h capturereadthread.h capturewritethread.h captureinfo.h captureimagepair.h bmpstruct.h
+capture_SOURCES = cameracalibration.cpp cameracalibration.h capture_main.cpp capturebuffer.cpp capturebuffer.h capturecontroller.cpp capturecontroller.h commandlineparser.cpp commandlineparser.h epixcameracontroller.cpp epixcameracontroller.h epixsource.cpp epixsource.h overlay.cpp overlay.h position.h sf1280controller.cpp sf1280controller.h ve.cpp ve.h veevent.cpp veevent.h veeventlistener.h veeventsource.cpp veeventsource.h vepositionevent.cpp vepositionevent.h xclibcontroller.cpp xclibcontroller.h epixreaderthread.cpp epixreaderthread.h stopwatch.cpp stopwatch.h videocanvas.cpp videocanvas.h videosource.cpp videosource.h capturereadthread.cpp capturewritethread.cpp captureinfo.h captureimagepair.cpp captureimagepair.h
 capture_LDADD = -lglut -lopencv /usr/local/xclib/xclibi86.a -lccgnu2 -lm -lGL -lGLEW -llog4cplus
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-bin_PROGRAMS = ve$(EXEEXT) benchmark$(EXEEXT) capture$(EXEEXT)
+bin_PROGRAMS = ve$(EXEEXT) capture$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-benchmark_SOURCES = benchmark.c
-benchmark_OBJECTS = benchmark.$(OBJEXT)
-benchmark_LDADD = $(LDADD)
-benchmark_DEPENDENCIES =
-benchmark_LDFLAGS =
 am_capture_OBJECTS = cameracalibration.$(OBJEXT) capture_main.$(OBJEXT) \
 	capturebuffer.$(OBJEXT) capturecontroller.$(OBJEXT) \
 	commandlineparser.$(OBJEXT) epixcameracontroller.$(OBJEXT) \
@@ -164,7 +159,8 @@ am_capture_OBJECTS = cameracalibration.$(OBJEXT) capture_main.$(OBJEXT) \
 	veeventsource.$(OBJEXT) vepositionevent.$(OBJEXT) \
 	xclibcontroller.$(OBJEXT) epixreaderthread.$(OBJEXT) \
 	stopwatch.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
-	capturereadthread.$(OBJEXT) capturewritethread.$(OBJEXT)
+	capturereadthread.$(OBJEXT) capturewritethread.$(OBJEXT) \
+	captureimagepair.$(OBJEXT)
 capture_OBJECTS = $(am_capture_OBJECTS)
 capture_DEPENDENCIES = /usr/local/xclib/xclibi86.a
 capture_LDFLAGS =
@@ -180,8 +176,7 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	sf1280controller.$(OBJEXT) vepositionevent.$(OBJEXT) \
 	corbacontroller.$(OBJEXT) calibrationoverlay.$(OBJEXT) \
 	corbathread.$(OBJEXT) registrationoverlay.$(OBJEXT) \
-	arregistration.$(OBJEXT) buffersource.$(OBJEXT) \
-	capturebuffer.$(OBJEXT)
+	arregistration.$(OBJEXT) buffersource.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_DEPENDENCIES = $(top_builddir)/src/stubs/libstubs.a \
 	/usr/local/xclib/xclibi86.a
@@ -190,13 +185,13 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/arregistration.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/benchmark.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/buffersource.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/calibrationoverlay.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/cameracalibration.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/capture_main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/capturebuffer.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/capturecontroller.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/captureimagepair.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/capturereadthread.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/capturewritethread.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/commandlineparser.Po \
@@ -220,13 +215,6 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/videocanvas.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/videosource.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/xclibcontroller.Po
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
-	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -235,7 +223,14 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = benchmark.c $(capture_SOURCES) $(ve_SOURCES)
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
+	$(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+DIST_SOURCES = $(capture_SOURCES) $(ve_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
 
@@ -246,12 +241,12 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.in Makefile.am
 DIST_SUBDIRS = $(SUBDIRS)
-SOURCES = benchmark.c $(capture_SOURCES) $(ve_SOURCES)
+SOURCES = $(capture_SOURCES) $(ve_SOURCES)
 
 all: all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .lo .o .obj
+.SUFFIXES: .cpp .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  src/Makefile
@@ -286,9 +281,6 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-benchmark$(EXEEXT): $(benchmark_OBJECTS) $(benchmark_DEPENDENCIES) 
-	@rm -f benchmark$(EXEEXT)
-	$(LINK) $(benchmark_LDFLAGS) $(benchmark_OBJECTS) $(benchmark_LDADD) $(LIBS)
 capture$(EXEEXT): $(capture_OBJECTS) $(capture_DEPENDENCIES) 
 	@rm -f capture$(EXEEXT)
 	$(CXXLINK) $(capture_LDFLAGS) $(capture_OBJECTS) $(capture_LDADD) $(LIBS)
@@ -303,13 +295,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arregistration.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/benchmark.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buffersource.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calibrationoverlay.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cameracalibration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capture_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capturebuffer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capturecontroller.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/captureimagepair.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capturereadthread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capturewritethread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/commandlineparser.Po@am__quote@
@@ -336,39 +328,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/videocanvas.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/videosource.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xclibcontroller.Po@am__quote@
-
-.c.o:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
-
-.c.obj:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
-
-.c.lo:
-@am__fastdepCC_TRUE@	if $(LTCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
-@am__fastdepCC_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Plo"; \
-@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
-@am__fastdepCC_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
