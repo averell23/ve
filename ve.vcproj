@@ -21,6 +21,7 @@
 				AdditionalIncludeDirectories="D:\sources\ARToolkit\include;&quot;D:\sources\gsl-1.0\include&quot;;&quot;D:\sources\omniORB-4.0.2\include&quot;;D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
 				PreprocessorDefinitions="WIN32;__WIN32__;__x86__;_WIN32_WINNT=0x0400"
 				RuntimeLibrary="2"
+				SuppressStartupBanner="FALSE"
 				DebugInformationFormat="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

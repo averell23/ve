@@ -72,8 +72,6 @@ private:
     double widthFactor, heightFactor;
     /// Logger for this class
     static Logger logger;
-    /// Buffers for the overlay textures
-    char *offsetTexLeft, *offsetTexRight;
     /**
     	Indicates wether the offset/gain texture should
     	be displayed. This is independent of the general

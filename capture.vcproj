@@ -164,6 +164,9 @@
 				RelativePath=".\src\veevent.cpp">
 			</File>
 			<File
+				RelativePath=".\src\veeventlistener.cpp">
+			</File>
+			<File
 				RelativePath=".\src\veeventsource.cpp">
 			</File>
 			<File

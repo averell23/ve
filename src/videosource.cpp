@@ -23,13 +23,17 @@
  ***************************************************************************/
 #include "videosource.h"
 
+Logger VideoSource::logger = Logger::getInstance("Ve.VideoSource");
+
 VideoSource::VideoSource() {
+	LOG4CPLUS_DEBUG(logger, "Creating Video Source");
     calibrationObject = new CameraCalibration(this);
     registrationObject = new ARRegistration(this);
     timer = new Stopwatch();
 	blackOffset = NULL;
     timer->start();
 	imgLock = false;
+	LOG4CPLUS_INFO(logger, "Video source global init complete.");
 }
 
 
@@ -64,21 +68,25 @@ void VideoSource::setBrightness(int brightness) {
 }
 
 void VideoSource::storeBlackOffset() {
+	LOG4CPLUS_DEBUG(logger, "Storing black offset");
 	lockImage();
 	IplImage* currentImage = getImage();
 	if (blackOffset == NULL) {
+		LOG4CPLUS_DEBUG(logger, "Creating new black offset image");
 		CvSize size;
 		size.height = currentImage->height;
 		size.width = currentImage->width;
 		blackOffset = cvCreateImageHeader(size, currentImage->depth, currentImage->nChannels);
-		int bufsize = currentImage->height * currentImage->width 
-			* currentImage->nChannels * (currentImage->depth/8);
-		char* bufCopy = Ve::bufferCopy(currentImage->imageData, bufsize);
-		blackOffset->imageData = bufCopy;
 	}
+	int bufsize = currentImage->height * currentImage->width 
+		* currentImage->nChannels * (currentImage->depth/8);
+	char* bufCopy = Ve::bufferCopy(currentImage->imageData, bufsize);
+	blackOffset->imageData = bufCopy;
 	releaseImage();
+	LOG4CPLUS_DEBUG(logger, "Black offset created, now posting event. Offset image at " << blackOffset);
 	VeEvent e(VeEvent::MISC_EVENT, VeEvent::OFFSET_UPDATE_CODE);
 	postEvent(e);
+	LOG4CPLUS_DEBUG(logger, "Black offset event posted.");
 }
 
 void VideoSource::clearBlackOffset() {

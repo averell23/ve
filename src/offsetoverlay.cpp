@@ -87,9 +87,6 @@ OffsetOverlay::OffsetOverlay(bool display)
                         << textureSize << ") = " << heightFactor);
     }
 
-    offsetTexLeft = NULL;
-    offsetTexRight = NULL;
-
 	rightEye->addListener(this); 
 	leftEye->addListener(this);
 
@@ -145,18 +142,29 @@ void OffsetOverlay::drawOverlay() { // FIXME: Could use Multitexturing if suppor
 }
 
 bool OffsetOverlay::createOffsetTextures() {
-	offsetTexRight = Ve::getRightSource()->getBlackOffset()->imageData;
-	offsetTexLeft = Ve::getLeftSource()->getBlackOffset()->imageData;
+	LOG4CPLUS_DEBUG(logger, "Trying to assign new black offset textures.");
+	const IplImage* rightOffset = Ve::getRightSource()->getBlackOffset();
+	const IplImage* leftOffset = Ve::getLeftSource()->getBlackOffset();
 
-    LOG4CPLUS_DEBUG(logger, "Texture buffers created.");
 
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
-                    GL_RGB, GL_UNSIGNED_BYTE, offsetTexRight);
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
-                    GL_RGB, GL_UNSIGNED_BYTE, offsetTexLeft);
-    LOG4CPLUS_DEBUG(logger, "Assigned new textures for overlay");
+	// Right texture
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	if (rightOffset != NULL) {
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+			GL_RGB, GL_UNSIGNED_BYTE, rightOffset->imageData);
+	} else {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	}
+	// Left texture
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	if (leftOffset != NULL) {
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight,
+			GL_RGB, GL_UNSIGNED_BYTE, leftOffset->imageData);
+	} else {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
+			GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	}
 
     LOG4CPLUS_INFO(logger, "Texture creation complete");
 
@@ -168,17 +176,13 @@ void OffsetOverlay::recieveEvent(VeEvent &e) {
         toggleDisplay();
         LOG4CPLUS_DEBUG(logger, "Toggling offset correction");
     }
-	if ((e.getType() == VeEvent::MISC_EVENT) && (e.getCode == VeEvent::OFFSET_UPDATE_CODE)) {
+	if ((e.getType() == VeEvent::MISC_EVENT) && (e.getCode() == VeEvent::OFFSET_UPDATE_CODE)) {
         LOG4CPLUS_DEBUG(logger, "Trying to assign offset correction textures.");
         createOffsetTextures();
     }
 }
 
 OffsetOverlay::~OffsetOverlay() {
-    if (offsetTexRight != NULL)
-        delete offsetTexRight;
-    if (offsetTexLeft != NULL)
-        delete offsetTexLeft;
 }
 
 void OffsetOverlay::drawLeftQuad() {

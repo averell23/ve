@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <cv.hpp>
 #include <cc++/thread.h>
+#include <log4cplus/logger.h>
 #include "stopwatch.h"
 #include "cameracalibration.h"
 #include "arregistration.h"
@@ -39,6 +40,7 @@ class ARRegistration;
 class Ve;
 
 using namespace ost;
+using namespace log4cplus;
 
 /**
 	Wrapper class for a source of video images. A video source is expected
@@ -202,6 +204,8 @@ protected:
 	Mutex tmpMutex;
 	/// Indicates whether the image was locked by the user
 	bool imgLock;
+	/// logger for this class
+	static Logger logger;
 };
 
 #endif
