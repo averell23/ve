@@ -23,8 +23,13 @@
  ***************************************************************************/
 #include "veeventlistener.h"
 
-void VeEventListener::callEvent(VeEvent e) {
+void VeEventListener::callEvent(VeEvent& e) {
 	mtx.enterMutex();
-	recieveEvent(e);
+	if (e.getType() == VeEvent::POSITION_EVENT) {
+		VePositionEvent newE = (VePositionEvent&) e;
+		recieveEvent(newE);
+	} else {
+		recieveEvent(e);
+	}
 	mtx.leaveMutex();
 }

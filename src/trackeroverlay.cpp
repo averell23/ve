@@ -78,7 +78,6 @@ void TrackerOverlay::drawOverlay() {
 
 void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
     font = FontManager::getFont();
-    int yOff = Ve::getVirtualSize().y;
     int size = positions.size();
     map<int,Position>::iterator posIterator;
     // Write static text
@@ -91,18 +90,19 @@ void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
     map<int,Position>::iterator center = getCenterMarker(positions);
     // Draw crosshairs on objects
     if (doCrosshairs) {
-	for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
-	    if (posIterator == center) {
-		glColor3f(1.0f, 0.2f, 0.2f);
-	    } else {
+		for (posIterator=positions.begin() ; posIterator!=positions.end() ; posIterator++) {
+			if (posIterator == center) {
+			glColor3f(1.0f, 0.2f, 0.2f);
+			} else {
+			glColor3f(1.0f, 1.0f, 1.0f);
+			}
+			GLMacros::drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y);
+			GLMacros::drawText((int) posIterator->second.x, (int) posIterator->second.y, "blah!", 60);
+		}
 		glColor3f(1.0f, 1.0f, 1.0f);
-	    }
-	    GLMacros::drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y + yOff);
-	}
-	glColor3f(1.0f, 1.0f, 1.0f);
     }
-    if (doHighlight && (positions.size() >= 0)) {
-	drawHighlight((int) center->second.x, (int) center->second.y + yOff);
+    if (doHighlight && (positions.size() > 0)) {
+		drawHighlight((int) center->second.x, (int) center->second.y);
     }
 }
 
@@ -184,11 +184,11 @@ double TrackerOverlay::centerDistanceSquared(double x, double y) {
 }
 
 void TrackerOverlay::recieveEvent(VeEvent &e) {
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'n')) {
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'j')) {
         doCrosshairs = !doCrosshairs;
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling crosshairs.");
     }
-	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'm')) {
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 'k')) {
         doHighlight = !doHighlight;
         LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling highlights.");
     }
@@ -200,7 +200,7 @@ void TrackerOverlay::recieveEvent(VeEvent &e) {
 	    } else if (pos.source == rightSourceID) {
 			rightPositions[pos.index] = pos;
 	    } else {
-			LOG4CPLUS_DEBUG(logger, "Caught position event from unknown source.");
+			LOG4CPLUS_DEBUG(logger, "Caught position event from unknown source " << pos.source);
 	    }
 		LOG4CPLUS_TRACE(logger, "Position event handler finished"); 
 	}

@@ -25,6 +25,7 @@
 #define VEEVENTLISTENER_H
 
 #include "veevent.h"
+#include "vepositionevent.h"
 #include <cc++/thread.h>
 
 using namespace ost;
@@ -36,11 +37,12 @@ Use to allow child classes to listen for VeEvents.
 */
 class VeEventListener {
 public:
+
 	/**
 		Called by the event posting mechanism. This takes care of the
 		synchronization and calls @see recieveEvent in turn.
 	*/
-	void callEvent(VeEvent e);
+	void callEvent(VeEvent& e);
 
 protected:
     /**

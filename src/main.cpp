@@ -150,13 +150,13 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(&offset);
     Ve::addListener(&offset);
     // Ve::addOverlay(new DummyOverlay(true));
-    // MarkerPositionTracker leftTrack(left, 1);
-    // MarkerPositionTracker rightTrack(right, 2);
-    // TrackerOverlay tracker(1,2);
-    // leftTrack.addListener(&tracker);
-    // rightTrack.addListener(&tracker);
-    // Ve::addOverlay(&tracker);
-    // Ve::addListener(&tracker);
+    MarkerPositionTracker leftTrack(left, 1);
+    MarkerPositionTracker rightTrack(right, 2);
+    TrackerOverlay tracker(1,2);
+    leftTrack.addListener(&tracker);
+    rightTrack.addListener(&tracker);
+    Ve::addOverlay(&tracker);
+    Ve::addListener(&tracker);
     StatusOverlay status(true);			// FIXME: proper deletion of overlays?
     Ve::addOverlay(&status);
     Ve::addListener(&status);

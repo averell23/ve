@@ -27,6 +27,7 @@
 #include "veevent.h"
 #include "position.h"
 
+
 /**
 Event containing a position update. The type of this event is always VeEvent::POSITION_EVENT and
 the event code is always 0.
@@ -40,6 +41,7 @@ public:
 
     ~VePositionEvent();
 
+
     /**
       Gets the position supplied by the event.
     */
@@ -47,7 +49,7 @@ public:
 
 private:
     Position pos;
-
+	
 };
 
 #endif

@@ -102,6 +102,9 @@
 				RelativePath=".\src\corbacontroller.cpp">
 			</File>
 			<File
+				RelativePath=".\src\corbapositiontracker.cpp">
+			</File>
+			<File
 				RelativePath=".\src\corbathread.cpp">
 			</File>
 			<File
@@ -229,6 +232,9 @@
 			</File>
 			<File
 				RelativePath=".\src\corbacontroller.h">
+			</File>
+			<File
+				RelativePath=".\src\corbapositiontracker.h">
 			</File>
 			<File
 				RelativePath=".\src\corbathread.h">

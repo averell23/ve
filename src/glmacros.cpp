@@ -76,7 +76,7 @@ void GLMacros::drawText(int x, int y, char* text, int fontSize) {
     glTranslatef(xTrans, yTrans, 0.0f);
     font->Render(text);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glTranslatef(-xTrans, yTrans, 0.0f); // Translate back
+    glTranslatef(-xTrans, -yTrans, 0.0f); // Translate back
 }
 
 void GLMacros::blankLeftEye() {

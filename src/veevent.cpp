@@ -27,7 +27,6 @@ VeEvent::VeEvent(int type, long code) {
     VeEvent::code = code;
     VeEvent::type = type;
 }
-
 long VeEvent::getCode() {
     return code;
 }

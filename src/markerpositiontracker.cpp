@@ -52,6 +52,7 @@ void MarkerPositionTracker::run() {
     CvPoint vCoords = Ve::getVirtualSize();
     float xFac = vCoords.x / (float) source->getWidth();
     float yFac = - vCoords.y / (float) source->getHeight();
+	int yOff = Ve::getVirtualSize().y;
     
     running = true;
     while (running) {
@@ -62,7 +63,7 @@ void MarkerPositionTracker::run() {
 		LOG4CPLUS_TRACE(logger, "Detected " << markerNum << " markers in image.");
 		for (int i=0 ; i<markerNum ; i++) {
 			int x = markerInfo[i].pos[0] * xFac;
-			int y = markerInfo[i].pos[1] * yFac * 2;
+			int y = (markerInfo[i].pos[1] * yFac * 2) + yOff;
 			Position pos(i, sourceID, x, y, 0);
 			VePositionEvent e(pos);
 			postEvent(e);

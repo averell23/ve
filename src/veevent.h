@@ -24,6 +24,10 @@
 #ifndef VEEVENT_H
 #define VEEVENT_H
 
+#include <iostream>
+
+using namespace std;
+
 /**
 Simple Event class for Ve's internal event handling.
  
@@ -56,7 +60,7 @@ public:
 	/// Pre-defined code types
 	static const int OFFSET_UPDATE_CODE = 0;
 
-private:
+protected:
     /// An arbitrary event code
     long code;
     /// Determines the event type
