@@ -58,10 +58,10 @@ public:
     /**
       Sets the gain value for the camera.
       
-      @param gain The gain value, in multiples of the normal gain.
+      @param gain The gain value, in percent of the full gain range.
       @return true if the gain was set successfully.
     */
-    virtual bool setGain(float gain);
+    virtual bool setGain(int gain);
 
 protected:
     /// Unit number of the board to which the camera is connected

@@ -29,6 +29,7 @@
 #include "fontmanager.h"
 #include "ve.h"
 #include "veeventlistener.h"
+#include "videosource.h"
 
 
 /**
@@ -48,12 +49,14 @@ public:
 private:
     /// Various timers
     Stopwatch *rightTimer, *leftTimer, *videoTimer;
+	/// Pointers to the video sources
+	VideoSource *rightSource, *leftSource;
     /// Logger for this class
     static Logger logger;
     /// The font used for status display
     FTGLTextureFont* font;
     /// Text buffer
-    char* text;
+    char *text, *text2;
     /// Contains the drawing code for a single eye.
     void drawOneEye();
     

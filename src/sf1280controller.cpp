@@ -23,77 +23,84 @@
  ***************************************************************************/
 #include "sf1280controller.h"
 
-Logger SF1280Controller::logger = Logger::getInstance("1280Controller");
+Logger SF1280Controller::logger = Logger::getInstance("Ve.1280Controller");
 
 SF1280Controller::SF1280Controller(int unit)
  : EpixCameraController(unit)
 {
     if (! XCLIBController::initCamLinkSerial(unit)) {
-	LOG4CPLUS_WARN(logger, "Unable to open Cam Link serial, controller not usable.");
-	unit = -1;
+		LOG4CPLUS_WARN(logger, "Unable to open Cam Link serial, controller not usable.");
+		unit = -1;
     }
 }
 
 bool SF1280Controller::initCamera() {
     if (unit == -1) {
-	LOG4CPLUS_WARN(logger, "Camera init not done, Cam Link serial not usable.");
-	return false;
+		LOG4CPLUS_WARN(logger, "Camera init not done, Cam Link serial not usable.");
+		return false;
     } 
-    string retVal = XCLIBController::writeCamLinkSerial(unit, "s\r");
+	string retVal;
+    retVal = XCLIBController::writeCamLinkSerial(unit, "s\r");
     LOG4CPLUS_DEBUG(logger, "Camera status message: " << retVal);
+	retVal = XCLIBController::writeCamLinkSerial(unit, "c\r");
+	LOG4CPLUS_DEBUG(logger, "Setting continuous/command mode, camera response: " << retVal);
     retVal = XCLIBController::writeCamLinkSerial(unit, "ly0005\r");
     LOG4CPLUS_DEBUG(logger, "Setting rolling shutter mode, camera response: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "lc35e709\r");
+    retVal = XCLIBController::writeCamLinkSerial(unit, "lc37cb8f\r");
     LOG4CPLUS_DEBUG(logger, "Setting clock, camera response: " << retVal);
-    retVal = XCLIBController::writeCamLinkSerial(unit, "ly804d\r");
+	retVal = XCLIBController::writeCamLinkSerial(unit, "ly3000\r");
+	LOG4CPLUS_DEBUG(logger, "Setting exposure time: " << retVal);
+    retVal = XCLIBController::writeCamLinkSerial(unit, "ly804c\r");
     LOG4CPLUS_DEBUG(logger, "Setting gain, camera response: " << retVal);
-    
+	retVal = XCLIBController::writeCamLinkSerial(unit, "ly9041\r");
+	LOG4CPLUS_DEBUG(logger, "Setting Black offset, camera response: " << retVal);
+
     return true; /// FIXME: No error detection done
 }
 
-bool SF1280Controller::setGain(float gain) {
+bool SF1280Controller::setGain(int gain) {
     if (unit == -1) {
-	LOG4CPLUS_WARN(logger, "Camera init not done, Cam Link serial not usable.");
-	return false;
+		LOG4CPLUS_WARN(logger, "Camera init not done, Cam Link serial not usable.");
+		return false;
     } 
     string command;
-    if (gain <= 1.00) {
-	command = "ly8050\r";
-    } else if (gain <= 1.41) {
-	command = "ly8040\r";
-    } else if (gain <= 1.62) {
-	command = "ly8041\r";
-    } else if (gain <= 1.88) {
-	command = "ly8042\r";
-    } else if (gain <= 2.17) {
-	command = "ly8043\r";
-    } else if (gain <= 2.52) {
-	command = "ly8044\r";
-    } else if (gain <= 2.92) {
-	command = "ly8045\r";
-    } else if (gain <= 3.38) {
-	command = "ly8046\r";
-    } else if (gain <= 3.90) {
-	command = "ly8047\r";
-    } else if (gain <= 4.50) {
-	command = "ly8048\r";
-    } else if (gain <= 5.17) {
-	command = "ly8049\r";
-    } else if (gain <= 5.93) {
-	command = "ly804a\r";
-    } else if (gain <= 6.76) {
-	command = "ly804b\r";
-    } else if (gain <= 7.86) {
-	command = "ly804c\r";
-    } else if (gain <= 8.64) {
-	command = "ly804d\r";
-    } else if (gain <= 9.61) {
-	command = "ly804e\r";
+    if (gain <= 6) {
+		command = "ly8050\r";
+    } else if (gain <= 12) {
+		command = "ly8040\r";
+    } else if (gain <= 18) {
+		command = "ly8041\r";
+    } else if (gain <= 24) {
+		command = "ly8042\r";
+    } else if (gain <= 30) {
+		command = "ly8043\r";
+    } else if (gain <= 36) {
+		command = "ly8044\r";
+    } else if (gain <= 42) {
+		command = "ly8045\r";
+    } else if (gain <= 48) {
+		command = "ly8046\r";
+    } else if (gain <= 54) {
+		command = "ly8047\r";
+    } else if (gain <= 60) {
+		command = "ly8048\r";
+    } else if (gain <= 66) {
+		command = "ly8049\r";
+    } else if (gain <= 72) {
+		command = "ly804a\r";
+    } else if (gain <= 78) {
+		command = "ly804b\r";
+    } else if (gain <= 84) {
+		command = "ly804c\r";
+    } else if (gain <= 90) {
+		command = "ly804d\r";
+    } else if (gain <= 95) {
+		command = "ly804e\r";
     } else {
-	command = "ly804f\r";
+		command = "ly804f\r";
     }
     string response = XCLIBController::writeCamLinkSerial(unit, command);
-    LOG4CPLUS_DEBUG(logger, "Reset gain, camera response: " << response);
+    LOG4CPLUS_DEBUG(logger, "Reset gain to " << gain << " camera response: " << response);
     
     return true;
 }

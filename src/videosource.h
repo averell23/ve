@@ -100,8 +100,21 @@ public:
       video sources, or has a different granularity for different sources.
       
       @param brightness The brightness in percent of the brightness range.
+	                    The internal brightness value should always be
+						clamped to [0,100]. Subclasses can do this
+						by calling VideoSource::setBrightness() first
+						in their own setBrightness() function, and then
+						use VideoSource::brightness as the brightness 
+						value.
     */
-    virtual void setBrightness(int brightness) { }
+    virtual void setBrightness(int brightness);
+
+	/**
+		Returns the current brightness setting.
+
+		@see setBrightness
+	*/
+	virtual int getBrightness() { return brightness; }
 
     virtual ~VideoSource();
 
@@ -110,6 +123,8 @@ protected:
     int width, height;
     /// Internal timer for performance measures.
     Stopwatch* timer;
+	/// Current brightness setting
+	int brightness;
 };
 
 #endif

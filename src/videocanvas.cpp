@@ -80,7 +80,13 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 	LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / " 
 			<< textureSize << ") = " << heightFactor);
     }
-     
+
+	leftBrightness = 50;
+	rightBrightness = 50;
+    
+	rightEye->setBrightness(rightBrightness);
+	leftEye->setBrightness(leftBrightness);
+
     LOG4CPLUS_INFO(logger, "Video Canvas created.");
 }
 
@@ -130,9 +136,9 @@ void VideoCanvas::draw() {
 		 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 		    GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
 		delete rightImage->imageData;
-	    } else {
+	} else {
 		LOG4CPLUS_TRACE(logger, "Got empty image for right eye"); 
-	    }
+	}
 	cvReleaseImageHeader(&rightImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);
@@ -145,12 +151,33 @@ void VideoCanvas::draw() {
 	glVertex3i(0, 1, 1);
     glEnd();
 
-    glBindTexture(GL_TEXTURE_2D, 0); // FIXME: Symbolic name?
+    glBindTexture(GL_TEXTURE_2D, NULL); 
     
     // Restore Matrices
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );		
     glPopMatrix();
+}
+
+void VideoCanvas::recieveEvent(VeEvent &e) {
+	LOG4CPLUS_DEBUG(logger, "Event encountered.");
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 49)) {
+		// If 1 is pressed, decrease left brightness
+		leftEye->setBrightness(leftEye->getBrightness() - 5);
+	}
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 50)) {
+		// If 2 pressed, increase left brightness
+		leftEye->setBrightness(leftEye->getBrightness() + 5);
+	}
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 51)) {
+		// If 3 is pressed, decrease right brightness
+		rightEye->setBrightness(rightEye->getBrightness() - 5);
+	}
+	if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 52)) {
+		// If 4 is pressed, increase right brightness
+		if (leftBrightness <= 95) leftBrightness +=5;
+		rightEye->setBrightness(rightEye->getBrightness() + 5);
+	}
 }
 
 VideoCanvas::~VideoCanvas()

@@ -120,7 +120,7 @@ public:
       @param unit Number of the unit to which the camera is connected.
       @return true if the port was closed successfully.
     */
-    static bool closeCamLinkSerial();
+    static bool closeCamLinkSerial(int unit);
     
     /**
       Writes a string to the built-in CamLink serial port.
@@ -144,9 +144,9 @@ private:
     /// Allow to synchronize XCLIB calls.
     static Mutex cMutex;
     // Serial port handles for Camera Link connections
-    static void* camLinkSerialRef[1024];
+    static void** camLinkSerialRef;
     /// How long shall we wait before timing out serial operations?
-    static const int serial_timeout = 1000;
+    static const int serial_timeout = 100;
 
 };
 

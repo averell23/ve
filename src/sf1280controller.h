@@ -24,7 +24,7 @@
 #ifndef SF1280CONTROLLER_H
 #define SF1280CONTROLLER_H
 
-#include <epixcameracontroller.h>
+#include "epixcameracontroller.h"
 #include <cstdlib>
 
 using namespace std;
@@ -40,7 +40,7 @@ public:
     
     bool initCamera();
     
-    bool setGain(float gain);
+    bool setGain(int gain);
     
     SF1280Controller(int unit);
 

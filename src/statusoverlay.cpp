@@ -28,10 +28,13 @@ Logger StatusOverlay::logger = Logger::getInstance("Ve.StatusOverlay");
 StatusOverlay::StatusOverlay(bool display)
  : Overlay(display)
 {
+	rightSource = Ve::getRightSource();
+	leftSource = Ve::getLeftSource();
     rightTimer = Ve::getRightSource()->getTimer();
 	leftTimer = Ve::getLeftSource()->getTimer();
 	videoTimer = Ve::getTimer();
 	text = new char[256];
+	text2 = new char[256];
 	LOG4CPLUS_INFO(logger, "Status overlay created");
 }
 
@@ -47,7 +50,10 @@ void StatusOverlay::drawOverlay() {
 	// glTranslatef(0.0f, 0.0f, 1.0f); // In front of everything
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-    glTranslatef(-1.0f, 0.0f, 0.0f);
+	sprintf(text, "%f/%f/%f", leftTimer->getFramerate(), rightTimer->getFramerate(), videoTimer->getFramerate());
+	sprintf(text2, "Video Brightness: %d%%/%d%%", leftSource->getBrightness(), rightSource->getBrightness());
+    
+	glTranslatef(-0.96f, 0.0f, 0.0f);
     drawOneEye();
     glLoadIdentity();
     drawOneEye();
@@ -62,10 +68,11 @@ void StatusOverlay::drawOneEye() {
     font = FontManager::getFont();
     if (font == NULL) return; // Sanity check
     
-    sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), videoTimer->getFramerate());
-    glTranslatef(0.05f, 0.9f, 0.0f);
+    glTranslatef(0.05f, 0.8f, 0.0f);
     font->Render(text);
-    glTranslatef(0.0f, -1.8f, 0.0f);
+	glTranslatef(0.0f, -1.4f, 0.0f);
+	font->Render(text2);
+    glTranslatef(0.0f, -0.1f, 0.0f);
     font->Render("Status Display active");
 }
 

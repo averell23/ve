@@ -51,3 +51,12 @@ Stopwatch* VideoSource::getAndStopTimer() {
 bool VideoSource::timerSupported() {
 	return false;
 }
+
+void VideoSource::setBrightness(int brightness) {
+	if (brightness > 100) {
+		brightness = 100;
+	} else if (brightness < 0) {
+		brightness = 0;
+	}
+	VideoSource::brightness = brightness;
+}

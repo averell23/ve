@@ -28,6 +28,7 @@
 bool XCLIBController::openState = false;
 Mutex XCLIBController::cMutex;
 Logger XCLIBController::logger = Logger::getInstance("Ve.XCLIBController");
+void** XCLIBController::camLinkSerialRef = new void*[1024];
 
 XCLIBController::XCLIBController()
 {
@@ -124,23 +125,25 @@ bool XCLIBController::initCamLinkSerial(int unit) {
 string XCLIBController::writeCamLinkSerial(int unit, string message) {
     #ifdef WIN32
     if ((unit < 0) || (unit >= 1024)) {
-	LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);
-	return false;
+		LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);
+		return false;
     }
     ulong size = message.size();
     ulong origSize = size;
     string retVal = "";
     
-    clSerialWrite(serialRef[unit], message.c_str(), &size , serial_timeout);
+    clSerialWrite(camLinkSerialRef[unit], (char*) message.c_str(), &size , serial_timeout);
     if (size != origSize) {
-	LOG4CPLUS_WARN(logger, "Not all characters could be written to serial out, written " << size << " of " << origSize);
-	return "Internal: Could not write all characters.";
+		LOG4CPLUS_WARN(logger, "Not all characters could be written to serial out, written " << size << " of " << origSize);
+		return "Internal: Could not write all characters.";
     }
     
     size = 1024;
     char* buffer = new char[1024];
-    clSerialRead(serialRef[unit], buffer, &size, serial_timeout);
-    retVal += buffer;
+    clSerialRead(camLinkSerialRef[unit], buffer, &size, serial_timeout);
+	string tmp = buffer;
+	while ((buffer[size - 1] == '\r') || (buffer[size - 1] == '\n')) size--; // Strip endlines from response
+	retVal = tmp.substr(0, size);
     delete buffer;
     
     return retVal;
@@ -150,7 +153,7 @@ string XCLIBController::writeCamLinkSerial(int unit, string message) {
     #endif
 }
 
-bool XCLIBController::closeCamLinkSerial() {
+bool XCLIBController::closeCamLinkSerial(int unit) {
     #ifdef WIN32
     if ((unit < 0) || (unit >= 1024)) {
 	LOG4CPLUS_WARN(logger, "Could not open camera link, illegal unit number: " << unit);

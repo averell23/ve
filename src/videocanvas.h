@@ -36,6 +36,7 @@
 #include <stdio.h>		// STD input/output headers
 #include <iostream>
 #include <log4cplus/logger.h>
+#include "veeventlistener.h"
 
 using namespace std;
 using namespace log4cplus;
@@ -47,7 +48,7 @@ screen.
 
 @author Daniel Hahn,,,
 */
-class VideoCanvas{
+class VideoCanvas : public VeEventListener {
 public:
     /** Creates a new video canvas with the given sources for the
         right and left eye. **/
@@ -57,6 +58,8 @@ public:
     void draw();
     
     ~VideoCanvas();
+
+	void recieveEvent(VeEvent &e);
 
 protected:
     /** The width and height of the image to be displayed */
@@ -72,6 +75,8 @@ protected:
     double widthFactor, heightFactor;
     /// Logger for this class
     static Logger logger;
+	/// Brightness setting for the sources
+	int leftBrightness, rightBrightness;
     
 };
 

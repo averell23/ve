@@ -77,7 +77,7 @@ OffsetOverlay::OffsetOverlay(bool display)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		LOG4CPLUS_DEBUG(logger, "Texture bind successful");
-		
+
 		// Calculate the size factors
 		widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
 		heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
@@ -87,22 +87,18 @@ OffsetOverlay::OffsetOverlay(bool display)
 				<< textureSize << ") = " << heightFactor);
     }
     
-    textureBufferLeft = NULL;
-    textureBufferRight = NULL;
+    offsetTexLeft = NULL;
+    offsetTexRight = NULL;
      
     LOG4CPLUS_INFO(logger, "Offset Overlay created.");
 }
 
-void OffsetOverlay::drawOverlay() {
+void OffsetOverlay::drawOverlay() { // FIXME: Could use Multitexturing if supported
 	LOG4CPLUS_TRACE(logger, "Entering drawOverlay()");
 	if (!GLEW_ARB_imaging) { // FIXME: Should rather show on-screen message
 		LOG4CPLUS_TRACE(logger, "Offset unusable: Imaging subset not available");
 		return;
 	} 
-
-
-    glBlendEquation(GL_FUNC_REVERSE_SUBTRACT); 
-    glBlendFunc(GL_ONE, GL_ONE);
         
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
@@ -112,40 +108,22 @@ void OffsetOverlay::drawOverlay() {
     glPushMatrix();
     glLoadIdentity();
  
-    // glTranslatef(0.0f, 0.0f, 0.1f);	  // In front of Video picture
+    glTranslatef(0.0f, 0.0f, 0.1f);	  // In front of Video picture
     glRotatef(180.0f, 0.0f, 0.0f, 1.0f);  // FIXME: Flipping not standard/should be global
     glRotatef(180.0f, 0.0f, 1.0f, 0.0f);  // FIXME: Check left/right
 
-    // Left Quad
-    glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glBlendEquation(GL_FUNC_REVERSE_SUBTRACT); 
+	glBlendFunc(GL_ONE, GL_ONE);
+	// Left Quad
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	drawLeftQuad();
+	// Right Quad
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	drawRightQuad();
 
-    glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
-	glVertex3i(-1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);		/* Bottom right */
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);		/* Top right */
-	glVertex3i(0, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);		/* Top left */
-	glVertex3i(-1, 1, 1);
-    glEnd();
+    glBindTexture(GL_TEXTURE_2D, NULL);
     
-    // Right Quad
-    glBindTexture(GL_TEXTURE_2D, textures[1]);
-    glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 0.0f);
-	glVertex3i(0, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 0.0f);
-	glVertex3i(1, -1, 1);
-	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
-	glVertex3i(1, 1, 1);
-	glTexCoord2d(0.0f, 1.0f - heightFactor);
-	glVertex3i(0, 1, 1);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0); // FIXME: Symbolic name?
-    
-    // Revert to standard blending FIXME: Define standard blending in superclass?
+    // Restore standard blending FIXME: Do in a central location?
 	glBlendEquation(GL_FUNC_ADD);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -155,29 +133,29 @@ void OffsetOverlay::drawOverlay() {
     glPopMatrix();
 }
 
-bool OffsetOverlay::tryCreateTextures() {
-    IplImage* rightImage = rightEye->waitAndGetImage();
-    IplImage* leftImage = leftEye->waitAndGetImage();
+bool OffsetOverlay::createOffsetTextures() {
+	IplImage* rightImage = rightEye->waitAndGetImage();
+	IplImage* leftImage = leftEye->waitAndGetImage();
     
     if ((leftImage->imageData == NULL) || (rightImage->imageData == NULL)) {
 		LOG4CPLUS_ERROR(logger, "Unable to acquire calibration image.");
 		return false;
     }
  
-    if (textureBufferRight != NULL) delete textureBufferRight;
-    if (textureBufferLeft != NULL) delete textureBufferLeft;
+    if (offsetTexRight != NULL) delete offsetTexRight;
+    if (offsetTexLeft != NULL) delete offsetTexLeft;
     
-	textureBufferRight = rightImage->imageData;
-	textureBufferLeft = leftImage->imageData;
+	offsetTexRight = rightImage->imageData;
+	offsetTexLeft = leftImage->imageData;
     
     LOG4CPLUS_DEBUG(logger, "Texture buffers created.");
     
     glBindTexture(GL_TEXTURE_2D, textures[1]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, textureBufferRight);
+		    GL_RGB, GL_UNSIGNED_BYTE, offsetTexRight);
     glBindTexture(GL_TEXTURE_2D, textures[0]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, textureBufferLeft);
+		    GL_RGB, GL_UNSIGNED_BYTE, offsetTexLeft);
     LOG4CPLUS_DEBUG(logger, "Assigned new textures for overlay");
     
     cvReleaseImageHeader(&rightImage);
@@ -194,15 +172,39 @@ void OffsetOverlay::recieveEvent(VeEvent &e) {
 		LOG4CPLUS_DEBUG(logger, "Toggling offset correction");
     }
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && ((e.getCode() == 73) || (e.getCode() == 105))) {
-		LOG4CPLUS_DEBUG(logger, "Trying to assign correction textures.");
-		tryCreateTextures();
+		LOG4CPLUS_DEBUG(logger, "Trying to assign offset correction textures.");
+		createOffsetTextures();
     }
 }
 
 OffsetOverlay::~OffsetOverlay()
 {
-	if (textureBufferRight != NULL) delete textureBufferRight;
-    if (textureBufferLeft != NULL) delete textureBufferLeft;
+	if (offsetTexRight != NULL) delete offsetTexRight;
+    if (offsetTexLeft != NULL) delete offsetTexLeft;
 }
 
+void OffsetOverlay::drawLeftQuad() {
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0f, 0.0f);
+	glVertex3i(-1, -1, 1);
+	glTexCoord2d(1.0f - widthFactor, 0.0f);
+	glVertex3i(0, -1, 1);
+	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);	
+	glVertex3i(0, 1, 1);
+	glTexCoord2d(0.0f, 1.0f - heightFactor);
+	glVertex3i(-1, 1, 1);
+    glEnd();
+}
 
+void OffsetOverlay::drawRightQuad() {
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0f, 0.0f);
+	glVertex3i(0, -1, 1);
+	glTexCoord2d(1.0f - widthFactor, 0.0f);
+	glVertex3i(1, -1, 1);
+	glTexCoord2d(1.0f - widthFactor, 1.0f - heightFactor);
+	glVertex3i(1, 1, 1);
+	glTexCoord2d(0.0f, 1.0f - heightFactor);
+	glVertex3i(0, 1, 1);
+    glEnd();
+}

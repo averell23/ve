@@ -77,6 +77,9 @@
 				RelativePath=".\src\dummysource.cpp">
 			</File>
 			<File
+				RelativePath=".\src\epixcameracontroller.cpp">
+			</File>
+			<File
 				RelativePath=".\src\epixreaderthread.cpp">
 			</File>
 			<File
@@ -89,6 +92,9 @@
 				RelativePath=".\src\fonttesteroverlay.cpp">
 			</File>
 			<File
+				RelativePath=".\src\gainoverlay.cpp">
+			</File>
+			<File
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
@@ -96,6 +102,9 @@
 			</File>
 			<File
 				RelativePath=".\src\overlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\sf1280controller.cpp">
 			</File>
 			<File
 				RelativePath=".\src\statusoverlay.cpp">
@@ -139,6 +148,9 @@
 				RelativePath=".\src\dummysource.h">
 			</File>
 			<File
+				RelativePath=".\src\epixcameracontroller.h">
+			</File>
+			<File
 				RelativePath=".\src\epixreaderthread.h">
 			</File>
 			<File
@@ -151,10 +163,16 @@
 				RelativePath=".\src\fonttesteroverlay.h">
 			</File>
 			<File
+				RelativePath=".\src\gainoverlay.h">
+			</File>
+			<File
 				RelativePath=".\src\offsetoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\overlay.h">
+			</File>
+			<File
+				RelativePath=".\src\sf1280controller.h">
 			</File>
 			<File
 				RelativePath=".\src\statusoverlay.h">

@@ -32,9 +32,10 @@
 
 
 /**
-Tries to correct camera artefacts by applying an offset texture.
+	Tries to correct camera artefacts by applying an offset correction 
+	texture.
 
-@author Daniel Hahn,,,
+	@author Daniel Hahn,,,
 */
 class OffsetOverlay : public Overlay, public VeEventListener
 {
@@ -63,15 +64,26 @@ private:
     /// Logger for this class
     static Logger logger;
     /// Buffers for the overlay textures
-    char *textureBufferLeft, *textureBufferRight;
+    char *offsetTexLeft, *offsetTexRight;
+	/**
+		Indicates wether the offset/gain texture should
+		be displayed. This is independent of the general
+		"display" variable.
+	*/
+	bool displayOffset, displayGain;
     
     /**
-      Tries to create the texture from the pictures in the video
+      Tries to create the offset textures from the pictures in the video
       source. The textures are immediately applied if successful.
       
       @return true if the creation of the textures was successful
     */
-    bool tryCreateTextures();
+	bool createOffsetTextures();
+
+	/// Draws the right quad of the display
+	void drawRightQuad();
+	/// Draws the left quad of the display
+	void drawLeftQuad();
 
 };
 

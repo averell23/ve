@@ -61,6 +61,8 @@ public:
 
     bool timerSupported();
 
+	void setBrightness(int brightness);
+
     const static int CAMERA_DEFAULT = 0;
     const static int CAMERA_1280F = 1;
     

@@ -27,8 +27,8 @@
 #include <FTGLTextureFont.h>
 #include <log4cplus/logger.h>
 
-// #define DEFAULT_FONT "../fonts/obliviousfont.ttf"
-#define DEFAULT_FONT "C:/Windows/fonts/Arial.ttf"
+#define DEFAULT_FONT "../fonts/obliviousfont.ttf"
+// #define DEFAULT_FONT "C:/Windows/fonts/Arial.ttf" // Windows fallback
 
 using namespace log4cplus;
 

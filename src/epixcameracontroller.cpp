@@ -23,14 +23,14 @@
  ***************************************************************************/
 #include "epixcameracontroller.h"
 
-Logger EpixCameraController::logger = Logger::getInstance("EpixCameraController");
+Logger EpixCameraController::logger = Logger::getInstance("Ve.EpixCameraController");
 
 bool EpixCameraController::initCamera() {
     LOG4CPLUS_INFO(logger, "Default Camera init: Nothing was done.");
     return true;
 }
 
-bool EpixCameraController::setGain(float gain) {
+bool EpixCameraController::setGain(int gain) {
     LOG4CPLUS_TRACE(logger, "Default Camera init: Gain will not be set");
     return true;
 }
@@ -38,6 +38,7 @@ bool EpixCameraController::setGain(float gain) {
 EpixCameraController::EpixCameraController(int unit)
 {
     EpixCameraController::unit = unit;
+	LOG4CPLUS_DEBUG(logger, "Camera controller created on unit " << unit);
 }
 
 

@@ -20,6 +20,7 @@ void Ve::init(VideoSource* left, VideoSource* right) {
     Ve::rightEye = right;
     Ve::leftEye = left;
     Ve::mainVideo = new VideoCanvas(left, right);
+	Ve::addListener(Ve::mainVideo);
     LOG4CPLUS_INFO(logger, "Main video canvas created.");
     Ve::timer = new Stopwatch();
   

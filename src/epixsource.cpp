@@ -55,6 +55,7 @@ EpixSource::EpixSource(int unit, int cameraModel, string configfile)
     EpixSource::unit = unit;
     XCLIBController::goLive(unit);
     readerThread = new EpixReaderThread(unit);
+	timer->start();
     readerThread->start();
 }
 
@@ -113,4 +114,11 @@ IplImage* EpixSource::waitAndGetImage() {
 	timer->count();
 
     return image;
+}
+
+void EpixSource::setBrightness(int brightness) {
+	VideoSource::setBrightness(brightness);
+	if (cameraModel == CAMERA_1280F) {
+		controller->setGain(VideoSource::brightness);
+	}
 }

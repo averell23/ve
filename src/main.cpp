@@ -41,13 +41,13 @@ int main(int argc, char *argv[])
 {
     cout << "Ve Augmented Reality toolbox. (c) 2003 ISAS, author: Daniel Hahn" << endl;
     
-    BasicConfigurator config;
-    config.configure();
+	PropertyConfigurator::doConfigure("../src/logger.properties");
     
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
+	parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
 	cout << endl;
@@ -102,10 +102,12 @@ int main(int argc, char *argv[])
       left = new DummySource();
       LOG4CPLUS_DEBUG(logger, "Left video source created");
   } else if (param == "epix") {
+	  param = parser.getParamValue("epixconf");
       LOG4CPLUS_INFO(logger, "Using epix video source");
-      right = new EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
+	  if (param == "") LOG4CPLUS_DEBUG(logger, "No epix config file given");
+      right = new EpixSource(1, EpixSource::CAMERA_1280F, param);
       LOG4CPLUS_DEBUG(logger, "Right video source created");
-      left = new EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
+      left = new EpixSource(0, EpixSource::CAMERA_1280F, param);
       LOG4CPLUS_DEBUG(logger, "Left video source created");
   } else {
       cout << "Unknown video source: " << param << endl;
@@ -119,7 +121,7 @@ int main(int argc, char *argv[])
   OffsetOverlay* offset = new OffsetOverlay(false);
   Ve::addOverlay(offset);
   Ve::addListener(offset);
-  Ve::addOverlay(new DummyOverlay(true)); 
+  // Ve::addOverlay(new DummyOverlay(true)); 
   StatusOverlay* status = new StatusOverlay(true);
   Ve::addOverlay(status);
   Ve::addListener(status);
