@@ -106,6 +106,8 @@ private:
       won't work with submatrix views.
     */
     gsl_matrix* submatrixCopy(gsl_matrix* source, int top, int left, int height, int width);
+
+    /// Prints the contents of a matrix
 };
 
 #endif

@@ -69,10 +69,10 @@ void ARRegistration::reRegister() {
     for (int i=0 ; i < sensorPoints.size() ; i++) {
         gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
         for (int j=0 ; j < 3 ; j++) { 
-	    gsl_matrix_set(x_1, j, j*4, sensorPoints[i].x);
-	    gsl_matrix_set(x_1, j, (j*4)+1, sensorPoints[i].y);
-	    gsl_matrix_set(x_1, j, (j*4)+2, sensorPoints[i].z);
-	    gsl_matrix_set(x_1, j, (j*4)+3, 1);
+	        gsl_matrix_set(x_1, j, j*4, sensorPoints[i].x);
+	        gsl_matrix_set(x_1, j, (j*4)+1, sensorPoints[i].y);
+	        gsl_matrix_set(x_1, j, (j*4)+2, sensorPoints[i].z);
+	        gsl_matrix_set(x_1, j, (j*4)+3, 1);
         } // for rows
         LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
         // Select the region of the parameter matrix to write into
@@ -81,7 +81,9 @@ void ARRegistration::reRegister() {
         LOG4CPLUS_TRACE(logger, "Submatrices selected.");
         // Compute the parameter values: c_1 * x_1, c_3 * x_1
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
+        LOG4CPLUS_TRACE(logger, "First submatrix multiplication.");
         gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_3, x_1, 0.0, &sub_bottom.matrix);
+        LOG4CPLUS_TRACE(logger, "Submatrix multiplication complete.");
         gsl_matrix_free(x_1);
     } // for sensorPoints
     LOG4CPLUS_DEBUG(logger, "Temp data structures initialized, now trying to do least-squares fit.");
