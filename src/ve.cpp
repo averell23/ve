@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
 
 void shutdown() {
     timer->stop();
-    free(mainVideo);
-    free(overlay);
+    delete mainVideo;
+    delete overlay;
     cout << "Elapsed time was " << timer->getSeconds() 
 	<< " seconds and " << timer->getMilis() 
 	<< " millis with " << timer->getCount() << " frames. "

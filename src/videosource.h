@@ -43,7 +43,7 @@ public:
     
     VideoSource();
 
-    ~VideoSource();
+    virtual ~VideoSource();
 
 protected:
     /** Width and height of this video source */

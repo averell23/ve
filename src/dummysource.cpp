@@ -51,8 +51,9 @@ DummySource::~DummySource()
 {
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
 	free(images[i]->imageData);
-	free(images[i]);
+	cvReleaseImageHeader(&images[i]);
     }
+    cout << "Data structures freed." << endl;
 }
 
 IplImage* DummySource::getImage() {
