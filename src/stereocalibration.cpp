@@ -124,7 +124,7 @@ gsl_vector* StereoCalibration::getExtVector(CvMatr32f trans, CvMatr32f rot, int 
 	for (int j=0 ; j<3 ; j++) {
 	    gsl_vector_set(retVal, (i*16) + 12 + j, trans[(i*3) + j]);
 	}
-	gsl_vector_set(retVal, 15, 1);
+	gsl_vector_set(retVal, (i*16) + 15, 1);
     }
     LOG4CPLUS_DEBUG(logger, "External matrix created as vector.");
     return retVal;
