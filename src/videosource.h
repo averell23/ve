@@ -55,7 +55,7 @@ public:
     int getHeight();
     /** Indicates whether the child class correctly updates the
         internal timer. */
-    virtual bool timerSupported() { return false; };
+    virtual bool timerSupported();
     
     /**
       Gets an handle to the internal timer. The timer will be stopped,
@@ -65,6 +65,11 @@ public:
       the internal timer
     */
     Stopwatch* getAndStopTimer();
+
+	/**
+		Gets an handle to the internal timer.
+	 */
+	Stopwatch* getTimer() { return timer; }
     
     VideoSource();
 

@@ -83,7 +83,7 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 
 void VideoCanvas::draw() {
     if (leftEye == NULL || rightEye == NULL) { 	// Sanity check
-	return;
+		return;
     }
     
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
@@ -95,6 +95,7 @@ void VideoCanvas::draw() {
     glLoadIdentity();
     
 	glRotatef(180.0f, 0.0f, 0.0f, 1.0f);  // FIXME: Flipping not standard
+	glRotatef(180.0f, 0.0f, 1.0f, 0.0f);  // FIXME: Check lef/right
 
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -103,7 +104,7 @@ void VideoCanvas::draw() {
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 			GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
 		delete leftImage->imageData;
-	} else cout << "Warning, got empty image for left eye" << endl;
+	} // else cout << "Warning, got empty image for left eye" << endl; // FIXME: Warn handling
 	cvReleaseImageHeader(&leftImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
@@ -120,10 +121,10 @@ void VideoCanvas::draw() {
     glBindTexture(GL_TEXTURE_2D, textures[1]);
 	IplImage* rightImage = rightEye->getImage();
 	if (!rightImage->imageData == NULL) {
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
+		 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 		    GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
 		delete rightImage->imageData;
-	} else cout << "Warning, got empty image for right eye" << endl;
+	} // else cout << "Warning, got empty image for right eye" << endl; // FIXME: Warn handling
 	cvReleaseImageHeader(&rightImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);

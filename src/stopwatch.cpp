@@ -52,14 +52,14 @@ void Stopwatch::count(int number) {
 
 long Stopwatch::getSeconds() {
     if (running) {
-	ftime(&stopStamp);
+		ftime(&stopStamp);
     }
     return stopStamp.time - startStamp.time;
 }
 
 long Stopwatch::getMilis() {
     if (running) {
-	ftime(&stopStamp);
+		ftime(&stopStamp);
     }
     return abs(stopStamp.millitm - startStamp.millitm);
 }
@@ -70,7 +70,7 @@ long Stopwatch::getCount() {
 
 float Stopwatch::getFramerate() {
     if (running) {
-	ftime(&stopStamp);
+		ftime(&stopStamp);
     }
     
     long seconds = stopStamp.time - startStamp.time;

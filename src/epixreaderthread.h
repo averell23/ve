@@ -45,7 +45,7 @@ public:
       Requests the reader to stop after the current iteration.
     */
     void stop();
-    
+
 private:
     /// Picture buffer
     uchar* buffer;

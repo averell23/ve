@@ -25,6 +25,7 @@
 
 
 bool XCLIBController::openState = false;
+Mutex* XCLIBController::cMutex = new Mutex();
 
 XCLIBController::XCLIBController()
 {
@@ -40,10 +41,12 @@ int XCLIBController::openLib(string configFile) {
     
     char* driverParams = NULL;
     char* format = NULL;
-	if (strcmp(configFile.c_str(), "")) {
+	if (!strcmp(configFile.c_str(), "")) {
+		cout << "No config file given, setting default config." << endl;
 		format = "default";
     }
-    int retVal = pxd_PIXCIopen(driverParams, format, (char*) configFile.c_str());
+	cout << "Opening Library with: " << " Config File: " << configFile.c_str() << endl;
+	int retVal = pxd_PIXCIopen(driverParams, format, (char*) configFile.c_str());
 	if (retVal == 0) {
 		openState = true;
 		cout << "Library opened successfully." << endl;
@@ -68,9 +71,11 @@ bool XCLIBController::isOpen() {
 int XCLIBController::goLive(int unit) {
     int result = pxd_goLive(1<<unit, 1);
 		if (result == 0) {
-		cout << "Gone live successfully, state is " << pxd_goneLive(1<<unit, 0) << endl;
+		cout << "Gone live successfully on unit " << unit 
+			<< ", state is " << pxd_goneLive(1<<unit, 0) << endl;
 	} else {
-		cout << "Not gone live, error code: " << pxd_mesgErrorCode(result) << endl;
+		cout << "Not gone live on unit " << unit
+			<< ", error code: " << pxd_mesgErrorCode(result) << endl;
 	}
     return result;
 }
@@ -81,7 +86,7 @@ int XCLIBController::goUnLive(int unit) {
 }
 
 uchar* XCLIBController::getBufferCopy(int unit, int* result) {
-	pxd_goSnap(1<<unit, 1); // FIXME: Go live!
+	cMutex->enterMutex();
     int bufsize = pxd_imageXdim() * pxd_imageYdim() * 3;
 
     uchar* buffer = new uchar[bufsize];
@@ -90,6 +95,7 @@ uchar* XCLIBController::getBufferCopy(int unit, int* result) {
     if (buffer) {
 		*result = pxd_readuchar(1<<unit, 1, 0, 0, pxd_imageXdim(), pxd_imageYdim(), buffer, bufsize, "RGB");
     }
+	cMutex->leaveMutex();
     
     return buffer;
 }

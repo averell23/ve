@@ -30,9 +30,10 @@
 extern "C" {
     #include "xcliball.h"
 }
-
+#include <cc++/thread.h>
 
 using namespace std;
+using namespace ost;
 
 /**
   Controls the behavior of the XCLIB library. This encapsulates the global
@@ -97,11 +98,17 @@ public:
     */
     static uchar* getBufferCopy(int unit, int* result);
 
-    
+	/**
+		Allows synchronisation on the XCLIB.
+		FIXME: Bad kludge
+	 */
+    static Mutex* cMutex;
+
+
 private:
     /// Constructor is private for singleton class.
     XCLIBController();
-    static bool openState; // FIXME: Init?
+    static bool openState;
 
 };
 

@@ -40,24 +40,37 @@ class EpixSource : public VideoSource
 public:
     
     /**
-      Creates a new EpixSource. 
+      Creates a new EpixSource. FIXME: Error handling
       
       @param unit Number of the unit from which to read.
       @param configfile Name of an XCAP Video configuration file.
+	  @param cameraModel Model code of the camera connected to this source
     */
-    EpixSource(int unit = 0, string configfile = "") ;
+    EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
 
     virtual IplImage *getImage();
 	
     ~EpixSource();
 
-    bool timerSupported() { return true; };
+    bool timerSupported();
+
+	const static int CAMERA_DEFAULT = 0;
+	const static int CAMERA_1280F = 1;
     
 private:
     /// Unit number from which this source reads
     int unit;
     // The thread that reads from the frame grabber
     EpixReaderThread* readerThread;
+	// Camera model
+	int cameraModel;
+	// Serial port handle for Camera Link connections
+	void* serialRef;
+
+	/**
+		Setup routines for the various camera models..
+	*/
+	void cameraSetup(); 
     
 };
 

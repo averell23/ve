@@ -54,7 +54,7 @@ public:
       Intializes the Ve application and data structures. This
       should be called after initGL().
       
-      @param rightEye/leftEye The sources for the two video 
+      @param right/left The sources for the two video 
                               images.
     */
     static void init(VideoSource* left, VideoSource* right);
@@ -63,7 +63,22 @@ public:
       Start video display and processing.
     */
     static void start();
-    
+
+	/**
+		Get the right video source (e.g. for fps calculations)
+	*/
+	static VideoSource* getRightSource() { return rightEye; }
+
+	/**
+		Get the left video source (e.g. for fps calculations);
+	*/
+	static VideoSource* getLeftSource()  { return leftEye; }
+
+	/**
+		Get the main timer.
+	 */
+	static Stopwatch* getTimer() { return timer; }
+
     /** OpenGL initilization */
     static void initGL( int argc, char** argv );
     

@@ -39,11 +39,6 @@ void Ve::addOverlay(Overlay* ol) {
 }
 
 void Ve::shutdown() {
-    timer->stop();
-    delete mainVideo;
-    for (int i=0 ; i < overlays.size() ; i++) {
-	delete overlays[i];
-    }
     overlays.clear();
     cout << "Elapsed time was " << timer->getSeconds() 
 	<< " seconds and " << timer->getMilis() 
@@ -51,24 +46,29 @@ void Ve::shutdown() {
 	<< " Framerate: " << timer->getFramerate() 
 	<< endl;
     if (rightEye->timerSupported()) {
-	Stopwatch* rightTimer = rightEye->getAndStopTimer();
-	cout << "Right Eye: Elapsed time was " << rightTimer->getSeconds() 
-	    << " seconds and " << rightTimer->getMilis() 
-	    << " millis with " << rightTimer->getCount() << " frames. "
-	    << " Framerate: " << rightTimer->getFramerate() 
-	    << endl;
+		Stopwatch* rightTimer = rightEye->getAndStopTimer();
+		cout << "Right Eye: Elapsed time was " << rightTimer->getSeconds() 
+			<< " seconds and " << rightTimer->getMilis() 
+			<< " millis with " << rightTimer->getCount() << " frames. "
+			<< " Framerate: " << rightTimer->getFramerate() 
+			<< endl;
     }
     if (leftEye->timerSupported()) {
-	Stopwatch* leftTimer = leftEye->getAndStopTimer();
-	cout << "Left Eye: Elapsed time was " << leftTimer->getSeconds() 
-	    << " seconds and " << leftTimer->getMilis() 
-	    << " millis with " << leftTimer->getCount() << " frames. "
-	    << " Framerate: " << leftTimer->getFramerate() 
-	    << endl;
+		Stopwatch* leftTimer = leftEye->getAndStopTimer();
+		cout << "Left Eye: Elapsed time was " << leftTimer->getSeconds() 
+			<< " seconds and " << leftTimer->getMilis() 
+			<< " millis with " << leftTimer->getCount() << " frames. "
+			<< " Framerate: " << leftTimer->getFramerate() 
+			<< endl;
     }
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) { 
-	cout << "Some openGL error has occured." << endl;
+		cout << "Some openGL error has occured." << endl;
+    }
+	timer->stop();
+    delete mainVideo;
+    for (int i=0 ; i < overlays.size() ; i++) {
+		delete overlays[i];
     }
 }
 
@@ -102,6 +102,9 @@ void Ve::keyboard ( unsigned char key, int x, int y )  // Create Keyboard Functi
 		shutdown();
 		exit ( EXIT_SUCCESS );   // Exit The Program
 		break;        // Ready For Next Case
+	case 32:
+		cout << "Spaced" << endl;
+		break;
 	default:        // Now Wrap It Up
 		break;
 	}
@@ -125,7 +128,7 @@ void Ve::initGL( int argc, char** argv ) {
     glutInit            ( &argc, argv ); // Erm Just Write It =)
     glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
     glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
-    glutCreateWindow    ( "NeHe's OpenGL Framework" ); // Window Title (argv[0] for current directory as title)
+    glutCreateWindow    ( "VE Augmented Reality" ); // Window Title (argv[0] for current directory as title)
     glutFullScreen      ( );          // Put Into Full Screen
     
     glShadeModel(GL_SMOOTH);

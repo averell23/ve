@@ -26,7 +26,7 @@
 VideoSource::VideoSource()
 {
     timer = new Stopwatch();
-   timer->start();
+    timer->start();
 }
 
 
@@ -50,4 +50,8 @@ IplImage* VideoSource::getImage() {
 Stopwatch* VideoSource::getAndStopTimer() {
     timer->stop();
     return timer;
+}
+
+bool VideoSource::timerSupported() {
+	return false;
 }

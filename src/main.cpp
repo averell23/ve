@@ -34,16 +34,16 @@ int main(int argc, char *argv[])
     
   Ve::initGL(argc, argv);  
   
-  VideoSource* left = new DummySource();// new EpixSource(1, "cam1.fmt");
-  cout << "Left source created" << endl;
-  VideoSource* right = new DummySource(); // new EpixSource(0);
+  VideoSource* right = new EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
   cout << "Right source created" << endl;
+  VideoSource* left = new EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
+  cout << "Left source created" << endl;
   Ve::init(left, right);
   
   cout << "Adding overlays" << endl;
   // Create overlays
-  Ve::addOverlay(new DummyOverlay()); 
-  cout << "one" << endl;
+  // Ve::addOverlay(new DummyOverlay()); 
+  // cout << "one" << endl;
   Ve::addOverlay(new FontTesterOverlay());
   cout << "two" << endl;
   

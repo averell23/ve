@@ -24,9 +24,12 @@
 #ifndef FONTTESTEROVERLAY_H
 #define FONTTESTEROVERLAY_H
 
-#include <FTGLPolygonFont.h>
+#include <FTGLTextureFont.h>
 #include <iostream>
 #include "overlay.h"
+#include "stopwatch.h"
+#include "videosource.h"
+#include "ve.h"
 
 using namespace std;
 
@@ -43,8 +46,9 @@ public:
 
 private:
     
-    FTGLPolygonFont* font;
-    
+    FTGLTextureFont* font;
+    Stopwatch *rightTimer, *leftTimer, *gTimer;
+	char* text;
 };
 
 #endif

@@ -26,16 +26,20 @@
 FontTesterOverlay::FontTesterOverlay()
 {
     cout << "Creating font" << endl;
-    font = new FTGLPolygonFont( "/usr/share/fonts/truetype/ttf-bitstream-vera/VeraIt.ttf");
+    font = new FTGLTextureFont( "C:/WINDOWS/Fonts/Arial.ttf"); // FIXME: Font path
     cout << "Yup." << font << endl;
     if (font->Error()) {
-	cout << "Duh!" << endl;
-	delete font;
-	font = NULL;
+		cout << "Duh!" << endl;
+		delete font;
+		font = NULL;
     } else {
-	font->FaceSize(100);
+		font->FaceSize(50);
     }
+	rightTimer = Ve::getRightSource()->getTimer();
+	leftTimer = Ve::getLeftSource()->getTimer();
+	gTimer = Ve::getTimer();
     cout << "Font tester created" << endl;
+	text = new char[256];
 }
 
 
@@ -44,7 +48,11 @@ FontTesterOverlay::~FontTesterOverlay()
 }
 
 void FontTesterOverlay::draw() {
-    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+	if (font == NULL) return; // Sanity check
+
+	sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), gTimer->getFramerate());
+    
+	glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glOrtho(-1000, 1000, -1000, 1000, 0, 1);	// ...and load the Identity Matrix instead
@@ -52,12 +60,11 @@ void FontTesterOverlay::draw() {
     glPushMatrix();
     glLoadIdentity();
     
-    glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-    glTranslatef(-0.5f, 0.0f, 0.0f);
-    
-    if (font != NULL) {
-	font->Render("Hello World");
-    }
+    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+    glTranslatef(-0.95f, 0.9f, 0.0f);
+	font->Render(text);
+	glTranslatef(1.0f, 0.0f, 0.0f);
+    font->Render(text);
     
     // Restore Matrices
     glPopMatrix();

@@ -25,6 +25,7 @@
 #define VIDEOCANVAS_H
 
 #include "videosource.h"
+#include "xclibcontroller.h" // FIXME: only for ushort
 
 #ifdef WIN32
 #include <windows.h>

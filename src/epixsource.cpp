@@ -23,17 +23,20 @@
  ***************************************************************************/
 #include "epixsource.h"
 
-EpixSource::EpixSource(int unit, string configfile)
+EpixSource::EpixSource(int unit, int cameraModel, string configfile)
  : VideoSource()
 {
     int result;
-    if (!XCLIBController::isOpen()) 
-	result = XCLIBController::openLib(configfile);
+	if (!XCLIBController::isOpen()) {
+		result = XCLIBController::openLib(configfile);
+	}
     if (XCLIBController::isOpen()) {
 	    height = pxd_imageYdim();
 	    width = pxd_imageXdim();
     }
+	EpixSource::cameraModel = cameraModel;
     EpixSource::unit = unit;
+	cameraSetup();
     XCLIBController::goLive(unit);
     readerThread = new EpixReaderThread(unit);
     readerThread->start();
@@ -44,6 +47,7 @@ EpixSource::~EpixSource()
 {
     readerThread->stop();
     XCLIBController::goUnLive(unit);
+	if (serialRef != NULL) clSerialClose(serialRef);
 }
 
 
@@ -53,12 +57,48 @@ IplImage* EpixSource::getImage() {
     size.height = height;
     size.width = width;
     
-    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
-    uchar* buffer = readerThread->getBuffer();
+    image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
+	uchar* buffer = readerThread->getBuffer();
     if (buffer != NULL) {
-	image->imageData = (char*) buffer;
-	timer->count();
+		image->imageData = (char*) buffer;
+		timer->count();
     }
 
     return image;
+}
+
+bool EpixSource::timerSupported() {
+	return true;
+}
+
+void EpixSource::cameraSetup() {
+	{
+		switch (cameraModel) {
+			case CAMERA_DEFAULT:
+				// No setup for unknow camera
+			break;
+			case CAMERA_1280F:
+				// Setup for Silicon Imaging 1280 F
+				// FIXME: Does not check board capabilities
+				cout << "Setting up camera model SI-1280F unit " << unit << endl;
+				void* serialRef;
+				char* buffer = new char[3];
+				int result = clSerialInit(unit, &serialRef);
+				if (result != 0) {
+					cout << "Error while opening camera link serial, code " 
+						<< result << endl;
+				} else {
+					ulong size = 7;
+					clSerialWrite(serialRef, "ly804d\r", &size , 1000); // Gain
+					size = 3;
+					clSerialRead(serialRef, buffer, &size, 1000);
+					if (strcmp(buffer, "104")) {
+						cout << "Warning: Unable to get result code from camera." << endl;
+					}
+					size = 9;
+					clSerialWrite(serialRef, "lc36cb8f\r", &size, 1000); // Clock: 60 Mhz
+				}
+			break;
+		}
+	}
 }
