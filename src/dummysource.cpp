@@ -33,27 +33,30 @@ DummySource::DummySource()
     status = true; 
     
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
-	sprintf(filename, "images/img%04d.ppm.bmp", 1000 + i);
+		sprintf(filename, "images/img%04d.ppm.bmp", 1000 + i);
 	if (!loadBMP(filename, &images[i])) { status = false; }
-	if (images[i] == NULL) { LOG4CPLUS_ERROR(logger, "Could not load image " << filename); }
+	if (images[i] == NULL) { 
+		LOG4CPLUS_ERROR(logger, "Could not load image " << filename); }
     }
 
     
     if ( !status ) {
-	LOG4CPLUS_ERROR(logger, "Could not load images. This may be fatal.");
+		LOG4CPLUS_ERROR(logger, "Could not load images. This may be fatal.");
     } else {
-	width = images[0]->width;
-	height = images[0]->height;
+		width = images[0]->width;
+		height = images[0]->height;
     }
     
     position = 0;
+
+	LOG4CPLUS_INFO(logger, "Dummy source created.");
 }
 
 DummySource::~DummySource()
 {
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
-	free(images[i]->imageData);
-	cvReleaseImageHeader(&images[i]);
+		free(images[i]->imageData);
+		cvReleaseImageHeader(&images[i]);
     }
     LOG4CPLUS_DEBUG(logger, "Data structures freed.");
 }
@@ -111,15 +114,15 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 		LOG4CPLUS_ERROR(logger, "Error reading file!");
 		return 0;
 	}
-	LOG4CPLUS_DEBUG(logger, "Data at Offset: " << bfOffBits);
+	LOG4CPLUS_TRACE(logger, "Data at Offset: " << bfOffBits);
 	/* skip size of bitmap info header */
 	fseek(file, 4, SEEK_CUR);
 	/* get the width of the bitmap */
 	fread(&width, sizeof(int), 1, file);
-	LOG4CPLUS_DEBUG(logger, "Width of Bitmap: " << width);
+	LOG4CPLUS_TRACE(logger, "Width of Bitmap: " << width);
 	/* get the height of the bitmap */
 	fread(&height, sizeof(int), 1, file);
-	LOG4CPLUS_DEBUG(logger, "Height of Bitmap: " << height);
+	LOG4CPLUS_TRACE(logger, "Height of Bitmap: " << height);
 	/* get the number of planes (must be set to 1) */
 	fread(&biPlanes, sizeof(short int), 1, file);
 	if (biPlanes != 1)
@@ -133,7 +136,7 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 		LOG4CPLUS_ERROR(logger,"Error reading file!");
 		return 0;
 	}
-	LOG4CPLUS_DEBUG(logger, "Bits per Pixel: " << biBitCount);
+	LOG4CPLUS_TRACE(logger, "Bits per Pixel: " << biBitCount);
 	if (biBitCount != 24)
 	{
 		LOG4CPLUS_ERROR(logger, "Bits per Pixel not 24");
@@ -141,7 +144,7 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 	}
 	/* calculate the size of the image in bytes */
 	biSizeImage = width * height * 3;
-	LOG4CPLUS_DEBUG(logger, "Size of the image data: " << biSizeImage);
+	LOG4CPLUS_TRACE(logger, "Size of the image data: " << biSizeImage);
 	data = (char*) malloc(biSizeImage);
 	/* seek to the actual data */
 	fseek(file, bfOffBits, SEEK_SET);
@@ -166,6 +169,10 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 	(*image)->imageData = data;
 
 	return 1;
+}
+
+IplImage* DummySource::waitAndGetImage() {
+	return getImage();
 }
 
 char* DummySource::copyBuffer(char* buffer, int size) {

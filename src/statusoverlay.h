@@ -29,9 +29,7 @@
 #include "fontmanager.h"
 #include "ve.h"
 #include "veeventlistener.h"
-#include <log4cplus/logger.h>
 
-using namespace log4cplus;
 
 /**
 Overlay to display system status information.

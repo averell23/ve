@@ -29,7 +29,7 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <vector>
@@ -40,7 +40,6 @@
 #include "overlay.h"
 #include "veeventsource.h"
 #include "veeventlistener.h"
-#include "glextensions.h"
 
 using namespace log4cplus;
 

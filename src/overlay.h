@@ -24,6 +24,14 @@
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+#include <GL/glew.h>
+#include <log4cplus/logger.h>
+
+using namespace log4cplus;
+
 /**
 This is the base overlay class. Each overlay is a layer upon the main VideoCanvas that displays part of the UI. The overlay is implemented by overwriting the draw() class and calling OpenGL functions from it.
 

@@ -37,18 +37,35 @@ class VideoSource{
 public:
     /** 
         Retrieve the next image for this video source. The class should
-	expect the IplImage to be consumed (read: deleted) by the 
-        subsequent processing, so it should not be expected to exist
-	after getImage() was called.
-	
-	This should return NULL if no new image was created/acquired 
-	since the last getImage() call, in order to avoid unecessary
-	display updates.
-	
-	Child methods should update the internal timer whenever a 
-	none-NULL image is returned.
+		expect the IplImage to be consumed (read: deleted) by the 
+		subsequent processing, so it should not be expected to exist
+		after getImage() was called.
+		
+		This should return NULL if no new image was created/acquired 
+		since the last getImage() call, in order to avoid unecessary
+		display updates.
+		
+		Child methods should update the internal timer whenever a 
+		none-NULL image is returned.
+
+		@see waitAndGetImage();
     */
-    virtual IplImage *getImage();
+    virtual IplImage *getImage() = 0;
+
+	/**
+		Works like getImage(), except that this function will block
+		until a new image is available from the source. It's not 
+		recommended to use this function for the regular display
+		updates.
+
+		Until this function is finished, getImage() should not block,
+		but should always return  NULL.
+
+		@see getImage()
+	*/
+	virtual IplImage *waitAndGetImage() = 0;
+
+
     /** Gets the image width for this video source */
     int getWidth();
     /** Gets the image height for this video source */

@@ -45,6 +45,8 @@ void DummyOverlay::drawOverlay() {
     glPushMatrix();
     glLoadIdentity();
     
+	// glTranslatef(0.0f, 0.0f, 0.5f); // In front of offset, maybe behind other overlays...
+
     glTranslatef(-0.5f, 0.0f, 0.0f);
     glColor4f(1.0f, 0.0f, 0.0f, 0.5f);
     glBegin(GL_QUADS); 

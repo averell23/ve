@@ -108,6 +108,8 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
 	    return false;
 	}
     }
+
+	return true;
 }
 
 void CommandLineParser::resetRequiredParameters() {

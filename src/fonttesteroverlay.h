@@ -24,9 +24,9 @@
 #ifndef FONTTESTEROVERLAY_H
 #define FONTTESTEROVERLAY_H
 
+#include "overlay.h"
 #include <FTGLTextureFont.h>
 #include <iostream>
-#include "overlay.h"
 #include "stopwatch.h"
 #include "videosource.h"
 #include "ve.h"

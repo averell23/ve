@@ -147,8 +147,10 @@ void Ve::initGL( int argc, char** argv ) {
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glFlush();
-    if (!GLExtensions::initExtensions()) {
-	LOG4CPLUS_ERROR(logger, "Could not initialize some OpenGL extensions. Problems may occur.");
-    }
+    if (glewInit() != GLEW_OK) {
+		LOG4CPLUS_ERROR(logger, "Could not initialize some OpenGL extension handler. Problems may occur.");
+	} else {
+		LOG4CPLUS_INFO(logger, "OpenGL extension handler initialized.");
+	}
     LOG4CPLUS_INFO(logger, "GLUT/OpenGL initialization complete");
 }

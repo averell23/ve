@@ -29,6 +29,7 @@
 #include "epixreaderthread.h"
 #include "stopwatch.h"
 #include <iostream>
+#include <cc++/thread.h>
 #include <log4cplus/logger.h>
 
 using namespace std;
@@ -51,6 +52,8 @@ public:
     EpixSource(int unit = 0, int cameraMode = CAMERA_DEFAULT, string configfile = "") ; //FIXME: Config file handling is stoopid
 
     virtual IplImage *getImage();
+
+	virtual IplImage *waitAndGetImage();
 	
     ~EpixSource();
 
@@ -75,6 +78,8 @@ private:
 	void cameraSetup(); 
 	/// Logger for this class
 	static Logger logger;
+	/// Mutex for waitAndGetImage()
+	Mutex tMutex;
     
 };
 

@@ -28,11 +28,11 @@ Logger StatusOverlay::logger = Logger::getInstance("Ve.StatusOverlay");
 StatusOverlay::StatusOverlay(bool display)
  : Overlay(display)
 {
-    	rightTimer = Ve::getRightSource()->getTimer();
+    rightTimer = Ve::getRightSource()->getTimer();
 	leftTimer = Ve::getLeftSource()->getTimer();
 	videoTimer = Ve::getTimer();
 	text = new char[256];
-	LOG4CPLUS_DEBUG(logger, "Status overlay created");
+	LOG4CPLUS_INFO(logger, "Status overlay created");
 }
 
 void StatusOverlay::drawOverlay() {
@@ -44,6 +44,8 @@ void StatusOverlay::drawOverlay() {
     glPushMatrix();
     glLoadIdentity();
     
+	// glTranslatef(0.0f, 0.0f, 1.0f); // In front of everything
+
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
     glTranslatef(-1.0f, 0.0f, 0.0f);
     drawOneEye();
@@ -69,8 +71,8 @@ void StatusOverlay::drawOneEye() {
 
 void StatusOverlay::recieveEvent(VeEvent &e) {
     if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 32)) {
-	toggleDisplay();
-	LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
+		toggleDisplay();
+		LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
     }
 }
 

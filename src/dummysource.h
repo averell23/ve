@@ -58,6 +58,8 @@ public:
     int loadBMP(char *filename, IplImage **image);
     
     IplImage* getImage();
+
+	IplImage *waitAndGetImage();
     
     char* copyBuffer(char* buffer, int size);
 

@@ -49,7 +49,7 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 	while (textureSize <= maxTexSize && (!accomodated)) {
 	    textureSize = textureSize * 2;
 	    if (textureSize >= vidSize) accomodated = true;
-	    LOG4CPLUS_DEBUG(logger, "Tex size set to " << textureSize);
+	    LOG4CPLUS_TRACE(logger, "Tex size set to " << textureSize);
 	}
 
 	LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);

@@ -35,6 +35,6 @@ Overlay::~Overlay()
 
 void Overlay::draw() {
     if (displayState) {
-	drawOverlay();
+		drawOverlay();
     }
 }

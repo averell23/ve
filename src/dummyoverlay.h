@@ -24,11 +24,7 @@
 #ifndef DUMMYOVERLAY_H
 #define DUMMYOVERLAY_H
 
-#ifdef WIN32
-#include <windows.h>
-#endif
 #include "overlay.h"
-#include <GL/gl.h>
 #include <math.h>
 #include <log4cplus/logger.h>
 

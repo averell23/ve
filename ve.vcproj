@@ -17,15 +17,15 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
+				AdditionalIncludeDirectories="D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
 				PreprocessorDefinitions="WIN32"
 				RuntimeLibrary="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib"
-				AdditionalLibraryDirectories="&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
+				AdditionalDependencies="cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib log4cplusd.lib glew32.lib"
+				AdditionalLibraryDirectories="D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -68,6 +68,9 @@
 				RelativePath=".\src\cameracalibration.cpp">
 			</File>
 			<File
+				RelativePath=".\src\commandlineparser.cpp">
+			</File>
+			<File
 				RelativePath=".\src\dummyoverlay.cpp">
 			</File>
 			<File
@@ -80,19 +83,34 @@
 				RelativePath=".\src\epixsource.cpp">
 			</File>
 			<File
+				RelativePath=".\src\fontmanager.cpp">
+			</File>
+			<File
 				RelativePath=".\src\fonttesteroverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\main.cpp">
 			</File>
 			<File
+				RelativePath=".\src\offsetoverlay.cpp">
+			</File>
+			<File
 				RelativePath=".\src\overlay.cpp">
+			</File>
+			<File
+				RelativePath=".\src\statusoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.cpp">
 			</File>
 			<File
 				RelativePath=".\src\ve.cpp">
+			</File>
+			<File
+				RelativePath=".\src\veevent.cpp">
+			</File>
+			<File
+				RelativePath=".\src\veeventsource.cpp">
 			</File>
 			<File
 				RelativePath=".\src\videocanvas.cpp">
@@ -112,6 +130,9 @@
 				RelativePath=".\src\cameracalibration.h">
 			</File>
 			<File
+				RelativePath=".\src\commandlineparser.h">
+			</File>
+			<File
 				RelativePath=".\src\dummyoverlay.h">
 			</File>
 			<File
@@ -124,16 +145,34 @@
 				RelativePath=".\src\epixsource.h">
 			</File>
 			<File
+				RelativePath=".\src\fontmanager.h">
+			</File>
+			<File
 				RelativePath=".\src\fonttesteroverlay.h">
 			</File>
 			<File
+				RelativePath=".\src\offsetoverlay.h">
+			</File>
+			<File
 				RelativePath=".\src\overlay.h">
+			</File>
+			<File
+				RelativePath=".\src\statusoverlay.h">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.h">
 			</File>
 			<File
 				RelativePath=".\src\ve.h">
+			</File>
+			<File
+				RelativePath=".\src\veevent.h">
+			</File>
+			<File
+				RelativePath=".\src\veeventlistener.h">
+			</File>
+			<File
+				RelativePath=".\src\veeventsource.h">
 			</File>
 			<File
 				RelativePath=".\src\videocanvas.h">

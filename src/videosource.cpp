@@ -43,10 +43,6 @@ int VideoSource::getHeight() {
     return height;
 }
 
-IplImage* VideoSource::getImage() {
-    return NULL;
-}
-
 Stopwatch* VideoSource::getAndStopTimer() {
     timer->stop();
     return timer;

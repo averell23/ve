@@ -34,11 +34,11 @@ FTGLTextureFont* FontManager::getFont() {
 void FontManager::createFont() {
     font = new FTGLTextureFont(DEFAULT_FONT);
     if (font->Error()) {
-	LOG4CPLUS_ERROR(logger, "Font could not be created.");
-	font = NULL;
+		LOG4CPLUS_ERROR(logger, "Font could not be created.");
+		font = NULL;
     } else {
-	font->FaceSize(40);
-	LOG4CPLUS_DEBUG(logger, "Font successfully created.");
+		font->FaceSize(40);
+		LOG4CPLUS_DEBUG(logger, "Font successfully created.");
     }
 }
 

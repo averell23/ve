@@ -62,11 +62,18 @@ IplImage* EpixSource::getImage() {
     size.width = width;
     
     image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
+	if (! tMutex.tryEnterMutex()) {
+		LOG4CPLUS_TRACE(logger, "Returning null image, currently waiting for image.");
+		return image;
+	}
 	uchar* buffer = readerThread->getBuffer();
+	tMutex.leaveMutex();
     if (buffer != NULL) {
 		image->imageData = (char*) buffer;
 		timer->count();
-    }
+	} else {
+		image->imageData = NULL;
+	}
 
     return image;
 }
@@ -109,4 +116,24 @@ void EpixSource::cameraSetup() {
 			break;
 		}
 	}
+}
+
+IplImage* EpixSource::waitAndGetImage() {
+	IplImage* image;
+    CvSize size;
+    size.height = height;
+    size.width = width;
+    
+    image = cvCreateImageHeader(size, IPL_DEPTH_16U, 3);
+	uchar* buffer = NULL;
+	tMutex.enterMutex();
+	while (buffer == NULL) {
+		buffer = readerThread->getBuffer();
+	}
+	tMutex.leaveMutex();
+	
+	image->imageData = (char*) buffer;
+	timer->count();
+
+    return image;
 }

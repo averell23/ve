@@ -116,13 +116,13 @@ int main(int argc, char *argv[])
   
   LOG4CPLUS_DEBUG(logger, "Adding overlays");
   // Create overlays
+  OffsetOverlay* offset = new OffsetOverlay(false);
+  Ve::addOverlay(offset);
+  Ve::addListener(offset);
   Ve::addOverlay(new DummyOverlay(true)); 
   StatusOverlay* status = new StatusOverlay(true);
   Ve::addOverlay(status);
   Ve::addListener(status);
-  OffsetOverlay* offset = new OffsetOverlay(false);
-  Ve::addOverlay(offset);
-  Ve::addListener(offset);
   LOG4CPLUS_DEBUG(logger, "Overlays added.");
   
   Ve::start();

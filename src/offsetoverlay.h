@@ -24,16 +24,12 @@
 #ifndef OFFSETOVERLAY_H
 #define OFFSETOVERLAY_H
 
-#include <log4cplus/logger.h>
-#include <GL/gl.h>
 #include <cv.hpp>
 #include "overlay.h"
 #include "veeventlistener.h"
 #include "videosource.h"
 #include "ve.h"
-#include "glextensions.h"
 
-using namespace log4cplus;
 
 /**
 Tries to correct camera artefacts by applying an offset texture.
@@ -67,9 +63,7 @@ private:
     /// Logger for this class
     static Logger logger;
     /// Buffers for the overlay textures
-    unsigned char *textureBufferLeft, *textureBufferRight;
-    /// Indicates if the offset can be used at all
-    bool usable;
+    char *textureBufferLeft, *textureBufferRight;
     
     /**
       Tries to create the texture from the pictures in the video
