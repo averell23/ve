@@ -36,6 +36,7 @@
 #include <cc++/thread.h>
 
 using namespace ost;
+using namespace log4cplus;
 
 /**
 Allows the registration of screen coordinates to sensor coordinates recieved through CORBA.
