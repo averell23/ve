@@ -28,6 +28,7 @@ CORBAController CORBAController::myInstance;
 
 CORBAController::CORBAController() {
     positionSource = new PositionConnector_Impl();
+	iorFileName = "../config/mcserver.ior";
 }
 
 void CORBAController::init(int argc, char** argv) {
@@ -41,7 +42,13 @@ void CORBAController::init(int argc, char** argv) {
         obj = positionSource->_this();
         CORBA::String_var sior(orb->object_to_string(obj));
         cout << "IOR of position updater object: " << sior << endl;
-
+		if (iorFileName) {
+		FILE* file = fopen(iorFileName, "wb");
+			if (file) {
+				fprintf(file, sior);
+				fclose(file);
+			}
+		}
         // Activate the POA
         PortableServer::POAManager_var pman = poa->the_POAManager();
         pman->activate();

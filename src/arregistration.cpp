@@ -48,6 +48,7 @@ void ARRegistration::clearCalibrationPoints() {
 }
 
 void ARRegistration::reRegister() {
+	LOG4CPLUS_DEBUG(logger, "Re-Registering sensor coordinates.");
     if (imagePoints.size() < 4) {
 	LOG4CPLUS_WARN(logger, "Could not proceed with registration, too few registration points.");
 	return;
@@ -67,8 +68,7 @@ void ARRegistration::reRegister() {
     gsl_matrix* params = gsl_matrix_alloc(sensorPoints.size()*3, 12);
     // Fill the parameter matrix
     for (int i=0 ; i < sensorPoints.size() ; i++) {
-	gsl_matrix* x_1 = gsl_matrix_alloc(3, 12);
-	gsl_matrix_set_zero(x_1);
+	gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
 	for (int j=0 ; i < 3 ; i++) { // count rows
 	    for (int k=0 ; j < 3 ; j++) { // count "columns"
 		gsl_matrix_set(x_1, j, k*4, sensorPoints[i].x);
@@ -77,9 +77,11 @@ void ARRegistration::reRegister() {
 		gsl_matrix_set(x_1, j, (k*4)+3, 1);
 	    } // for "columns"
 	} // for rows
+	LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
 	// Select the region of the parameter matrix to write into
 	gsl_matrix_view sub_top = gsl_matrix_submatrix(params, i*3, 0, 2, 12);
 	gsl_matrix_view sub_bottom = gsl_matrix_submatrix(params, (i*3)+2, 0, 1, 12);
+	LOG4CPLUS_TRACE(logger, "Submatrices selected.");
 	// Compute the parameter values: c_1 * x_1, c_3 * x_1
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_1, x_1, 0.0, &sub_top.matrix);
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c_3, x_1, 0.0, &sub_bottom.matrix);

@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-	if (!parser.getOptionValue("nocorba")) { // FIXME: Incompatible with CORBA command line options
+	if (!parser.getOptionValue("nocorba")) { 
 		    CORBAController corba = CORBAController::getInstance();
 			corba.init(argc, argv);
 	}
