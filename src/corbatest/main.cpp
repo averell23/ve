@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 	    return 1;
 	}
 	
-	connector->update(23, 17, 12);
+	connector->update(0, 23, 17, 12);
 	
 	orb->destroy();
     } catch (CORBA::COMM_FAILURE& ex) {

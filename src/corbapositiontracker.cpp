@@ -21,19 +21,32 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "positionconnector_impl.h"
+#include "corbapositiontracker.h"
 
-Logger PositionConnector_Impl::logger = Logger::getInstance("Ve.stubs.PositionConnector");
-
-PositionConnector_Impl::~PositionConnector_Impl()
+CORBAPositionTracker::CORBAPositionTracker()
 {
 }
 
 
-void PositionConnector_Impl::update(CORBA::Short index, CORBA::Float x, CORBA::Float y, CORBA::Float z) {
-    LOG4CPLUS_TRACE(logger, "Got update through CORBA: " << x << "," << y << "," << z);
-    Position pos(0, index, x, y, z); 
-    VePositionEvent e(pos);
-    VeEventSource::postEvent(e);
+CORBAPositionTracker::~CORBAPositionTracker()
+{
 }
 
+
+void CORBAPositionTracker::recieveEvent(VeEvent &e) {
+    if (e.getType() == VeEvent::POSITION_EVENT) {
+	VePositionEvent& posE = (VePositionEvent&) e;
+	CvPoint3D32f origPoint;
+	origPoint.x = posE.getPosition().x;
+	origPoint.y = posE.getPosition().y;
+	origPoint.z = posE.getPosition().z;
+	CvPoint2D32f leftPoint = Ve::getLeftSource()->getRegistration()->transformSensorToImage(origPoint);
+	CvPoint2D32f rightPoint = Ve::getRightSource()->getRegistration()->transformSensorToImage(origPoint);
+	Position leftPos(posE.getPosition().index, LEFT_EYE_SOURCE, leftPoint.x, leftPoint.y, 0);
+	Position rightPos(posE.getPosition().index, RIGHT_EYE_SOURCE, rightPoint.x, rightPoint.y, 0);
+	VePositionEvent leftE(leftPos);
+	VePositionEvent rightE(rightPos);
+	postEvent(leftE);
+	postEvent(rightE);
+    }
+}

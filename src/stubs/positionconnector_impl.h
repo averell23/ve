@@ -42,7 +42,7 @@ public:
 
     ~PositionConnector_Impl();
     
-    void update(CORBA::Float x, CORBA::Float y, CORBA::Float z);
+    void update(CORBA::Short index, CORBA::Float x, CORBA::Float y, CORBA::Float z);
 
 private:
     static Logger logger;

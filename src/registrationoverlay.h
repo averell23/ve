@@ -30,6 +30,7 @@
 #include "arregistration.h"
 #include "ve.h"
 #include "fontmanager.h"
+#include "glmacros.h"
 #include <log4cplus/logger.h>
 #include <cv.hpp>
 #include <cc++/thread.h>
@@ -75,12 +76,6 @@ public:
 private:
     /// Logger for this class
     static Logger logger;
-    /**
-      Draws the picture for one eye.
-    */
-    void drawOneEye();
-    /// Draws crosshairs at the desired position
-    void drawCrosshairs(int x, int y);
     /// Temporary sensor points for smoothing out inaccuracies
     CvPoint3D32f* tmpSensorPoints;
     /// Number of sensor updates in a full set
@@ -89,8 +84,6 @@ private:
     int measureCount;
     /// Indicates calibration mode (LEFT_EYE or RIGHT_EYE)
     int mode;
-    /// Blanks the unused eye
-    void blankOtherEye();
     /// Mutex to protect measurent updates
     Mutex mutex;
     /// The registration object used by this overlay

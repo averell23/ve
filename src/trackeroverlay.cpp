@@ -69,7 +69,7 @@ void TrackerOverlay::drawOverlay() {
     glLoadIdentity();
     
     // The following draws the right eye
-    glTranslatef(0.0f, 0.0f,  1.0f);
+    // ? glTranslatef(0.0f, 0.0f,  1.0f);
     drawOneEye(rightPositions);
     
     GLMacros::revertMatrices();
@@ -97,7 +97,7 @@ void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
 	    } else {
 		glColor3f(1.0f, 1.0f, 1.0f);
 	    }
-	    drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y + yOff);
+	    GLMacros::drawCrosshairs((int) posIterator->second.x, (int) posIterator->second.y + yOff);
 	}
 	glColor3f(1.0f, 1.0f, 1.0f);
     }
@@ -106,27 +106,6 @@ void TrackerOverlay::drawOneEye(map<int,Position>& positions) {
     }
 }
 
-
-void TrackerOverlay::drawCrosshairs(int x, int y) {
-    glLineWidth(2.0f);
-    glBegin(GL_LINES);
-    // vertical line
-    glVertex3i(x, -1000, 0);
-    glVertex3i(x, 1000, 0);
-    // horizontal line
-    glVertex3i(0, y, 0);
-    glVertex3i(1000, y, 0);
-    //  box
-    glVertex3i(x-10, y-10, 0);
-    glVertex3i(x-10, y+10, 0);
-    glVertex3i(x+10, y-10, 0);
-    glVertex3i(x+10, y+10, 0);
-    glVertex3i(x-10, y-10, 0);
-    glVertex3i(x+10, y-10, 0);
-    glVertex3i(x-10, y+10, 0);
-    glVertex3i(x+10, y+10, 0);
-    glEnd();
-}
 
 void TrackerOverlay::drawHighlight(int x, int y) {
 	// set color to translucent green

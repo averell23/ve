@@ -29,6 +29,8 @@
 interface PositionConnector {
     /**
      * Sends a new position update.
+     * 
+     * @param index Integer code of the source object.
      */
-    void update(in float x, in float y, in float z);
+    void update(in short index, in float x, in float y, in float z);
 };

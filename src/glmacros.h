@@ -29,6 +29,7 @@
 #endif
 #include <GL/glew.h>
 #include "ve.h"
+#include "fontmanager.h"
 
 /**
 A collection of OpenGL macros for common tasks
@@ -50,7 +51,30 @@ public:
       values.
     */
     static void revertMatrices();
+    
+    /**
+      Draws crosshairs at the given virtual coordinates.
+    */
+    static void drawCrosshairs(int x, int y);
+    
+    /**
+      Draws the text at the given virtual coordinates.
+      
+      @param size FaceSize of the text font.
+    */
+    static void drawText(int x, int y, char* text, int fontSize);
+    
+    /**
+      Blanks the left eye by drawing a black square in front of 
+      all existing elements. 
+    */
+    static void blankLeftEye();
 
+    /**
+      Blanks the left eye by drawing a black square in front of 
+      all existing elements. 
+    */
+    static void blankRightEye();
 };
 
 #endif

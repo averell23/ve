@@ -103,78 +103,31 @@ void RegistrationOverlay::measurePoint(int x, int y) {
 }
 
 void RegistrationOverlay::drawOverlay() {
-    glColor3f(1.0f, 1.0f, 1.0f);		// Set normal color 
-    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
-    glPushMatrix();				// ...push the Matrix for backup...
-    glOrtho(-1000, 1000, -1000, 1000, 0, 1);
-    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
-    glPushMatrix();
-    glLoadIdentity();
+    GLMacros::initVirtualCoords();
 
+    // Draws left eye
     glTranslatef(-1.0f, 0.0f, 0.0f);
-    drawOneEye(); // left eye
-    glLoadIdentity();
-    drawOneEye(); // right eye
-    blankOtherEye();
-
-    // Restore Matrices
-    glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );
-    glPopMatrix();
-}
-
-void RegistrationOverlay::drawOneEye() {
-    drawCrosshairs(500, 0);
-    // drawCrosshairs(calibPoints[calibPointPos].x, calibPoints[calibPointPos].y);
-    FTGLTextureFont* font = FontManager::getFont();
-    if (font == NULL)
-        return; // Sanity check
-
-    glTranslatef(0.05f, 0.7f, 0.0f);
-    font->Render(text[0]);
-}
-
-void RegistrationOverlay::blankOtherEye() {
-    glLoadIdentity();
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBindTexture(GL_TEXTURE_2D, 0);
     if (mode == LEFT_EYE) {
-        glBegin(GL_QUADS);
-        glVertex3i(-1000, -1000, 0);
-        glVertex3i(0, -1000, 0);
-        glVertex3i(0, 1000, 0);
-        glVertex3i(-1000, 1000, 0);
-        glEnd();
-    } else {
-        glBegin(GL_QUADS);
-        glVertex3i(0, -1000, 0);
-        glVertex3i(1000, -1000, 0);
-        glVertex3i(1000, 1000, 0);
-        glVertex3i(0, 1000, 0);
-        glEnd();
+	GLMacros::drawCrosshairs(calibPoints[calibPointPos].x, calibPoints[calibPointPos].y);
     }
+    
+    // Draws right eye
+    glTranslatef(1.0f, 0.0f, 0.0f);
+    if (mode == RIGHT_EYE) {
+	GLMacros::drawCrosshairs(calibPoints[calibPointPos].x, calibPoints[calibPointPos].y);
+    }
+    
+    
+    if (mode == LEFT_EYE) {
+	GLMacros::blankRightEye();
+    } else {
+	GLMacros::blankLeftEye();
+    }
+
+    GLMacros::revertMatrices();
 }
 
-void RegistrationOverlay::drawCrosshairs(int x, int y) {
-    glLineWidth(2.0f);
-    glBegin(GL_LINES);
-    // vertical line
-    glVertex3i(x, -1000, 0);
-    glVertex3i(x, 1000, 0);
-    // horizontal line
-    glVertex3i(0, y, 0);
-    glVertex3i(1000, y, 0);
-    //  box
-    glVertex3i(x-10, y-10, 0);
-    glVertex3i(x-10, y+10, 0);
-    glVertex3i(x+10, y-10, 0);
-    glVertex3i(x+10, y+10, 0);
-    glVertex3i(x-10, y-10, 0);
-    glVertex3i(x+10, y-10, 0);
-    glVertex3i(x-10, y+10, 0);
-    glVertex3i(x+10, y+10, 0);
-    glEnd();
-}
+
 
 void RegistrationOverlay::recieveEvent(VeEvent &e) {
     mutex.enterMutex();

@@ -107,8 +107,7 @@ private:
     FTGLTextureFont* font;
     /// Text for display
     char* text;
-    /// Draws crosshairs at the given position
-    void drawCrosshairs(int x, int y);
+    
     /// Draw a highlight indicator at the given position
     void drawHighlight(int x, int y);
     

@@ -21,19 +21,37 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "positionconnector_impl.h"
+#ifndef CORBAPOSITIONTRACKER_H
+#define CORBAPOSITIONTRACKER_H
 
-Logger PositionConnector_Impl::logger = Logger::getInstance("Ve.stubs.PositionConnector");
+#include <cv.hpp>
+#include "veeventlistener.h"
+#include "veeventsource.h"
+#include "position.h"
+#include "vepositionevent.h"
+#include "ve.h"
 
-PositionConnector_Impl::~PositionConnector_Impl()
-{
-}
+/**
+Recieves position updates through CORBA and forwards them to the display overlay.
 
+@author Daniel Hahn,,,
+*/
+class CORBAPositionTracker : public VeEventListener, VeEventSource {
+public:
+    /// Source ID for the left eye
+    static const int LEFT_EYE_SOURCE = 3;
+    /// Source ID for the right eye 
+    static const int RIGHT_EYE_SOURCE = 4;
+    
+    CORBAPositionTracker();
 
-void PositionConnector_Impl::update(CORBA::Short index, CORBA::Float x, CORBA::Float y, CORBA::Float z) {
-    LOG4CPLUS_TRACE(logger, "Got update through CORBA: " << x << "," << y << "," << z);
-    Position pos(0, index, x, y, z); 
-    VePositionEvent e(pos);
-    VeEventSource::postEvent(e);
-}
+    ~CORBAPositionTracker();
+    
+    /**
+      Event handler for recieving Updates through CORBA.
+    */
+    void recieveEvent(VeEvent &e);
 
+};
+
+#endif

@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "veeventlistener.h"
 
-void VeEventListener::callEvent(VeEvent &e) {
+void VeEventListener::callEvent(VeEvent e) {
 	mtx.enterMutex();
 	recieveEvent(e);
 	mtx.leaveMutex();

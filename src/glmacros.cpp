@@ -44,3 +44,63 @@ void GLMacros::revertMatrices() {
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
 }
+
+
+void GLMacros::drawCrosshairs(int x, int y) {
+    int xsize = Ve::getVirtualSize().x;
+    int ysize = Ve::getVirtualSize().y;
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+    // vertical line
+    glVertex3i(x, -ysize, 0);
+    glVertex3i(x, ysize, 0);
+    // horizontal line
+    glVertex3i(0, y, 0);
+    glVertex3i(xsize, y, 0);
+    //  box
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glVertex3i(x-10, y-10, 0);
+    glVertex3i(x+10, y-10, 0);
+    glVertex3i(x-10, y+10, 0);
+    glVertex3i(x+10, y+10, 0);
+    glEnd();
+}
+
+void GLMacros::drawText(int x, int y, char* text, int fontSize) {
+    FTGLTextureFont* font = FontManager::getFont(fontSize);
+    float xTrans = (float) x / Ve::getVirtualSize().x;
+    float yTrans = (float) y / Ve::getVirtualSize().y;
+    glTranslatef(xTrans, yTrans, 0.0f);
+    font->Render(text);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glTranslatef(-xTrans, yTrans, 0.0f); // Translate back
+}
+
+void GLMacros::blankLeftEye() {
+    glColor3f(0.0f, 0.0f, 0.0f);
+    int xsize = Ve::getVirtualSize().x;
+    int ysize = Ve::getVirtualSize().y;
+    glBegin(GL_QUADS);
+    glVertex3i(-xsize, -ysize, 0);
+    glVertex3i(0, -ysize, 0);
+    glVertex3i(0, ysize, 0);
+    glVertex3i(-xsize, ysize, 0);
+    glEnd();
+    glColor3f(1.0f, 1.0f, 1.0f);
+}
+
+void GLMacros::blankRightEye() {
+    glColor3f(0.0f, 0.0f, 0.0f);
+    int xsize = Ve::getVirtualSize().x;
+    int ysize = Ve::getVirtualSize().y;
+    glBegin(GL_QUADS);
+    glVertex3i(0, -ysize, 0);
+    glVertex3i(xsize, -ysize, 0);
+    glVertex3i(xsize, ysize, 0);
+    glVertex3i(0, ysize, 0);
+    glEnd();
+    glColor3f(1.0f, 1.0f, 1.0f);
+}

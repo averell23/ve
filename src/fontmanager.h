@@ -43,34 +43,58 @@ public:
 
     ~FontManager();
 
+    /// Initial size of the internal font array
+    static const int INTIAL_FONTS_SIZE = 1024;
+    
     /**
-      Returns the single instance of the managed font. 
+      Returns the single instance of the managed font. The font object is
+      re-used and must not be changed.
       
-      At the moment the
-      font has a default size, and the face size should NOT be changed
-      outside this class. This is because FaceSize() is an expensive 
-      operation and should not be done for every frame. 
-      
-      To get around this future implementatios may contain multiple 
-      Font objects, one for each font size.
+      @param size Font size 
       
       @return The font object, or NULL if it could not be created.
     */
-    static FTGLTextureFont* getFont();
+    static FTGLTextureFont* getFont(int size=40) { return myInstance.internalGetFont(size); }
 
 private:
     /**
       Private for singleton class.
     */
     FontManager();
+    
+    /// The singleton instance;
+    static FontManager myInstance;
 
+    /** 
+      Internal version of @see getFont
+    */
+    FTGLTextureFont* internalGetFont(int size);
+    
     /**
       This actually creates the font object.
+      
+      @param size FaceSize of the font object.
     */
-    static void createFont();
+    void createFont(int size);
 
-    /// The font managed by this class
-    static FTGLTextureFont* font;
+    /**
+      Fonts managed by this class. An array eats memory,
+      but it's fast.
+    */
+    FTGLTextureFont** fonts;
+    
+    /**
+      Grows the internal font array.
+      
+      @param increment Number of elements that will be added to 
+                       the font array
+    */
+    void growFonts(int increment);
+    
+    /**
+      Size of the font array.
+    */
+    int fontsSize;
 
     /// Logger for this class
     static Logger logger;
