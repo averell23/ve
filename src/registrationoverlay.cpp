@@ -26,8 +26,7 @@
 Logger RegistrationOverlay::logger = Logger::getInstance("Ve.RegistrationOverlay");
 
 
-RegistrationOverlay::~RegistrationOverlay()
-{
+RegistrationOverlay::~RegistrationOverlay() {
 	delete tmpSensorPoints;
 	delete calibPoints;
 	delete text[0];
@@ -76,12 +75,12 @@ void RegistrationOverlay::measurePoint(int x, int y) {
 	// result vector
 	gsl_vector* result = gsl_vector_alloc(3);
 	// Least squares
-	double* chisq = 0;
+	double chisq;
 	gsl_matrix* cov = gsl_matrix_calloc(3,3);
 	gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(measureCount*3, 3);
 	LOG4CPLUS_DEBUG(logger, "Matrices created, fitting least squares.");
-	gsl_multifit_linear(params, observations, result, cov, chisq, work);
-	LOG4CPLUS_DEBUG(logger, "Matched measured points, chi squared was " << *chisq);
+	gsl_multifit_linear(params, observations, result, cov, &chisq, work);
+	LOG4CPLUS_DEBUG(logger, "Matched measured points, chi squared was " << chisq);
 	CvPoint2D32f imagePoint;
 	imagePoint.x = x;
 	imagePoint.y = y;
@@ -147,31 +146,31 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
 	}
 	if (e.getType() == VeEvent::KEYBOARD_EVENT) {
 		switch (e.getCode()) {
-		case 'r':
-		case 'R':
-			toggleDisplay();
-			break;
-		case 't':
-		case 'T':
-			if (measuring == false) {
-				measuring = true;
-				measureCount = 0;
-			} 
-			break;
-		case 'e':
-		case 'E': 
-			if (mode == LEFT_EYE) {
-				mode = RIGHT_EYE;
-				registration = Ve::getRightSource()->getRegistration();
-			} else {
-				mode = LEFT_EYE;
-				registration = Ve::getLeftSource()->getRegistration();
-			}
-			break;
-		case 'w':
-		case 'W':
-			registration->reRegister();
-			break;
+				case 'r':
+				case 'R':
+				toggleDisplay();
+				break;
+				case 't':
+				case 'T':
+				if (measuring == false) {
+					measuring = true;
+					measureCount = 0;
+				}
+				break;
+				case 'e':
+				case 'E':
+				if (mode == LEFT_EYE) {
+					mode = RIGHT_EYE;
+					registration = Ve::getRightSource()->getRegistration();
+				} else {
+					mode = LEFT_EYE;
+					registration = Ve::getLeftSource()->getRegistration();
+				}
+				break;
+				case 'w':
+				case 'W':
+				registration->reRegister();
+				break;
 		}
 	}
 }

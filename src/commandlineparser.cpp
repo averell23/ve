@@ -25,7 +25,8 @@
 
 Logger CommandLineParser::logger = Logger::getInstance("Ve.CommandLineParser");
 
-CommandLineParser::CommandLineParser(string programName) {
+CommandLineParser::CommandLineParser(string programName, bool ignoreUnknown) {
+    CommandLineParser::ignoreUnknown = ignoreUnknown;
     CommandLineParser::programName = programName;
 }
 
@@ -78,8 +79,10 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
 
     for (int i = 1 ; i < argc ; i++) {
         if (argv[i][0] != '-') {
-            cout << "Illegal option: " << argv[i] << endl;
-            return false;
+	    if (!ignoreUnknown) {
+		cout << "Illegal option: " << argv[i] << endl;
+		return false;
+	    }
         } // Sanity check
 
         char* current = &argv[i][1];
@@ -99,8 +102,10 @@ bool CommandLineParser::parseCommandLine(int argc, char *argv[]) {
             parameters[current] = argv[i];
             LOG4CPLUS_DEBUG(logger, "Set parameter " << current << " to " << argv[i]);
         } else {
-            cout << "Unknown Option/Parameter: " << current << endl;
-            return false;
+	    if (!ignoreUnknown) {
+		cout << "Unknown Option/Parameter: " << current << endl;
+		return false;
+	    }
         }
     } // for
 

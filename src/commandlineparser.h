@@ -46,7 +46,7 @@ public:
      printing the usage information, and will be
      automatically re-set when parsing a command line).
     */
-    CommandLineParser(string programName);
+    CommandLineParser(string programName, bool ignoreUnknown = false);
     ~CommandLineParser();
 
     static const int OPTION_UNSET = 0;
@@ -118,6 +118,8 @@ private:
     map<string, string> parameters;
     /// Logger for this class
     static Logger logger;
+    /// Indicates wether unknown parameters/options will generate an error
+    bool ignoreUnknown;
 
     /**
       Resets the list of required Parameters.

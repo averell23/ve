@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     // own command line parser
     Ve::initGL(argc, argv);
 
-    CommandLineParser parser("ve");
+    CommandLineParser parser("ve", true);
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
