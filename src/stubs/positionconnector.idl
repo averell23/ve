@@ -21,43 +21,14 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENT_H
-#define VEEVENT_H
 
 /**
-Simple Event class for Ve's internal event handling.
-
-@author Daniel Hahn,,,
-*/
-class VeEvent{
-public:
+ * Very simple connector that allows a single 3D position to be transferred to 
+ * the server. 
+ */
+interface PositionConnector {
     /**
-      Creates an event with the given event code.
-    */
-    VeEvent(int type, long code);
-
-    ~VeEvent();
-    
-    /**
-      Returns the event code.
-    */
-    long getCode();
-    
-    /**
-      Returns the event type.
-    */
-    int getType();
-    
-    /// Pre-defined event types
-    static const int MISC_EVENT = 0;
-    static const int KEYBOARD_EVENT = 1;
-    static const int POSITION_EVENT = 2;
-
-private:
-    /// An arbitrary event code
-    long code;
-    /// Determines the event type
-    int type;
+     * Sends a new position update.
+     */
+    void update(in float x, in float y, in float z);
 };
-
-#endif

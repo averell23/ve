@@ -21,43 +21,67 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENT_H
-#define VEEVENT_H
+#ifndef CORBACONTROLLER_H
+#define CORBACONTROLLER_H
+
+#include <log4cplus/logger.h>
+#include <cc++/thread.h>
+#include "veeventsource.h"
+#include "stubs/positionconnector.hh"
+#include "stubs/positionconnector_impl.h"
+
+using namespace log4cplus;
+using namespace std;
+using namespace ost;
 
 /**
-Simple Event class for Ve's internal event handling.
+Static class that controls the operations of the CORBA subsystem.
+This is a singleton class that will run the CORBA processing in
+a separate thread once it is initialized.
 
 @author Daniel Hahn,,,
 */
-class VeEvent{
+class CORBAController : public Thread {
 public:
-    /**
-      Creates an event with the given event code.
-    */
-    VeEvent(int type, long code);
-
-    ~VeEvent();
     
     /**
-      Returns the event code.
+      Gets the singleton instance of this class.
     */
-    long getCode();
+    static CORBAController& getInstance() { return myInstance; }
     
     /**
-      Returns the event type.
+      Initializes the CORBA subsystem
     */
-    int getType();
+    void init(int argc, char** argv);
     
-    /// Pre-defined event types
-    static const int MISC_EVENT = 0;
-    static const int KEYBOARD_EVENT = 1;
-    static const int POSITION_EVENT = 2;
-
+    /**
+      Adds a listener for position events.
+    */
+    void addPositionEventListener(VeEventListener* listener);
+    
+    /**
+      Indicates if the CORBA controller thread is running;
+    */
+    bool isRunning() { return running; }
+    
+    void run();
+    
+    ~CORBAController();
+    
 private:
-    /// An arbitrary event code
-    long code;
-    /// Determines the event type
-    int type;
+    /// The CORBA ORB
+    CORBA::ORB_var orb;
+    /// Logger for this class
+    static Logger logger;
+    /// Internal instance that will run the CORBA worker thread
+    static CORBAController myInstance;
+    /// Private contructor for singleton class
+    CORBAController();
+    /// Indicates if the internal thread is running
+    bool running;
+    /// Event source/CORBA object for position events
+    PositionConnector_Impl* positionSource;
+
 };
 
 #endif

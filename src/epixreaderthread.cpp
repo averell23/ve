@@ -46,6 +46,7 @@ void EpixReaderThread::run() {
 			LOG4CPLUS_WARN(logger, "Buffer read error: " << pxd_mesgErrorCode(readResult));
 		} 
     }
+    LOG4CPLUS_INFO(logger, "Thread shut down.");
 }
 
 

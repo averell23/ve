@@ -21,43 +21,34 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENT_H
-#define VEEVENT_H
+#ifndef VEPOSITIONEVENT_H
+#define VEPOSITIONEVENT_H
+
+#include "position.h"
+#include "veevent.h"
 
 /**
-Simple Event class for Ve's internal event handling.
+Event containing a position update. The type of this event is always VeEvent::POSITION_EVENT and
+the event code is always 0.
 
 @author Daniel Hahn,,,
 */
-class VeEvent{
+class VePositionEvent : public VeEvent
+{
 public:
-    /**
-      Creates an event with the given event code.
-    */
-    VeEvent(int type, long code);
 
-    ~VeEvent();
+    VePositionEvent(Position& position);
     
-    /**
-      Returns the event code.
+    ~VePositionEvent();
+    
+    /** 
+      Gets the position supplied by the event.
     */
-    long getCode();
-    
-    /**
-      Returns the event type.
-    */
-    int getType();
-    
-    /// Pre-defined event types
-    static const int MISC_EVENT = 0;
-    static const int KEYBOARD_EVENT = 1;
-    static const int POSITION_EVENT = 2;
+    Position getPosition();
 
 private:
-    /// An arbitrary event code
-    long code;
-    /// Determines the event type
-    int type;
+    Position pos;
+
 };
 
 #endif

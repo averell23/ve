@@ -21,43 +21,42 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENT_H
-#define VEEVENT_H
 
-/**
-Simple Event class for Ve's internal event handling.
+#include <iostream>
+#include "../stubs/positionconnector.hh"
 
-@author Daniel Hahn,,,
+using namespace std;
+
+/*
+  Simple utility to test the function of the CORBA server in ve.
 */
-class VeEvent{
-public:
-    /**
-      Creates an event with the given event code.
-    */
-    VeEvent(int type, long code);
 
-    ~VeEvent();
+int main(int argc, char** argv) {
+    try {
+	CORBA::ORB_var orb = CORBA::ORB_init(argc, argv);
     
-    /**
-      Returns the event code.
-    */
-    long getCode();
+	if (argc != 2) {
+	    cout << "Usage: " << argv[0] << " <object reference>" << endl;
+	    return 1;
+	}
+	
+	CORBA::Object_var obj = orb->string_to_object(argv[1]);
+	PositionConnector_var connector = PositionConnector::_narrow(obj);
+	
+	if (CORBA::is_nil(connector)) {
+	    cout << "Can't narrow reference to type PositionConnector (or it was nil)." << endl;
+	    return 1;
+	}
+	
+	connector->update(23, 17, 12);
+	
+	orb->destroy();
+    } catch (CORBA::COMM_FAILURE& ex) {
+	cout << "Caught CORBA::COMM_FAILURE, unable to contact the object." << endl;
+    } catch (CORBA::SystemException&) {
+	cout << "Caught CORBA::SystemException" << endl;
+    } catch (CORBA::Exception&) {
+	cout << "Caught CORBA::Exception" << endl;
+    }
     
-    /**
-      Returns the event type.
-    */
-    int getType();
-    
-    /// Pre-defined event types
-    static const int MISC_EVENT = 0;
-    static const int KEYBOARD_EVENT = 1;
-    static const int POSITION_EVENT = 2;
-
-private:
-    /// An arbitrary event code
-    long code;
-    /// Determines the event type
-    int type;
-};
-
-#endif
+}

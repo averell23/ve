@@ -21,43 +21,32 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#ifndef VEEVENT_H
-#define VEEVENT_H
+#ifndef POSITIONCONNECTOR_IMPL_H
+#define POSITIONCONNECTOR_IMPL_H
+
+#include <log4cplus/logger.h>
+#include "positionconnector.hh"
+#include "../position.h"
+#include "../vepositionevent.h"
+#include "../veeventsource.h"
 
 /**
-Simple Event class for Ve's internal event handling.
+Implementation of the postion update connector.
 
 @author Daniel Hahn,,,
 */
-class VeEvent{
+class PositionConnector_Impl : public POA_PositionConnector, public PortableServer::RefCountServantBase, public VeEventSource
+{
 public:
-    /**
-      Creates an event with the given event code.
-    */
-    VeEvent(int type, long code);
 
-    ~VeEvent();
+
+    ~PositionConnector_Impl();
     
-    /**
-      Returns the event code.
-    */
-    long getCode();
-    
-    /**
-      Returns the event type.
-    */
-    int getType();
-    
-    /// Pre-defined event types
-    static const int MISC_EVENT = 0;
-    static const int KEYBOARD_EVENT = 1;
-    static const int POSITION_EVENT = 2;
+    void update(CORBA::Float x, CORBA::Float y, CORBA::Float z);
 
 private:
-    /// An arbitrary event code
-    long code;
-    /// Determines the event type
-    int type;
+    static Logger logger;
+
 };
 
 #endif

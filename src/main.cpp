@@ -30,6 +30,7 @@
 #include "statusoverlay.h"
 #include "offsetoverlay.h"
 #include "commandlineparser.h"
+#include "corbacontroller.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 
@@ -41,13 +42,19 @@ int main(int argc, char *argv[])
 {
     cout << "Ve Augmented Reality toolbox. (c) 2003 ISAS, author: Daniel Hahn" << endl;
     
-	PropertyConfigurator::doConfigure("../config/logger.properties");
-    
+    PropertyConfigurator::doConfigure("../config/logger.properties");
+  
+    // Initialize all stuff that reads from the command line, before starting our
+    // own command line parser
+    Ve::initGL(argc, argv);
+    CORBAController corba = CORBAController::getInstance();
+    corba.init(argc, argv);
+	
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
-	parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");
+    parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
 	cout << endl;
@@ -91,7 +98,6 @@ int main(int argc, char *argv[])
     Logger logger = Logger::getInstance("Ve.main");
     LOG4CPLUS_DEBUG(logger, "Logging initialized");
     
-  Ve::initGL(argc, argv);  
   VideoSource *left,*right;
   
   param = parser.getParamValue("source");

@@ -91,6 +91,7 @@ public:
     /** OpenGL initilization */
     static void initGL( int argc, char** argv );
     
+    
     /** Reshape (viewport) callback */
     static void reshape ( int w, int h );
 

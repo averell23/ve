@@ -155,3 +155,4 @@ void Ve::initGL( int argc, char** argv ) {
 	}
     LOG4CPLUS_INFO(logger, "GLUT/OpenGL initialization complete");
 }
+
