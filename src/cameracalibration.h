@@ -266,6 +266,9 @@ private:
 
     /// Set internal image to undistorted version of last snapshot
     void setUndistortSnap();
+    
+    /// Copies a set of corners to a new array
+    static void copyCorners(CvPoint2D32f* src, CvPoint2D32f* dst, int size);
 
 };
 

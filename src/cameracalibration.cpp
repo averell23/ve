@@ -47,6 +47,9 @@ CameraCalibration::~CameraCalibration() {
         delete lastSnapshot->imageData;
         cvReleaseImageHeader(&lastSnapshot);
     }
+    if (lastCorners) {
+	delete lastCorners;
+    }
     deleteSnapshots();
 }
 void CameraCalibration::setFilename(string filename) {
@@ -239,7 +242,7 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
     int pointCount = patternDimension.width * patternDimension.height;
     CvPoint2D32f* tempPoints = new CvPoint2D32f[pointCount + 1];
     if (lastCorners) delete lastCorners; // tempPoints from last round deleted here!
-    lastCorners = tempPoints;
+    lastCorners = new CvPoint2D32f[pointCount + 1];
 
     IplImage* threshTmp; // Temp Image for corner detection
     int cornerNum; // Number of corners found
@@ -253,14 +256,17 @@ CvPoint2D32f* CameraCalibration::guessCorners(IplImage* image) {
                 &cornerNum);
 
     lastCornerCount = (cornerNum > 0)?cornerNum:(-cornerNum);
-
+    
     if (found != 0) {
          cvFindCornerSubPix(image, tempPoints, cornerNum,			// FIXME: Last parameter not understood
 			   searchWindow, cvSize(-1, -1),
 			   cvTermCriteria(CV_TERMCRIT_EPS|CV_TERMCRIT_ITER,30,0.1));
-        LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found); 
+	 copyCorners(tempPoints, lastCorners, pointCount);
+	 LOG4CPLUS_DEBUG(logger, cornerNum << " corners found in calibration image, result was " << found); 
     } else {
         LOG4CPLUS_WARN(logger, "Corner find unsuccessful, corner count: " << cornerNum);
+	copyCorners(tempPoints, lastCorners, pointCount);
+	delete tempPoints;
         tempPoints = NULL;
     }
 
@@ -507,10 +513,16 @@ bool CameraCalibration::readDistortionVec(xercesc::DOMNodeList* nodeList) {
 void CameraCalibration::popSnapshot() {
     int lastI = images.size() - 1; 
     if (lastI >= 0) {
-	    cvReleaseImage(&images[lastI]);
-	    delete guessedCorners[lastI];
-	    images.pop_back();
-	    guessedCorners.pop_back();
+	cvReleaseImage(&images[lastI]);
+	delete guessedCorners[lastI];
+	images.pop_back();
+	guessedCorners.pop_back();
+    }
+}
+
+void CameraCalibration::copyCorners(CvPoint2D32f* src, CvPoint2D32f* dst, int size) {
+    for (int i=0 ; i<size ; i++) {
+	dst[i] = src[i];
     }
 }
 
