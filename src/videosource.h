@@ -59,7 +59,7 @@ public:
     virtual IplImage *getImage() = 0;
 
     /**
-    	Works like getImage(), except that this function will block
+    	Works like @see getImage(), except that this function will block
     	until a new image is available from the source. It's not 
     	recommended to use this function for the regular display
     	updates.
@@ -70,6 +70,13 @@ public:
     	@see getImage()
     */
     virtual IplImage *waitAndGetImage() = 0;
+
+	/**
+		Works like @see waitAndGetImage() but will perform image
+		corrections on the image. At the moment, the only correction performed
+		is the subtraction of the black offset.
+	*/
+	virtual IplImage *waitAndGetImageCorrected();
 
 
     /** Gets the image width for this video source */
@@ -124,6 +131,28 @@ public:
         return calibrationObject;
     }
     
+	/** 
+		Stores a "black offset" image that can be subtracted from the video image to correct 
+		some cameras (like the Silicon Imaging 1280).
+	*/
+	void storeBlackOffset();
+
+	/**
+		Clears the internal "black offset" image. This may either result in the black offset image
+		being cleared, or the image itself being set to NULL.
+	*/
+	void clearBlackOffset();
+
+	/* 
+		Returns a pointer to the internal "black offset" image. This
+		is actually a pointer to the internal data, so it shouldn't be
+		touched by external routines.
+
+		@return The black offset image, or NULL if the image has not been 
+		        initialized.
+	*/
+	const IplImage* getBlackOffset() { return blackOffset; }
+
     /**
       Returns the sensor registration object connected to this source.
     */
@@ -151,6 +180,8 @@ protected:
     CameraCalibration* calibrationObject;
     /// Internal registration Object
     ARRegistration* registrationObject;
+	/// Black offset image
+	IplImage* blackOffset;
 };
 
 #endif

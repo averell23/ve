@@ -29,22 +29,24 @@ char* TrackerOverlay::paramFile = "../config/camera.param";
 TrackerOverlay::TrackerOverlay() {
     thresh = 100;
     // Init ARToolkit camera parameters
-    ARParam *cparam, *wparam;
-    if (arParamLoad(paramFile, 1, wparam) < 0) {
-	LOG4CPLUS_WARN(logger, "Could not load parameter file: " << paramFile);
+    ARParam cparam, wparam;
+    if (arParamLoad(paramFile, 1, &wparam) < 0) {
+		LOG4CPLUS_WARN(logger, "Could not load parameter file: " << paramFile);
     } else {
-	LOG4CPLUS_DEBUG(logger, "Parameters loaded for ARToolkit.");
-	int height = Ve::getLeftSource()->getHeight();
-	int width = Ve::getLeftSource()->getWidth();
-	arParamChangeSize(wparam, width, height, cparam);
-	arInitCparam(cparam);
-	LOG4CPLUS_DEBUG(logger, "Camera parameters initialized.");
+		LOG4CPLUS_DEBUG(logger, "ARToolkit parameters loaded.");
+		int height = Ve::getLeftSource()->getHeight();
+		int width = Ve::getLeftSource()->getWidth();
+		arParamChangeSize(&wparam, width, height, &cparam);
+		arInitCparam(&cparam);
+		LOG4CPLUS_DEBUG(logger, "Camera parameters initialized.");
     }
     // Load patterns
     int pattId = arLoadPatt("../config/patterns/hiro.pattern"); // FIXME: Global variables instead of hardcode
     if (pattId < 0) {
-	LOG4CPLUS_WARN(logger, "Pattern could not be loaded.");
-    }
+		LOG4CPLUS_WARN(logger, "Pattern could not be loaded.");
+	} else {
+		LOG4CPLUS_DEBUG(logger, "Pattern loaded.");
+	}
 }
 
 TrackerOverlay::~TrackerOverlay()

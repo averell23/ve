@@ -34,6 +34,7 @@
 #include "commandlineparser.h"
 #include "corbacontroller.h"
 #include "arregistration.h"
+#include "trackeroverlay.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 
@@ -148,6 +149,7 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(offset);
     Ve::addListener(offset);
     // Ve::addOverlay(new DummyOverlay(true));
+	Ve::addOverlay(new TrackerOverlay());
     StatusOverlay* status = new StatusOverlay(true);			// FIXME: proper deletion of overlays?
     Ve::addOverlay(status);
     Ve::addListener(status);

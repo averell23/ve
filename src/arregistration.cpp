@@ -88,11 +88,11 @@ void ARRegistration::reRegister() {
     LOG4CPLUS_DEBUG(logger, "Temp data structures initialized, now trying to do least-squares fit.");
     gsl_vector* T_vec = gsl_vector_alloc(12);
     // Least-square
-    gsl_matrix* cov;
-    double* chisq;
+    gsl_matrix* cov = gsl_matrix_alloc(3,3);
+    double chisq;
     gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(sensorPoints.size(), 12);
-    gsl_multifit_linear(params, y, T_vec, cov, chisq, work);
-    LOG4CPLUS_DEBUG(logger, "Least squares returned, chi squared is " << *chisq);
+    gsl_multifit_linear(params, y, T_vec, cov, &chisq, work);
+    LOG4CPLUS_DEBUG(logger, "Least squares returned, chi squared is " << chisq);
     gsl_multifit_linear_free(work);
     // Recreate the transformation matrix
     gsl_matrix* T = gsl_matrix_calloc(4,4);
@@ -108,6 +108,7 @@ void ARRegistration::reRegister() {
     gsl_vector_free(T_vec);
     gsl_matrix_free(params);
     gsl_matrix_free(T);
+	gsl_matrix_free(cov);
 }
 
 gsl_matrix* ARRegistration::getCalibrationMatrix() {
@@ -123,6 +124,8 @@ gsl_matrix* ARRegistration::getCalibrationMatrix() {
     gsl_matrix_set(c, 1, 2, calibMatrix[5]); // Principal point y
     // Last row of the calibration matrix
     gsl_matrix_set(c, 2, 2, 1);
+
+	return c;
 }
 
 CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
@@ -138,4 +141,6 @@ CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
     retVal.y = gsl_matrix_get(result, 1, 0) / gsl_matrix_get(result, 2, 0);
     gsl_matrix_free(result);
     gsl_matrix_free(point);
+
+	return retVal;
 }

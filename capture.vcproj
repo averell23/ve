@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\sources\gsl-1.0\include&quot;;C:\Programme\OpenCV\cv\include;D:\sources\glew\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;&quot;D:\sources\log4cplus-1.0\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -32,10 +32,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="XCLIBWNT.lib log4cplusd.lib glew32.lib ccgnu2d.lib cv.lib"
+				AdditionalDependencies="XCLIBWNT.lib log4cplusd.lib glew32.lib ccgnu2d.lib cv.lib libgsl.lib libgslcblas.lib"
 				OutputFile="$(OutDir)/capture.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="C:\Programme\OpenCV\lib;&quot;D:\sources\commoncpp2-1.0.13\win32\Debug&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;C:\Programme\XCLIB"
+				AdditionalLibraryDirectories="&quot;D:\sources\gsl-1.0\lib&quot;;C:\Programme\OpenCV\lib;&quot;D:\sources\commoncpp2-1.0.13\win32\Debug&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;C:\Programme\XCLIB"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/capture.pdb"
 				SubSystem="1"
@@ -116,6 +116,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\src\arregistration.cpp">
+			</File>
+			<File
 				RelativePath=".\src\buffersource.cpp">
 			</File>
 			<File
@@ -180,6 +183,9 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\src\arregistration.h">
+			</File>
 			<File
 				RelativePath=".\src\bmpstruct.h">
 			</File>

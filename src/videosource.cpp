@@ -27,6 +27,7 @@ VideoSource::VideoSource() {
     calibrationObject = new CameraCalibration(this);
     registrationObject = new ARRegistration(this);
     timer = new Stopwatch();
+	blackOffset = NULL;
     timer->start();
 }
 
@@ -59,4 +60,15 @@ void VideoSource::setBrightness(int brightness) {
         brightness = 0;
     }
     VideoSource::brightness = brightness;
+}
+
+void VideoSource::storeBlackOffset() {
+	blackOffset = waitAndGetImage();
+}
+
+void VideoSource::clearBlackOffset() {
+	blackOffset = NULL;
+}
+IplImage *VideoSource::waitAndGetImageCorrected() {
+	return waitAndGetImage(); // FIXME: Do correction
 }

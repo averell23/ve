@@ -245,6 +245,35 @@ href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/pro
 			<span class="code">WS2_32.LIB</span>
 		</li>
     </div>
+    <h2>Gnu Scientific Library</h2>
+    <p>
+    As of the writing of this documentation, a prebuilt package of the current version
+    of the GSL (1.4) is not readily available. It is possible to obtain a commercial CD 
+    version, or try to build the library from the CVS sources. These can be found on the
+    GSL homepage at <a href="http://sources.redhat.com/gsl/">http://sources.redhat.com/gsl/</a>
+    </p>
+    <p>
+    However, a pre-built package of version 1.0 of the library is available at 
+    <a href="http://prdownloads.sourceforge.net/gnuwin32/">http://prdownloads.sourceforge.net/gnuwin32/</a>,
+    and the application should run with this as well. The following instructions are valid for that version
+    of the library.
+    </p>
+    <div class="steps">
+		<li>
+			Add the GSL <span class="code">include/</span> directory to your
+			include search path.
+		</li>
+		<li>
+			Add the GSL <span class="code">lib/</span> directory to your library search path.
+		</li>
+		<li>
+			Link against <span class="code">libgsl.lib</span> and <span class="code">libgslcblas.lib</span>.
+		</li>
+		<li>
+			Copy <span class="code">libgsl.dll</span> and <span class="code">libgscblas.dll</span> to
+			the system search path.
+		</li>
+    </div>
     <h2>Visual Studio Settings</h2>
   </body>
 </html>
