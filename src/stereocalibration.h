@@ -24,9 +24,10 @@
 #ifndef STEREOCALIBRATION_H
 #define STEREOCALIBRATION_H
 
+#include "ve.h"
 #include "cameracalibration.h"
 
-// Forward declaration
+// Forward declarations
 class CameraCalibration;
 
 /**
