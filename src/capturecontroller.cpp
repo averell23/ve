@@ -4,31 +4,31 @@ Logger CaptureController::logger = Logger::getInstance("Ve.CaptureController");
 
 CaptureController::CaptureController(int height, int width, int size, int type, char* filePrefix)
 {
-	this->height = height;
-	this->width = width;
-	this->filePrefix = filePrefix;
-	offset_x = 0;
-	offset_y = 0;
+	info.height = height;
+	info.width = width;
+	info.filePrefix = filePrefix;
+	info.offset_x = 0;
+	info.offset_y = 0;
 	
 	if (type == IMAGE_BAYER) {
-		planes = 1;
-		pixBytes = 2;
-		colorName = "Bayer";
+		info.planes = 1;
+		info.pixBytes = 2;
+		info.colorName = "Bayer";
 		LOG4CPLUS_DEBUG(logger, "Bayer color model selected.");
 	} else if (type == IMAGE_RGB) {
-		planes = 3;
-		pixBytes = 1;
-		colorName = "RGB";
+		info.planes = 3;
+		info.pixBytes = 1;
+		info.colorName = "RGB";
 		LOG4CPLUS_DEBUG(logger, "RGB color model selected.");
 	} else if (type == IMAGE_GRAY) {
-		planes = 1;
-		pixBytes = 1;
-		colorName = "Gray";
+		info.planes = 1;
+		info.pixBytes = 1;
+		info.colorName = "Gray";
 		LOG4CPLUS_DEBUG(logger, "Grayscale color model selected.");
 	} else {
-		planes = 1;
-		pixBytes = 1;
-		colorName = "Gray";
+		info.planes = 1;
+		info.pixBytes = 1;
+		info.colorName = "Gray";
 		LOG4CPLUS_WARN(logger, "Illegal color mode, defaulting to grayscale");
 	}
 
@@ -39,30 +39,28 @@ CaptureController::CaptureController(int height, int width, int size, int type, 
 		bufferSize = size;
 	}
 
-	imgSize = height * width * planes;
+	info.imgSize = info.height * info.width * info.planes;
 
-	buffers_a = new char*[bufferSize];
-	buffers_b = new char*[bufferSize];
-	for (int i = 0 ; i < bufferSize ; i++) {
-		buffers_a[i] = new char[imgSize * pixBytes];
-		buffers_b[i] = new char[imgSize * pixBytes];
-	}
-	LOG4CPLUS_INFO(logger, "Creation complete, size is " << width << "x" << height << "x(" 
-		<< planes << "x" << pixBytes << "), buffer size is " << bufferSize << " images.");
+	buffer_a = new CaptureBuffer(bufferSize, info.imgSize * info.pixBytes);
+	buffer_b = new CaptureBuffer(bufferSize, info.imgSize * info.pixBytes);
+
+	LOG4CPLUS_INFO(logger, "Creation complete, size is " << info.width << "x" 
+		       << info.height << "x(" << info.planes << "x" << info.pixBytes 
+		       << "), buffer size is " << bufferSize << " images.");
+	mutex = new Mutex();
+	readThread = NULL;
+	writeThread = NULL;
 }
 
 CaptureController::~CaptureController(void)
 {
-	for (int i = 0 ; i < bufferSize ; i++) {
-		delete buffers_a[i];
-		delete buffers_b[i];
-	}
-	delete buffers_a;
-	delete buffers_b;
+    delete mutex;
+	delete buffer_a;
+	delete buffer_b;
 	LOG4CPLUS_INFO(logger, "Buffers deallocated.");
 }
 
-void CaptureController::captureToBuffer() {
+void CaptureController::captureToBuffers() {
 	pxvbtime_t fieldCount1 = pxd_capturedFieldCount(1<<0);
 	pxvbtime_t fieldCount2 = pxd_capturedFieldCount(1<<1);
 	Stopwatch timer;
@@ -76,7 +74,7 @@ void CaptureController::captureToBuffer() {
 		while ((fieldCount1 == pxd_capturedFieldCount(1<<0)) && (fieldCount2 == pxd_capturedFieldCount(1<<1))) {
 			Thread::yield();
 		}
-		readBuffers(i);
+		readBuffer(i);
 		fieldCount1 = pxd_capturedFieldCount(1<<0);
 		fieldCount2 = pxd_capturedFieldCount(1<<1);
 		timer.count();
@@ -86,26 +84,26 @@ void CaptureController::captureToBuffer() {
 		<< timer.getSeconds() << "s, " << timer.getMilis()  << "ms, framerate was " << timer.getFramerate());
 }
 
-void CaptureController::writeBuffer() {
+void CaptureController::writeBuffers() {
 	// Names for the image files
 	char name1[256], name2[256];
 	// File handles
 	FILE *file1, *file2;
 	Stopwatch timer;
 
-	LOG4CPLUS_INFO(logger, "Starting to write buffer to disk, with file prefix " << filePrefix);
+	LOG4CPLUS_INFO(logger, "Starting to write buffer to disk, with file prefix " << info.filePrefix);
 	timer.start();
 	for (int i = 0 ; i < bufferSize ; i++) {
-		sprintf(name1,"%s_a_%d.img",filePrefix, i);
-		sprintf(name2,"%s_b_%d.img",filePrefix, i);
+		sprintf(name1,"%s_a_%d.img",info.filePrefix, i);
+		sprintf(name2,"%s_b_%d.img",info.filePrefix, i);
 
 		// write to files
 		file1 = fopen(name1, "wb");
-		if (fwrite(buffers_a[i], pixBytes, imgSize, file1) != imgSize)
+		if (fwrite(buffer_a->getBufferAt(i), info.pixBytes, info.imgSize, file1) != info.imgSize)
 			LOG4CPLUS_ERROR(logger, "Error writing file for cam a");
 		fclose(file1);
 		file2 = fopen(name2, "wb");
-		if (fwrite(buffers_b[i], pixBytes, imgSize, file2) != imgSize)
+		if (fwrite(buffer_b->getBufferAt(i), info.pixBytes, info.imgSize, file2) != info.imgSize)
 			LOG4CPLUS_ERROR(logger, "Error writing file for cam b");
 		fclose(file2);
 		timer.count();
@@ -115,22 +113,42 @@ void CaptureController::writeBuffer() {
 		<< timer.getSeconds() << "s, " << timer.getMilis()  << "ms, framerate was " << timer.getFramerate());
 }
 
-void CaptureController::readBuffers(int i) {
-	if (pixBytes == 1) {
-			int result = pxd_readuchar(1<<0, 1, offset_x, offset_y, offset_x + width , offset_y + height, (uchar*) buffers_a[i], imgSize, colorName);
-			if (result != imgSize) 
-				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << imgSize);
-			result = pxd_readuchar(1<<1, 1, offset_x, offset_y, offset_x + width , offset_y + height, (uchar*) buffers_b[i], imgSize, colorName);
-			if (result != imgSize) 
-				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << imgSize);
-		} else if (pixBytes == 2) {
-			int result = pxd_readushort(1<<0, 1, offset_x, offset_y, offset_x + width , offset_y + height, (ushort*) buffers_a[i], imgSize, colorName);
-			if (result != imgSize) 
-				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << imgSize);
-			result = pxd_readushort(1<<1, 1, offset_x, offset_y, offset_x + width , offset_y + height, (ushort*) buffers_b[i], imgSize, colorName);
-			if (result != imgSize) 
-				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << imgSize);
+void CaptureController::readBuffer(int i) {
+	if (info.pixBytes == 1) {
+			int result = pxd_readuchar(1<<0, 1, info.offset_x, info.offset_y, info.offset_x + info.width , info.offset_y + info.height, (uchar*) buffer_a->getBufferAt(i), info.imgSize, info.colorName);
+			if (result != info.imgSize) 
+				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << info.imgSize);
+			result = pxd_readuchar(1<<1, 1, info.offset_x, info.offset_y, info.offset_x + info.width , info.offset_y + info.height, (uchar*) buffer_b->getBufferAt(i), info.imgSize, info.colorName);
+			if (result != info.imgSize) 
+				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << info.imgSize);
+		} else if (info.pixBytes == 2) {
+			int result = pxd_readushort(1<<0, 1, info.offset_x, info.offset_y, info.offset_x + info.width , info.offset_y + info.height, (ushort*) buffer_a->getBufferAt(i), info.imgSize, info.colorName);
+			if (result != info.imgSize) 
+				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << info.imgSize);
+			result = pxd_readushort(1<<1, 1, info.offset_x, info.offset_y, info.offset_x + info.width , info.offset_y + info.height, (ushort*) buffer_b->getBufferAt(i), info.imgSize, info.colorName);
+			if (result != info.imgSize) 
+				LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << info.imgSize);
 		} else {
-			LOG4CPLUS_ERROR(logger, pixBytes << " pixel bytes not supported.");
+			LOG4CPLUS_ERROR(logger, info.pixBytes << " pixel bytes not supported.");
 		}
+}
+
+void CaptureController::startLiveCapture() {
+    readThread = new CaptureReadThread(buffer_a, buffer_b, info, mutex);
+    writeThread = new CaptureWriteThread(buffer_a, buffer_b, info, mutex);
+    readThread->start();
+    writeThread->start();
+    LOG4CPLUS_INFO(logger, "Started reader and writer threads.");
+}
+
+void CaptureController::stopLiveCapture() {
+    if (writeThread != NULL) {
+	writeThread->quit();
+	writeThread->join();
+	delete writeThread;
+    }
+    if (readThread != NULL) {
+	delete readThread;
+    }
+    LOG4CPLUS_INFO(logger, "Reader and writer thread shut down.");
 }

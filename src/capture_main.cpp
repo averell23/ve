@@ -48,13 +48,14 @@ int main(int argc, char *argv[])
 	Logger logger = Logger::getInstance("Ve.main");
 
 	CommandLineParser parser("ve");
-    parser.setupOption("help", "Show usage information");
-    parser.setupParameter("epixconf", false, "Epix config file");
+	parser.setupOption("help", "Show usage information");
+	parser.setupParameter("epixconf", false, "Epix config file");
 	parser.setupParameter("height", false, "Height of images");
 	parser.setupParameter("width", false, "Width of images");
 	parser.setupParameter("colors", true, "Color model (bayer|rgb|gray)");
 	parser.setupParameter("prefix", false, "File prefix, includeing path");
 	parser.setupParameter("size", true, "Buffer size in images (per imaging board)");
+	parser.setupOption("direct", "Write directly to disk (continous capture)");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
         cout << endl;
@@ -124,8 +125,12 @@ int main(int argc, char *argv[])
 	LOG4CPLUS_INFO(logger, "Creating controller with prefix: " << filePrefix);
 	CaptureController controller(height, width, size, colorMode, (char*) filePrefix.c_str());
 
-	controller.captureToBuffer();
-	controller.writeBuffer();
+	if (parser.getOptionValue("direct")) {
+	    controller.startLiveCapture();
+	} else {
+	    controller.captureToBuffers();
+	    controller.writeBuffers();
+	}
 
 	XCLIBController::closeLib();
 	

@@ -10,6 +10,10 @@ extern "C" {
 }
 #include <cc++/thread.h>
 #include "stopwatch.h"
+#include "capturebuffer.h"
+#include "captureinfo.h"
+#include "capturereadthread.h"
+#include "capturewritethread.h"
 
 using namespace log4cplus;
 using namespace ost;
@@ -17,15 +21,15 @@ using namespace ost;
 class CaptureController
 {
 public:
-	static const IMAGE_BAYER = 0;
-	static const IMAGE_RGB = 1;
-	static const IMAGE_GRAY = 2;
+	static const int IMAGE_BAYER = 0;
+	static const int IMAGE_RGB = 1;
+	static const int IMAGE_GRAY = 2;
 
 	/**
 		Creates a new CaptureController with an internal image buffer.
 		
 		@param height Height of images
-		@param width Width of images
+		@param width Width of imagesfer_b->getBufferAt(i)
 		@param size Number of images in buffer
 		@param type The color model of the images. Valid types are the IMAGE_*
 		            constants, for the respective color model.
@@ -38,43 +42,46 @@ public:
 	/**
 		Captures images to the memory buffer until it is filled.
 	*/
-	void captureToBuffer();
+	void captureToBuffers();
 
 	/**
-		Writes the memory buffer out to disk. Each image will
+		Writes the memory buffers out to disk. Each image will
 		be a file in RAW format (for now).
 	*/
-	void writeBuffer();
+	void writeBuffers();
+	
+	/**
+	  Starts to capture live data directly to disk. The actuall I/O
+	  is started in seperate threads, the function returns immediately.
+	  
+	  @see stopLiveCapture
+	*/
+	void startLiveCapture();
+	
+	/**
+	  Stops a live capture started with @see startLiveCapture
+	*/
+	void stopLiveCapture();
 private:
 	/// Pointer to the byte arrays that will contain the image data
-	char **buffers_a, **buffers_b;
-	/// Image height
-	int height;
-	/// Image width
-	int width;
-	/// Top offset (for AOI)
-	int offset_y;
-	/// Left offset (for AOI)
-	int offset_x;
-	// Number of color planes
-	int planes;
-	// Bytes per plane per pixel
-	int pixBytes;
-	// Size of one image in color componets
-	int imgSize;
+	CaptureBuffer *buffer_a, *buffer_b;
+	/// Info structure for meta information
+	CaptureInfo info;
 	/// Size of one buffer in images
 	int bufferSize;
-	/// Name of the color model (for the XCLIB functions)
-	char* colorName;
 	/**
 		Reads the contents of the frame buffer into the given memory
 		buffer location.
 	*/
-	void readBuffers(int i);
-	/// File name prefix for saving files
-	char* filePrefix;
+	void readBuffer(int i);
 	/// Logger for this class
 	static Logger logger;
+	/// Mutex for global thread synchronization FIXME: kludge
+	Mutex *mutex;
+	/// Reader thread
+	CaptureReadThread* readThread;
+	/// Writer thread
+	CaptureWriteThread* writeThread;
 };
 
 #endif
