@@ -17,14 +17,14 @@
 			ConfigurationType="1">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Programme\OpenCV\cv\include"
+				AdditionalIncludeDirectories="C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
 				PreprocessorDefinitions="WIN32"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cv.lib"
-				AdditionalLibraryDirectories="C:\Programme\OpenCV\lib"/>
+				AdditionalDependencies="cv.lib XCLIBWNT.lib"
+				AdditionalLibraryDirectories="C:\Programme\XCLIB;C:\Programme\OpenCV\lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -67,19 +67,16 @@
 				RelativePath=".\src\cameracalibration.cpp">
 			</File>
 			<File
-				RelativePath=".\src\cameracalibration.h">
-			</File>
-			<File
 				RelativePath=".\src\dummyoverlay.cpp">
 			</File>
 			<File
 				RelativePath=".\src\dummysource.cpp">
 			</File>
 			<File
-				RelativePath=".\src\glutCallbacks.cpp">
+				RelativePath=".\src\epixsource.cpp">
 			</File>
 			<File
-				RelativePath=".\src\imagereadersource.cpp">
+				RelativePath=".\src\glutCallbacks.cpp">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.cpp">
@@ -93,11 +90,17 @@
 			<File
 				RelativePath=".\src\videosource.cpp">
 			</File>
+			<File
+				RelativePath=".\src\xclibcontroller.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\src\cameracalibration.h">
+			</File>
 			<File
 				RelativePath=".\src\dummyoverlay.h">
 			</File>
@@ -105,10 +108,10 @@
 				RelativePath=".\src\dummysource.h">
 			</File>
 			<File
-				RelativePath=".\src\glutCallbacks.h">
+				RelativePath=".\src\epixsource.h">
 			</File>
 			<File
-				RelativePath=".\src\imagereadersource.h">
+				RelativePath=".\src\glutCallbacks.h">
 			</File>
 			<File
 				RelativePath=".\src\stopwatch.h">
@@ -118,6 +121,9 @@
 			</File>
 			<File
 				RelativePath=".\src\videosource.h">
+			</File>
+			<File
+				RelativePath=".\src\xclibcontroller.h">
 			</File>
 		</Filter>
 		<Filter

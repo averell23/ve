@@ -23,6 +23,9 @@
  ***************************************************************************/
 #include "xclibcontroller.h"
 
+
+bool XCLIBController::openState = false;
+
 XCLIBController::XCLIBController()
 {
 }
@@ -33,15 +36,22 @@ XCLIBController::~XCLIBController()
 }
 
 int XCLIBController::openLib(string configFile) {
-    if (openState) return 0;
+    if (openState == true) return 0;
     
     char* driverParams = NULL;
     char* format = NULL;
-    if (configFile == "") {
-	format = "default";
+	if (strcmp(configFile.c_str(), "")) {
+		format = "default";
     }
     int retVal = pxd_PIXCIopen(driverParams, format, (char*) configFile.c_str());
-    if (retVal == 0) openState = true;
+	if (retVal == 0) {
+		openState = true;
+		cout << "Library opened successfully." << endl;
+	} else {
+		cout << "Could not open library, error code: ";
+		XCLIBController::printPXDMessage(retVal);
+		cout << endl;
+	}
 
     return retVal;
 }
@@ -58,7 +68,14 @@ bool XCLIBController::isOpen() {
 }
 
 int XCLIBController::goLive(int unit) {
-    int result = pxd_goLive(1<<unit, 1);
+    int result = pxd_goSnap(1<<unit, 1);
+		if (result == 0) {
+		cout << "Gone live successfully, state is " << pxd_goneLive(1<<unit, 0) << endl;
+	} else {
+		cout << "Not gone live, error code: ";
+		XCLIBController::printPXDMessage(result);
+		cout << endl;
+	}
     return result;
 }
 
@@ -67,15 +84,51 @@ int XCLIBController::goUnLive(int unit) {
     return result;
 }
 
-int XCLIBController::getBufferCopy(int unit, ushort** buffer) {
+uchar* XCLIBController::getBufferCopy(int unit, int* result) {
+	pxd_goSnap(1<<unit, 1); // FIXME: Go live!
     int bufsize = pxd_imageXdim() * pxd_imageYdim() * 3;
+
+    uchar* buffer = new uchar[bufsize];
+    *result = -1024;
     
-    *buffer = (ushort*) malloc(sizeof(ushort) * bufsize);
-    int result = -1024;
-    
-    if (*buffer) {
-	result = pxd_readushort(1<<unit, 1, 0, 0, pxd_imageXdim(), pxd_imageYdim(), *buffer, bufsize, "RGB");
+    if (buffer) {
+		*result = pxd_readuchar(1<<unit, 1, 0, 0, pxd_imageXdim(), pxd_imageYdim(), buffer, bufsize, "RGB");
     }
     
-    return result;
+    return buffer;
+}
+
+void XCLIBController::printPXDMessage(int errorcode) {
+	switch (errorcode) {
+		case PXERROR:
+			cout << "Could not access imaging board (PXERROR).";
+			break;
+		case PXERMALLOC:
+			cout << "Memory allocation error (PXERMALLOC).";
+			break;
+		case PXERNOFILE:
+			cout << "No format file (PXERNOFILE).";
+			break;
+		case PXERDOSIO:
+			cout << "I/O error (PXERDOSIO).";
+			break;
+		case PXERSEARCH:
+			cout << "Invalid format name (PXERSEARCH).";
+			break;
+		case PXERVIDFORM:
+			cout << "Unsupported video format (PXERVIDFORM).";
+			break;
+		case PXERBADPARM:
+			cout << "Bad parameters (PXERBADPARM).";
+			break;
+		case PXERFILEFORM:
+			cout << "Bad file format (PXERFILEFORM).";
+			break;
+		case PXERISOPEN:
+			cout << "Library already open (PXERISOPEN).";
+			break;
+		case PXERNOTOPEN:
+			cout << "Library not open (PXERNOTOPEN).";
+			break;
+	}
 }

@@ -96,7 +96,11 @@ public:
                     copy of the current frame buffer.
       @return The pxd_readushort return code. (0 if successful).
     */
-    static int getBufferCopy(int unit, ushort** buffer);
+    static uchar* getBufferCopy(int unit, int* result);
+
+	/// Looks up the XCLIB error message and prints it
+	static void printPXDMessage(int errorcode);
+
     
 private:
     /// Constructor is private for singleton class.

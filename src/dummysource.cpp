@@ -58,6 +58,7 @@ DummySource::~DummySource()
 
 IplImage* DummySource::getImage() {
     position = ++position % NUM_IMAGES;
+
     return images[position];
 }
 

@@ -57,7 +57,7 @@ EpixSource::~EpixSource()
 void EpixSource::selectUnit(int unit) {
     XCLIBController::goUnLive(EpixSource::unit);
     EpixSource::unit = unit;
-    XCLIBController::goLive(EpixSource::unit);
+    int result = XCLIBController::goLive(EpixSource::unit);
 }
 
 IplImage* EpixSource::getImage() {
@@ -66,8 +66,13 @@ IplImage* EpixSource::getImage() {
     size.height = height;
     size.width = width;
     
-    image = cvCreateImageHeader(size, IPL_DEPTH_16S, 3);
-    ushort** buffer;
-    int result = XCLIBController::getBufferCopy(unit, buffer);
-    image->imageData = (char*) *buffer;
+    image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
+    uchar* buffer = NULL;
+    int result = 0;
+	buffer = XCLIBController::getBufferCopy(unit, &result);
+	if (result == height * width * 3) {
+		image->imageData = (char*) buffer;
+	}
+
+	return image;
 }

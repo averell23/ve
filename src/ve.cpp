@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include "glutCallbacks.h"
+#include "epixsource.h"
 #include "dummysource.h"
 #include "videocanvas.h"
 #include "stopwatch.h"
@@ -24,9 +25,13 @@ int main(int argc, char *argv[])
 {
   initGL(argc, argv);
   cout << "Init complete." << endl;
-  DummySource *right = new DummySource();
+  EpixSource *right = new EpixSource();
+  // DummySource* right = new DummySource();
+  right->selectUnit(1);
   cout << "Right source created" << endl;
-  DummySource *left = new DummySource();
+  EpixSource *left = new EpixSource();
+  // DummySource* left = new DummySource();
+  left->selectUnit(0);
   cout << "Left source created" << endl;
   mainVideo = new VideoCanvas(left, right);
   overlay = new DummyOverlay();

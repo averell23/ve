@@ -35,6 +35,8 @@
 #include <stdio.h>		// STD input/output headers
 #include <iostream>
 
+using namespace std;
+
 /**
 A canvas for displaying a stereo video feed. This retrieves a picture for the
 left and the right eye and displays them in their respective half of the 

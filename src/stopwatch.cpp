@@ -26,6 +26,7 @@
 Stopwatch::Stopwatch()
 {
     running = false;
+	counter = 0;
     ftime(&startStamp);
     ftime(&stopStamp);
 }
