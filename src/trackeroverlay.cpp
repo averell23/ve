@@ -70,7 +70,7 @@ void TrackerOverlay::drawOverlay() {
     ARUint8* imageData = getImageData(LEFT);
     arDetectMarker(imageData, thresh, &markerInfo, &markerNumL);
     LOG4CPLUS_TRACE(logger, "Detected " << markerNumL << " markers in left image.");
-	markerInfoL = new ARMarkerInfo[markerNumL];
+	markerInfoL = new ARMarkerInfo[markerNumL]; // FIXME: Take care, markerInfoL is not completely initialized
 	for (int i=0 ; i < markerNumL ; i++) {
 		markerInfoL[i].pos[0] = markerInfo[i].pos[0]; 
 		 markerInfoL[i].pos[1] = markerInfo[i].pos[1];
@@ -82,7 +82,7 @@ void TrackerOverlay::drawOverlay() {
 	delete imageData;
 	
 	// Drawing code
-	glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
     glOrtho(-1000, 1000, -1000, 1000, 0, 1);
@@ -91,17 +91,21 @@ void TrackerOverlay::drawOverlay() {
     glLoadIdentity();
 
     // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
-	if (markerNumL > 0) {
-		sprintf(text, "%f/%f/%f", markerInfoL[0].pos[0], markerInfoL[0].pos[1],
-			    sqrt(centerDistanceSquared(markerInfoL[0].pos[0], markerInfoL[0].pos[1])));
-	} else {
-		sprintf(text, "Detected %d/%d", markerNumL, markerNumR);
+	if (DRAW_TEXT) {
+		if (markerNumL > 0) {
+			sprintf(text, "%f/%f/%f", markerInfoL[0].pos[0], markerInfoL[0].pos[1],
+					sqrt(centerDistanceSquared(markerInfoL[0].pos[0], markerInfoL[0].pos[1])));
+		} else {
+			sprintf(text, "Detected %d/%d", markerNumL, markerNumR);
+		} 
 	}
 	
 
     glTranslatef(-1.0f, 0.0f, 0.0f);
-    drawOneEye();
-	glTranslatef(-1.0f, 0.0f, 0.0f);
+	if (DRAW_TEXT) {
+		drawOneEye();
+		glTranslatef(-1.0f, 0.0f, 0.0f);
+	}
 	int center = getCenterMarker(markerInfoL, markerNumL);
 	for (int i=0 ; i < markerNumL ; i++) {
 		if (i == center) {
@@ -110,14 +114,17 @@ void TrackerOverlay::drawOverlay() {
 		drawCrosshairs((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
 		if (i == center) {
 			glColor3f(1.0f, 1.0f, 1.0f);
+		 	drawHighlight((markerInfoL[i].pos[0] * xFac)+ xOff, (markerInfoL[i].pos[1] * yFac) + yOff);
 		}
 	}
 	delete markerInfoL;
 	// drawCrosshairs(500,1000);
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f,  1.0f);
-    drawOneEye();
-	glTranslatef(0.0f, 0.0f,  1.0f);
+	if (DRAW_TEXT) { 
+		drawOneEye();
+		glTranslatef(0.0f, 0.0f,  1.0f);
+	}
 	center = getCenterMarker(markerInfoR, markerNumR);
 	for (int i=0 ; i < markerNumR ; i++) {
 		if (i == center) {
@@ -126,6 +133,7 @@ void TrackerOverlay::drawOverlay() {
 		drawCrosshairs((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff); 
 		if (i == center) {
 			glColor3f(1.0f, 1.0f, 1.0f);
+			drawHighlight((markerInfoR[i].pos[0] * xFac)+ xOff, (markerInfoR[i].pos[1] * yFac) + yOff);
 		}
 	}
 	// drawCrosshairs(0,0);
@@ -203,6 +211,25 @@ void TrackerOverlay::drawCrosshairs(int x, int y) {
     glEnd();
 }
 
+void TrackerOverlay::drawHighlight(int x, int y) {
+	// set color to translucent green
+	glColor4f(0.6f, 0.6f, 0.9f, 0.5f);
+	// Stretching factor and dimensions
+	double yStretch = (double) width / (double) height;
+	int boxDimension = width / 6;
+	int boxHeight = (int) (boxDimension * yStretch) * 2;
+	int boxWidth = boxDimension;
+	// Draw box
+	glBegin(GL_QUADS);
+	glVertex3i(x-boxWidth, y-boxHeight, 0);
+	glVertex3i(x+boxWidth, y-boxHeight, 0);
+	glVertex3i(x+boxWidth, y+boxHeight, 0);
+	glVertex3i(x-boxWidth, y+boxHeight, 0);
+	glEnd();
+	// reset color
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
 int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
 	float shortestDistance;
 	int centerIndex = 0;
@@ -220,8 +247,7 @@ int TrackerOverlay::getCenterMarker(ARMarkerInfo* markers, int markerNum) {
 	return centerIndex;
 }
 
-void TrackerOverlay::drawHighlight(int x, int y) {
-}
+
 
 double TrackerOverlay::centerDistanceSquared(double x, double y) {
 	double xPos = x - ((double) width / 2.0f);

@@ -47,6 +47,8 @@ public:
     static const int LEFT = 0;
     
     static const int RIGHT = 1;
+	
+	static const bool DRAW_TEXT = false; // Set to true to display some "debugging" text
     
     TrackerOverlay();
     
