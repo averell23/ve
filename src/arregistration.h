@@ -98,6 +98,14 @@ private:
       matrix struct.
     */
     gsl_matrix* getCalibrationMatrix();
+    
+    /**
+      Creates a new copy of the given submatrix. The user is
+      responsible for deleting the matrix object after use. A copy
+      of the submatrix may be neccessary because some functions (e.g. blas_dgemm
+      won't work with submatrix views.
+    */
+    gsl_matrix* submatrixCopy(gsl_matrix* source, int top, int left, int height, int width);
 };
 
 #endif

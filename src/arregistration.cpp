@@ -61,20 +61,18 @@ void ARRegistration::reRegister() {
     }
     // calibration matrix
     gsl_matrix* c = getCalibrationMatrix();
-    gsl_matrix* c_1 = &(gsl_matrix_submatrix(c, 0, 0, 2, 3).matrix); // Top part
-    gsl_matrix* c_3 = &(gsl_matrix_submatrix(c, 2, 0, 1, 3).matrix); // Bottom part
+    gsl_matrix* c_1 = submatrixCopy(c, 0, 0, 2, 3); // Top part
+    gsl_matrix* c_3 = submatrixCopy(c, 2, 0, 1, 3); // Bottom part
     // Create the "master" parameter matrix
     gsl_matrix* params = gsl_matrix_alloc(sensorPoints.size()*3, 12);
     // Fill the parameter matrix
     for (int i=0 ; i < sensorPoints.size() ; i++) {
         gsl_matrix* x_1 = gsl_matrix_calloc(3, 12);
-        for (int j=0 ; j < 3 ; j++) { // count rows
-            for (int k=0 ; k < 3 ; k++) { // count "columns"
-                gsl_matrix_set(x_1, j, k*4, sensorPoints[i].x);
-                gsl_matrix_set(x_1, j, (k*4)+1, sensorPoints[i].y);
-                gsl_matrix_set(x_1, j, (k*4)+2, sensorPoints[i].z);
-                gsl_matrix_set(x_1, j, (k*4)+3, 1);
-            } // for "columns"
+        for (int j=0 ; j < 3 ; j++) { 
+	    gsl_matrix_set(x_1, j, j*4, sensorPoints[i].x);
+	    gsl_matrix_set(x_1, j, (j*4)+1, sensorPoints[i].y);
+	    gsl_matrix_set(x_1, j, (j*4)+2, sensorPoints[i].z);
+	    gsl_matrix_set(x_1, j, (j*4)+3, 1);
         } // for rows
         LOG4CPLUS_TRACE(logger, "Sensor matrix initialized.")
         // Select the region of the parameter matrix to write into
@@ -89,9 +87,9 @@ void ARRegistration::reRegister() {
     LOG4CPLUS_DEBUG(logger, "Temp data structures initialized, now trying to do least-squares fit.");
     gsl_vector* T_vec = gsl_vector_alloc(12);
     // Least-square
-    gsl_matrix* cov = gsl_matrix_alloc(3,3);
+    gsl_matrix* cov = gsl_matrix_alloc(12,12);
     double chisq;
-    gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(sensorPoints.size(), 12);
+    gsl_multifit_linear_workspace* work = gsl_multifit_linear_alloc(sensorPoints.size()*3, 12);
     gsl_multifit_linear(params, y, T_vec, cov, &chisq, work);
     LOG4CPLUS_DEBUG(logger, "Least squares returned, chi squared is " << chisq);
     gsl_multifit_linear_free(work);
@@ -105,6 +103,8 @@ void ARRegistration::reRegister() {
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
     // Clean up
     gsl_matrix_free(c);
+    gsl_matrix_free(c_1);
+    gsl_matrix_free(c_3);
     gsl_vector_free(y);
     gsl_vector_free(T_vec);
     gsl_matrix_free(params);
@@ -144,4 +144,11 @@ CvPoint2D32f ARRegistration::transformSensorToImage(CvPoint3D32f sensor) {
     gsl_matrix_free(point);
 
     return retVal;
+}
+
+gsl_matrix* ARRegistration::submatrixCopy(gsl_matrix* source, int top, int left, int height, int width) {
+	gsl_matrix* sub = &gsl_matrix_submatrix(source, top, left, height, width).matrix;
+	gsl_matrix* retVal = gsl_matrix_alloc(height, width);
+	gsl_matrix_memcpy(retVal, sub);
+	return retVal;
 }
