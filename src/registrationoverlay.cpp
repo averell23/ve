@@ -187,6 +187,7 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
         case 'Q':
             Ve::getRightSource()->getRegistration()->resetCalibration();
             Ve::getLeftSource()->getRegistration()->insertTransformation(tMat);
+            break;
         case 'r':
         case 'R':
             toggleDisplay();

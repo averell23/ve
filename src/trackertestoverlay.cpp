@@ -68,13 +68,14 @@ void TrackerTestOverlay::drawOneEye(map<int,Position>& positions) {
             } else {
                 glColor3f(1.0f, 1.0f, 1.0f);
             }
-	    CvPoint pos = GLMacros::getPixelCoords((int) posIterator->second.x, (int) posIterator->second.y);
+	        CvPoint pos = GLMacros::getPixelCoords((int) posIterator->second.x, (int) posIterator->second.y);
+            // CvPoint pos= cvPoint((int) posIterator->second.x, (int) posIterator->second.y);
             GLMacros::drawCrosshairs(pos.x, pos.y);
         }
         glColor3f(1.0f, 1.0f, 1.0f);
     }
     if (doHighlight && (positions.size() > 0)) {
-	CvPoint pos = GLMacros::getPixelCoords((int) center->second.x, (int) center->second.y);
+	    CvPoint pos = GLMacros::getPixelCoords((int) center->second.x, (int) center->second.y);
         drawHighlight(pos.x, pos.y);
     }
 }

@@ -162,13 +162,13 @@ CvPoint GLMacros::getPixelCoords(int x, int y) {
     int vx = Ve::getVirtualSize().x;
     int vy = Ve::getVirtualSize().y;
     
-    float xFac =  (float) pixW / (float) vx;
-    float yFac = - (float) pixH / (float) vy;
+    float xFac =  (float) vx / (float) pixW;
+    float yFac =  (float) vy / (float) pixH;
     int yOff = Ve::getVirtualSize().y;
     
     CvPoint retVal;
     retVal.x = (int) (x * xFac);
-    retVal.y = (int) ((y - yOff) * yFac * 0.5);
+    retVal.y = (int) (y * yFac * 2) - yOff;
     
     return retVal;
 }
