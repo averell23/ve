@@ -140,7 +140,7 @@ void RegistrationOverlay::drawOverlay() {
 
 
 void RegistrationOverlay::recieveEvent(VeEvent &e) {
-     if (measuring && e.getType() == VeEvent::POSITION_EVENT) {
+    if (measuring && e.getType() == VeEvent::POSITION_EVENT) { // FIXME: Only events for one eye should be treated.
         VePositionEvent& eP = (VePositionEvent&) e;
         Position pos = eP.getPosition();
         tmpSensorPoints[measureCount].x = pos.x;

@@ -23,7 +23,10 @@
  ***************************************************************************/
 #include "corbapositiontracker.h"
 
-CORBAPositionTracker::CORBAPositionTracker() {}
+CORBAPositionTracker::CORBAPositionTracker(int leftId, int rightId) {
+    CORBAPositionTracker::leftId = leftId;
+    CORBAPositionTracker::rightId = rightId;
+}
 
 
 CORBAPositionTracker::~CORBAPositionTracker() {}
@@ -38,8 +41,8 @@ void CORBAPositionTracker::recieveEvent(VeEvent &e) {
         origPoint.z = posE.getPosition().z;
         CvPoint2D32f leftPoint = Ve::getLeftSource()->getRegistration()->transformSensorToImage(origPoint);
         CvPoint2D32f rightPoint = Ve::getRightSource()->getRegistration()->transformSensorToImage(origPoint);
-        Position leftPos(posE.getPosition().index, LEFT_EYE_SOURCE, leftPoint.x, leftPoint.y, 0);
-        Position rightPos(posE.getPosition().index, RIGHT_EYE_SOURCE, rightPoint.x, rightPoint.y, 0);
+        Position leftPos(posE.getPosition().index, leftId, leftPoint.x, leftPoint.y, 0);
+        Position rightPos(posE.getPosition().index, rightId, rightPoint.x, rightPoint.y, 0);
         VePositionEvent leftE(leftPos);
         VePositionEvent rightE(rightPos);
         postEvent(leftE);

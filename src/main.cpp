@@ -218,7 +218,9 @@ int main(int argc, char *argv[]) {
         rightTrack = new MarkerPositionTracker(right, 2, artthresh);
         trackingActive = true;
     } else if (trackParam == "audio") {
-        LOG4CPLUS_ERROR(logger, "Audio tracking not implemented yet");
+	leftTrack = new CorbaPositionTracker(1,2);
+	rightTrack = leftTrack;
+        trackingActive = true;
     } else {
         LOG4CPLUS_WARN(logger, "No tracking option given, no tracker was initialized.");
     }

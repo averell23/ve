@@ -19,7 +19,7 @@
  *   IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR     *
  *   OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, *
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
- *   OTHER DEALINGS IN THE SOFTWARE.                                       *
+ *   OTHER DEALINGS IN THE SOFTWARE.                                       * 
  ***************************************************************************/
 #ifndef CORBAPOSITIONTRACKER_H
 #define CORBAPOSITIONTRACKER_H
@@ -38,12 +38,11 @@ Recieves position updates through CORBA and forwards them to the display overlay
 */
 class CORBAPositionTracker : public VeEventListener, VeEventSource {
 public:
-    /// Source ID for the left eye
-    static const int LEFT_EYE_SOURCE = 3;
-    /// Source ID for the right eye
-    static const int RIGHT_EYE_SOURCE = 4;
 
-    CORBAPositionTracker();
+    /**
+      Create a new tracker, using the given left and right source id
+    */
+    CORBAPositionTracker(int leftId = 3, int rightId = 4);
 
     ~CORBAPositionTracker();
 
@@ -51,7 +50,12 @@ public:
       Event handler for recieving Updates through CORBA.
     */
     void recieveEvent(VeEvent &e);
-
+    
+private:
+    /// Source ID for the left eye
+    static const int leftId;
+    /// Source ID for the right eye
+    static const int rightId;
 };
 
 #endif

@@ -121,6 +121,8 @@ void ARRegistration::reRegister() {
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
         cout << "Covariance is:" << endl;
         printMatrix(cov);
+	cout << "Result vector is:" << endl;
+	printVector(T_vec);
     }
     gsl_multifit_linear_free(work);
     // Recreate the transformation matrix
@@ -132,7 +134,7 @@ void ARRegistration::reRegister() {
     // calculate the final transformation matrix
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
     if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
-	cout << "Calibration matrix is now: " << endl;
+	cout << "Registration matrix is now: " << endl;
 	    printMatrix(Trans);
     }
     // Clean up
