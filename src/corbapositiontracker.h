@@ -25,18 +25,21 @@
 #define CORBAPOSITIONTRACKER_H
 
 #include <cv.hpp>
+#include <log4cplus/logger.h>
 #include "veeventlistener.h"
 #include "veeventsource.h"
 #include "position.h"
 #include "vepositionevent.h"
 #include "ve.h"
 
+using namespace log4cplus;
+
 /**
 Recieves position updates through CORBA and forwards them to the display overlay.
  
 @author Daniel Hahn,,,
 */
-class CORBAPositionTracker : public VeEventListener, VeEventSource {
+class CORBAPositionTracker : public VeEventListener, public VeEventSource {
 public:
 
     /**
@@ -49,13 +52,15 @@ public:
     /**
       Event handler for recieving Updates through CORBA.
     */
-    void recieveEvent(VeEvent &e);
+    virtual void recieveEvent(VeEvent &e);
     
 private:
     /// Source ID for the left eye
-    static const int leftId;
+    int leftId;
     /// Source ID for the right eye
-    static const int rightId;
+    int rightId;
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

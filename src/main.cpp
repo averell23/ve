@@ -37,6 +37,7 @@
 #include "trackertestoverlay.h"
 #include "texttrackeroverlay.h"
 #include "markerpositiontracker.h"
+#include "corbapositiontracker.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 
@@ -218,8 +219,12 @@ int main(int argc, char *argv[]) {
         rightTrack = new MarkerPositionTracker(right, 2, artthresh);
         trackingActive = true;
     } else if (trackParam == "audio") {
-	leftTrack = new CorbaPositionTracker(1,2);
-	rightTrack = leftTrack;
+        CORBAPositionTracker* cTrack = new CORBAPositionTracker(1,2);
+	    leftTrack = (VeEventSource*) cTrack;
+	    rightTrack = leftTrack;
+        CORBAController corba = CORBAController::getInstance();
+        corba.addPositionEventListener(cTrack);
+        LOG4CPLUS_INFO(logger, "Using audio tracking through CORBA");
         trackingActive = true;
     } else {
         LOG4CPLUS_WARN(logger, "No tracking option given, no tracker was initialized.");
@@ -230,14 +235,18 @@ int main(int argc, char *argv[]) {
         if (parser.getOptionValue("trackingoverlay")) {
             LOG4CPLUS_DEBUG(logger, "Using test overlay for tracker.");
             leftTrack->addListener(&testTracker); 
-            rightTrack->addListener(&testTracker);
+            if (leftTrack != rightTrack) {
+                rightTrack->addListener(&testTracker);
+            }
             Ve::addOverlay(&testTracker);
             Ve::addListener(&testTracker); 
         }
         if (parser.getOptionValue("textoverlay")) {
             LOG4CPLUS_DEBUG(logger, "Using text augmentation");
             leftTrack->addListener(&tracker);
-            rightTrack->addListener(&tracker);
+            if (leftTrack != rightTrack) {
+                rightTrack->addListener(&tracker);
+            }
             Ve::addOverlay(&tracker);
             Ve::addListener(&tracker); 
         }

@@ -23,9 +23,12 @@
  ***************************************************************************/
 #include "corbapositiontracker.h"
 
+Logger CORBAPositionTracker::logger = Logger::getInstance("Ve.CORBAPositionTracker");
+
 CORBAPositionTracker::CORBAPositionTracker(int leftId, int rightId) {
     CORBAPositionTracker::leftId = leftId;
     CORBAPositionTracker::rightId = rightId;
+    LOG4CPLUS_TRACE(logger, "Tracker created");
 }
 
 
@@ -47,5 +50,8 @@ void CORBAPositionTracker::recieveEvent(VeEvent &e) {
         VePositionEvent rightE(rightPos);
         postEvent(leftE);
         postEvent(rightE);
+        LOG4CPLUS_TRACE(logger, "Created position updates from CORBA event.");
+    } else {
+        LOG4CPLUS_DEBUG(logger, "Caught non-position event in CORBA tracker.");
     }
 }

@@ -33,7 +33,7 @@ RegistrationOverlay::~RegistrationOverlay() {
 }
 
 RegistrationOverlay::RegistrationOverlay(bool display) : Overlay(display) {
-    measureSize = 5;
+    measureSize = 100;
     measureCount = 0;
     calibPointNum = 5;
     calibPointPos = 0;
