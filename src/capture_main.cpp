@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     parser.setupParameter("initB", false, "Initialization file for camera B");
     parser.setupOption("direct", "Write directly to disk (continous capture, q quits)");
     parser.setupParameter("timestamp", false, "Create a separate timestamp file for each image with this parameter as prefix");
+    parser.setupParameter("format", true, "Sets the file format for output (raw|bmp)");
     bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
         cout << endl;
@@ -87,6 +88,17 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
+    param = parser.getParamValue("format");
+    if (param == "raw") {
+	info.fileFormat = CaptureInfo::FILE_FORMAT_RAW;
+    } else if (param == "bmp") {
+	info.fileFormat = CaptureInfo::FILE_FORMAT_BMP;
+    } else {
+	cout << "Unknown file format: " << param;
+	parser.printUsage();
+	exit(0);
+    }
+    
     param = parser.getParamValue("height");
     info.height = atoi(param.c_str());
     param = parser.getParamValue("width");

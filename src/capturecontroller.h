@@ -110,10 +110,6 @@ private:
 	CaptureReadThread* readThread;
 	/// Writer thread
 	CaptureWriteThread* writeThread;
-	/// Cache for the BMP header (for .bmp writing)
-	BMP_HEADER* bmpHeader;
-	/// Cache for the BMP info header (for .bmp writing)
-	BMP_INFOHEADER* bmpInfoHeader;
 
 };
 

@@ -44,8 +44,6 @@ CaptureController::CaptureController(CaptureInfo* info, int size) {
                    << "), buffer size is " << bufferSize << " images.");
     readThread = NULL;
     writeThread = NULL;
-    bmpHeader = NULL;
-    bmpInfoHeader = NULL;
 }
 
 CaptureController::~CaptureController(void) {
@@ -87,18 +85,28 @@ void CaptureController::writeBuffers() {
     LOG4CPLUS_INFO(logger, "Starting to write buffer to disk, with file prefix " << info->filePrefix);
     timer.start();
     for (int i = 0 ; i < bufferSize ; i++) {
-        sprintf(name1,"%s_a_%d.img",info->filePrefix, i);
-        sprintf(name2,"%s_b_%d.img",info->filePrefix, i);
-        writeRAWFiles(name1, name2,
-                      buffer->getBufferAt(i),
-                      info);
-	if (info->writeTimestamp) {
-	    char stampFile[256];
-	    sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, i);
-	    writeMetaStamp(stampFile, buffer->getBufferAt(i));
+        if (info->fileFormat == CaptureInfo::FILE_FORMAT_RAW) {
+            sprintf(name1,"%s_a_%d.raw",info->filePrefix, i);
+            sprintf(name2,"%s_b_%d.raw",info->filePrefix, i);
+            writeRAWFiles(name1, name2,
+                          buffer->getBufferAt(i),
+                          info);
+        } else if (info->fileFormat == CaptureInfo::FILE_FORMAT_BMP){
+	    sprintf(name1,"%s_a_%d.raw",info->filePrefix, i);
+            sprintf(name2,"%s_b_%d.raw",info->filePrefix, i);
+            writeBMPFiles(name1, name2,
+                          buffer->getBufferAt(i),
+                          info);
+	}
+        if (info->writeTimestamp) {
+            char stampFile[256];
+            sprintf(stampFile, "%s_%d.txt", info->timstampPrefix, i);
+            writeMetaStamp(stampFile, buffer->getBufferAt(i));
+	} else {
+	    LOG4CPLUS_ERROR(logger, "Nothing written: unsupported file format.");
 	}
         timer.count();
-    }
+    } // for
     timer.stop();
     LOG4CPLUS_INFO(logger, "Wrote " << bufferSize << " images to disk in "
                    << timer.getSeconds() << "s, " << timer.getMilis()  << "ms, framerate was " << timer.getFramerate());
@@ -112,13 +120,11 @@ void CaptureController::writeRAWFiles(char* aFile, char* bFile, CaptureImagePair
         return;
     }
     if (fwrite(imgPair->buffer_a, myInfo->pixBytes,
-	       myInfo->imgSize, file1) != myInfo->imgSize)
-    {
+               myInfo->imgSize, file1) != myInfo->imgSize) {
         LOG4CPLUS_ERROR(logger, "Error writing file for cam a");
     }
-    if (fwrite(imgPair->buffer_b, myInfo->pixBytes, 
-	       myInfo->imgSize, file2) != myInfo->imgSize)
-    {
+    if (fwrite(imgPair->buffer_b, myInfo->pixBytes,
+               myInfo->imgSize, file2) != myInfo->imgSize) {
         LOG4CPLUS_ERROR(logger, "Error writing file for cam b");
     }
     fclose(file1);
@@ -126,24 +132,58 @@ void CaptureController::writeRAWFiles(char* aFile, char* bFile, CaptureImagePair
 }
 
 void CaptureController::writeBMPFiles(char* aFile, char* bFile, CaptureImagePair* imgPair, CaptureInfo* myInfo) {
-    // If no cached headers exist, initialize them
-    if (bmpHeader == NULL) {
-	bmpHeader = new BMP_HEADER;
-    }
+    // Create the file header
+    BMP_HEADER imageHeader;
+    imageHeader.type = 19778; // Set to 'BM'
+    unsigned int imageSize = myInfo->height * myInfo->width * myInfo->planes * myInfo->pixBytes;
+    unsigned int headerSize = sizeof(BMP_HEADER) + sizeof(BMP_INFOHEADER);
+    imageHeader.size = imageSize + headerSize;
+    imageHeader.reserved1 = 0;
+    imageHeader.reserved2 = 0;
+    imageHeader.offset = headerSize;
+    // Create the file info header
+    BMP_INFOHEADER imageInfoHeader;
+    imageInfoHeader.size = 40;
+    imageInfoHeader.width = myInfo->width;
+    imageInfoHeader.height = myInfo->height;
+    imageInfoHeader.planes = myInfo->planes;
+    imageInfoHeader.bits = (myInfo->pixBytes * 8);
+    imageInfoHeader.compression = 0;
+    imageInfoHeader.size = 0;
+    imageInfoHeader.xresolution = 0;
+    imageInfoHeader.yresolution = 0;
+    imageInfoHeader.ncolours = 0;
+    imageInfoHeader.importantcolours = 0;
+
+
     FILE* file1 = fopen(aFile, "wb");
     FILE* file2 = fopen(bFile, "wb");
     if ((file1 == NULL) || (file2 == NULL)) {
         LOG4CPLUS_ERROR(logger, "Could not open file for writing.");
         return;
     }
-    if (fwrite(imgPair->buffer_a, myInfo->pixBytes,
-	       myInfo->imgSize, file1) != myInfo->imgSize)
-    {
+    // Write image a
+    bool error = false; // Indicates an error
+    int result = fwrite(&imageHeader, 1, sizeof(BMP_HEADER), file1);
+    error = (result != sizeof(BMP_HEADER));
+    result = fwrite(&imageInfoHeader, 1, sizeof(BMP_INFOHEADER), file1);
+    error = error || (result != sizeof(BMP_INFOHEADER));
+    result = fwrite(imgPair->buffer_a, myInfo->pixBytes,
+                    myInfo->imgSize, file1);
+    error = error || (result != myInfo->imgSize);
+    if (error) {
         LOG4CPLUS_ERROR(logger, "Error writing file for cam a");
     }
-    if (fwrite(imgPair->buffer_b, myInfo->pixBytes, 
-	       myInfo->imgSize, file2) != myInfo->imgSize)
-    {
+    // Write image b
+    error = false;
+    result = fwrite(&imageHeader, 1, sizeof(BMP_HEADER), file2);
+    error = (result != sizeof(BMP_HEADER));
+    result = fwrite(&imageInfoHeader, 1, sizeof(BMP_INFOHEADER), file2);
+    error = error || (result != sizeof(BMP_INFOHEADER));
+    result = fwrite(imgPair->buffer_b, myInfo->pixBytes,
+                    myInfo->imgSize, file2);
+    error = error || (result != myInfo->imgSize);
+    if (error) {
         LOG4CPLUS_ERROR(logger, "Error writing file for cam b");
     }
     fclose(file1);
@@ -160,27 +200,27 @@ void CaptureController::readBuffer(CaptureImagePair* imgPair, CaptureInfo* myInf
                                    myInfo->imgSize, myInfo->colorName);
         if (result != myInfo->imgSize)
             LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << myInfo->imgSize);
-        
-	result = pxd_readuchar(1<<1, 1, myInfo->offset_x, myInfo->offset_y, 
-			       myInfo->offset_x + myInfo->width, 
-			       myInfo->offset_y + myInfo->height, 
-			       (uchar*) imgPair->buffer_b, 
-			       myInfo->imgSize, myInfo->colorName);
+
+        result = pxd_readuchar(1<<1, 1, myInfo->offset_x, myInfo->offset_y,
+                               myInfo->offset_x + myInfo->width,
+                               myInfo->offset_y + myInfo->height,
+                               (uchar*) imgPair->buffer_b,
+                               myInfo->imgSize, myInfo->colorName);
         if (result != myInfo->imgSize)
             LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << myInfo->imgSize);
     } else if (myInfo->pixBytes == 2) {
-        int result = pxd_readushort(1<<0, 1, myInfo->offset_x, myInfo->offset_y, 
-				    myInfo->offset_x + myInfo->width, 
-				    myInfo->offset_y + myInfo->height, 
-				    (ushort*) imgPair->buffer_a, 
-				    myInfo->imgSize, myInfo->colorName);
+        int result = pxd_readushort(1<<0, 1, myInfo->offset_x, myInfo->offset_y,
+                                    myInfo->offset_x + myInfo->width,
+                                    myInfo->offset_y + myInfo->height,
+                                    (ushort*) imgPair->buffer_a,
+                                    myInfo->imgSize, myInfo->colorName);
         if (result != myInfo->imgSize)
             LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board a, only read " << result << " of " << myInfo->imgSize);
-        result = pxd_readushort(1<<1, 1, myInfo->offset_x, myInfo->offset_y, 
-				myInfo->offset_x + myInfo->width, 
-				myInfo->offset_y + myInfo->height, 
-				(ushort*) imgPair->buffer_b, 
-				myInfo->imgSize, myInfo->colorName);
+        result = pxd_readushort(1<<1, 1, myInfo->offset_x, myInfo->offset_y,
+                                myInfo->offset_x + myInfo->width,
+                                myInfo->offset_y + myInfo->height,
+                                (ushort*) imgPair->buffer_b,
+                                myInfo->imgSize, myInfo->colorName);
         if (result != myInfo->imgSize)
             LOG4CPLUS_ERROR(logger, "Read failure: Not all bytes read for board b, only read " << result << " of " << myInfo->imgSize);
     } else {
@@ -198,7 +238,7 @@ void CaptureController::writeMetaStamp(char* file, CaptureImagePair* imgPair) {
         return;
     }
     tStream << imgPair->timestamp << endl
-	<< imgPair->serial << endl;
+    << imgPair->serial << endl;
     tStream.close();
 }
 

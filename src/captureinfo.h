@@ -61,11 +61,15 @@ public:
 	bool writeTimestamp;
 	/// Prefix for the timestamp files (including path)
 	char* timstampPrefix;
+	/// Indicates the preferred file format
+	int fileFormat;
 	
 	static const int IMAGE_BAYER = 0;
 	static const int IMAGE_RGB = 1;
 	static const int IMAGE_GRAY = 2;
 
+	static const int FILE_FORMAT_RAW = 0;
+	static const int FILE_FORMAT_BMP = 1;
 };
 
 #endif
