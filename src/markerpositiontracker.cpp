@@ -62,8 +62,8 @@ void MarkerPositionTracker::run() {
 		arDetectMarker(imageData, thresh, &markerInfo, &markerNum);
 		LOG4CPLUS_TRACE(logger, "Detected " << markerNum << " markers in image.");
 		for (int i=0 ; i<markerNum ; i++) {
-			int x = markerInfo[i].pos[0] * xFac;
-			int y = (markerInfo[i].pos[1] * yFac * 2) + yOff;
+			int x = (int) (markerInfo[i].pos[0] * xFac);
+			int y = (int) ((markerInfo[i].pos[1] * yFac * 2) + yOff);
 			Position pos(i, sourceID, x, y, 0);
 			VePositionEvent e(pos);
 			postEvent(e);

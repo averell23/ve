@@ -57,9 +57,11 @@ int main(int argc, char *argv[]) {
     parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
     parser.setupParameter("source", true, "Video source (dummy|epix)");
     parser.setupParameter("epixconf", false, "Epix config file (only with -source epix)");	
-	parser.setupParameter("initA", false, "Initialization file for camera a (EPIX only)");
-	parser.setupParameter("initB", false, "Initialization file for camera b (EPIX only)");
-	parser.setupOption("nocorba", "Disable CORBA system");
+    parser.setupParameter("initA", false, "Initialization file for camera a (EPIX only)");
+    parser.setupParameter("initB", false, "Initialization file for camera b (EPIX only)");
+    parser.setupParameter("calibrationL", false, "Calibration parameter file for left camera");
+    parser.setupParameter("calibrationR", false, "Calibration parameter file for right camera");
+    parser.setupOption("nocorba", "Disable CORBA system");
     
 	bool result = parser.parseCommandLine(argc, argv);
     if (!result) {
@@ -115,9 +117,11 @@ int main(int argc, char *argv[]) {
 
     if (param == "dummy") {
         LOG4CPLUS_INFO(logger, "Using dummy video source");
-        right = new DummySource();
+	DummySource dumRight;
+        right = &dumRight;
         LOG4CPLUS_DEBUG(logger, "Right video source created");
-        left = new DummySource();
+	DummySource dumLeft;
+        left = &dumLeft;
         LOG4CPLUS_DEBUG(logger, "Left video source created");
     } else if (param == "epix") {
         param = parser.getParamValue("epixconf");
@@ -126,15 +130,36 @@ int main(int argc, char *argv[]) {
         LOG4CPLUS_INFO(logger, "Using epix video source");
         if (param == "")
            LOG4CPLUS_DEBUG(logger, "No epix config file given");
-	    left = new EpixSource(1, EpixSource::CAMERA_1280F, param, init2);
-        LOG4CPLUS_DEBUG(logger, "Right video source created");
-        right = new EpixSource(0, EpixSource::CAMERA_1280F, param, init1);
+	EpixSource epixLeft(1, EpixSource::CAMERA_1280F, param, init2);
+	    left = &epixLeft;
         LOG4CPLUS_DEBUG(logger, "Left video source created");
+	EpixSource epixRight(0, EpixSource::CAMERA_1280F, param, init1);
+        right = &epixRight;
+        LOG4CPLUS_DEBUG(logger, "Right video source created");
     } else {
         cout << "Unknown video source: " << param << endl;
         exit(1);
     }
 
+    param = parser.getParamValue("calibrationL");
+    if (param != "") {
+	left->getCalibration()->setFilename(param);
+	LOG4CPLUS_DEBUG(logger, "Left camera parameter file: " << param);
+    } else {
+	left->getCalibration()->setFilename("default_left_cal.xml");
+	LOG4CPLUS_DEBUG(logger, "Left camera parameter file set to default");
+    }
+    left->getCalibration()->load();
+    
+    param = parser.getParamValue("calibrationR");
+    if (param != "") {
+	right->getCalibration()->setFilename(param);
+	LOG4CPLUS_DEBUG(logger, "Right camera parameter file: " << param);
+    } else {
+	right->getCalibration()->setFilename("default_right_cal.xml");
+	LOG4CPLUS_DEBUG(logger, "Right camera parameter file set to default.");
+    }
+    right->getCalibration()->load();
 	
     Ve::init(left, right);
 	CameraCalibration* calTmp = Ve::getLeftSource()->getCalibration();

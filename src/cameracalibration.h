@@ -34,9 +34,19 @@
 #include <log4cplus/logger.h>
 #include <math.h>
 #include <gsl/gsl_poly.h>
+#include <xercesc/parsers/XercesDOMParser.hpp>  // Xerces related files
+#include <xercesc/dom/DOM.hpp> 
+#include <xercesc/sax/HandlerBase.hpp> 
+#include <xercesc/util/XMLString.hpp> 
+#include <xercesc/util/PlatformUtils.hpp> 
+#include <xercesc/dom/DOMWriter.hpp>
+#include <xercesc/framework/LocalFileFormatTarget.hpp>
 
 using namespace std;
 using namespace log4cplus;
+#ifdef XERCES_HAS_CPP_NAMESPACE
+using namespace xercesc;
+#endif
 
 // Forward declaration
 class VideoSource;
@@ -52,10 +62,14 @@ or by loading the data from disk.
 */
 class CameraCalibration {
 public:
+    
+    /// Size of the calibration matrix.
+    static const int CALIB_MATRIX_SIZE = 3;
+    /// Size of the distortion vector
+    static const int DISTORT_VEC_SIZE = 4;
+    
     /** Create a new calibration object.
        @param input The video source that will be calibrated. 
-       @param filename Name of a file from which to read the initial calibration
-                       Defaults to empty string.
        @param patternDimension Number of the inner corners in the chessboard field.
                        Defaults to height=8, width=6.
        @param chessSize Size of on chessboard field. Defaults to (2,2).
@@ -63,7 +77,6 @@ public:
        @see setChessSize
     */
     CameraCalibration(VideoSource *input,
-                      string filename = "",
                       CvSize patternDimension = cvSize(5,7),
                       CvSize chessSize = cvSize(2,2));
 
@@ -166,6 +179,10 @@ public:
     */
     CvPoint2D32f unDistortPoint(CvPoint2D32f point);
     
+    /**
+      Sets the internal filename for load/save operations.
+    */
+    void setFilename(string filename);
     
     ~CameraCalibration();
 
@@ -214,8 +231,32 @@ private:
     */
     CvPoint2D32f* guessCorners(IplImage* image);
     
+    /// Helper method to read in the calibration Matrix from DOM
+    bool readCalibrationMatrix(DOMNodeList* nodelist);
+    
+    /// Helper method to read in the distortion vector from DOM
+    bool readDistortionVec(DOMNodeList* nodeList);
+    
+    /**
+       Helper method to read text child from a node.
+       
+       @return The contents of the first text node child, or null if
+               node has no text children. Does not combine multiple
+	       text children.
+    */
+    const XMLCh* getTextChild(DOMNode* node);
+    
+    /**
+      Helper method to get an attribute by name from a node.
+      
+      @return The contents of the attribute, or null if the attribute
+              does not exist.
+    */
+    const XMLCh* getAttributeByName(DOMNode* node, XMLCh* name);
+    
     /// Logger for this class
     static Logger logger;
+    
 };
 
 #endif

@@ -144,6 +144,16 @@ void CalibrationOverlay::recieveEvent(VeEvent &e) {
     case 'M':
         cCalibrationObject->recalibrate();
         break;
+    case 'a':
+    case 'A':
+	Ve::getLeftSource()->getCalibration()->load();
+	Ve::getRightSource()->getCalibration()->save();
+	break;
+    case 's':
+    case 'S':
+	Ve::getLeftSource()->getCalibration()->save();
+	Ve::getRightSource()->getCalibration()->save();
+	break;
     }
 
 }

@@ -63,6 +63,16 @@
 					effect <b>after</b> the command line has been parsed.</li>
 				<li>
 					<b>-help</b> Causes usage information to be printed out.</li>
+				<li>
+					<b>-initA/-initB</b> Specify setup files for serial camera setup. The files
+					are expected to contain one serial command per line. These commands are
+					sent to the camera on startup. This only works with the "epix" source, and
+					cameras that support a serial protocol. </li>
+				<li>
+					<b>-calibrationL/-calibrationR</b> Specifies the XML files that contain the
+					camera calibration parameters. If the file exists, the parameters are loaded
+					from it. If these are not given, a default filename is used.
+				</li>
 			</ul>
 		</div>
 		<h2>Configuration files</h2>
@@ -107,6 +117,10 @@
 				<li>
 					<b>Camera Calibration</b></li>
 				<ul>
+					<li>
+						<b>a</b> Loads the camera parameters from file</li>
+					<li>	
+						<b>s</b> Saves the camera parameters to file</li>
 					<li>
 						<b>c</b> Toggle Calibration Overlay on/off</li>
 					<li>

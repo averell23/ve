@@ -74,6 +74,8 @@ public:
     void measurePoint(int x, int y);
     
 private:
+    /// Indicates if measure points are being collected
+    bool measuring;
     /// Logger for this class
     static Logger logger;
     /// Temporary sensor points for smoothing out inaccuracies

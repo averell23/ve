@@ -8,7 +8,7 @@ INCLUDES = -I/home/daniel/sources/ARToolKit2.61/include -I/usr/local/xclib $(all
 ve_LDFLAGS = $(all_libraries) -L/home/daniel/sources/ARToolKit2.61/lib
 
 SUBDIRS = stubs corbatest
-ve_LDADD = $(top_builddir)/src/stubs/libstubs.a -lAR -lgslcblas -lgsl /usr/local/xclib/xclibi86.a -lomniORB4 -lftgl -lGLEW -lfreetype -lm -lopencv -llog4cplus -lglut -lGL -lccgnu2
+ve_LDADD = $(top_builddir)/src/stubs/libstubs.a -lxerces-c -lAR -lgslcblas -lgsl /usr/local/xclib/xclibi86.a -lomniORB4 -lftgl -lGLEW -lfreetype -lm -lopencv -llog4cplus -lglut -lGL -lccgnu2
 noinst_HEADERS = vepositionevent.h position.h corbacontroller.h calibrationoverlay.h registrationoverlay.h arregistration.h capturebuffer.h capturereadthread.h capturewritethread.h captureinfo.h captureimagepair.h bmpstruct.h trackeroverlay.h markerpositiontracker.h position.h glmacros.h corbapositiontracker.h
 capture_SOURCES = cameracalibration.cpp cameracalibration.h capture_main.cpp capturebuffer.cpp capturebuffer.h capturecontroller.cpp capturecontroller.h commandlineparser.cpp commandlineparser.h epixcameracontroller.cpp epixcameracontroller.h epixsource.cpp epixsource.h overlay.cpp overlay.h position.h sf1280controller.cpp sf1280controller.h ve.cpp ve.h veevent.cpp veevent.h veeventlistener.h veeventsource.cpp veeventsource.h vepositionevent.cpp vepositionevent.h xclibcontroller.cpp xclibcontroller.h epixreaderthread.cpp epixreaderthread.h stopwatch.cpp stopwatch.h videocanvas.cpp videocanvas.h videosource.cpp videosource.h capturereadthread.cpp capturewritethread.cpp captureinfo.h captureimagepair.cpp captureimagepair.h arregistration.cpp arregistration.h veeventlistener.cpp position.cpp
-capture_LDADD = -lgslcblas -lgsl -lglut -lopencv /usr/local/xclib/xclibi86.a -lccgnu2 -lm -lGL -lGLEW -llog4cplus
+capture_LDADD = -lxerces-c -lgslcblas -lgsl -lglut -lopencv /usr/local/xclib/xclibi86.a -lccgnu2 -lm -lGL -lGLEW -llog4cplus

@@ -54,17 +54,11 @@ RegistrationOverlay::RegistrationOverlay(bool display) : Overlay(display) {
     text[0] = new char[256];
     sprintf(text[0], "No position updates recieved.");
     this->registration = Ve::getLeftSource()->getRegistration();
+    measuring = false;
 }
 
 void RegistrationOverlay::measurePoint(int x, int y) {
     LOG4CPLUS_INFO(logger, "Trying to acquire data for point at " << x << "," << y);
-    mutex.enterMutex();
-    measureCount = 0;
-    mutex.leaveMutex();
-    while (measureCount != measureSize) {
-	Thread::yield();
-    }
-    mutex.enterMutex();
     // Create observation vector
     gsl_vector* observations = gsl_vector_alloc(measureCount * 3);
     for (int i=0 ; i < measureCount ; i++) {
@@ -99,7 +93,6 @@ void RegistrationOverlay::measurePoint(int x, int y) {
     gsl_vector_free(observations);
     gsl_vector_free(result);
     gsl_matrix_free(params);
-    mutex.leaveMutex();
 }
 
 void RegistrationOverlay::drawOverlay() {
@@ -131,17 +124,21 @@ void RegistrationOverlay::drawOverlay() {
 
 void RegistrationOverlay::recieveEvent(VeEvent &e) {
     mutex.enterMutex();
-    if (e.getType() == VeEvent::POSITION_EVENT) {
+    if (measuring || e.getType() == VeEvent::POSITION_EVENT) {
 	VePositionEvent& eP = (VePositionEvent&) e;
 	Position pos = eP.getPosition();
-	if (measureCount < measureSize) {
-	    tmpSensorPoints[measureCount].x = pos.x;
-	    tmpSensorPoints[measureCount].y = pos.y;
-	    tmpSensorPoints[measureCount].z = pos.z;
-	    measureCount++;
-	}
-	sprintf(text[0], "Last sensor position recieved from CORBA: x:%i y:%i z%i", pos.x, pos.y, pos.z);
+	tmpSensorPoints[measureCount].x = pos.x;
+	tmpSensorPoints[measureCount].y = pos.y;
+	tmpSensorPoints[measureCount].z = pos.z;
+	measureCount++;
 	LOG4CPLUS_DEBUG(logger, "Recieved position event (" << pos.x << "," << pos.y << "," << pos.z << ")");
+	if (measureCount >= measureSize) {
+	    measurePoint(calibPoints[calibPointPos].x, calibPoints[calibPointPos].y);
+	    calibPointPos = (calibPointPos + 1) % calibPointNum;
+	    measuring = false;
+	    measureCount = 0;
+	    LOG4CPLUS_DEBUG(logger, "Measure Point acquired.");
+	}
     }
     if (e.getType() == VeEvent::KEYBOARD_EVENT) {
 	switch (e.getCode()) {
@@ -150,9 +147,11 @@ void RegistrationOverlay::recieveEvent(VeEvent &e) {
 		toggleDisplay();
 	    break;
 	    case 't':
-	    case 'T': 
-		measurePoint(calibPoints[calibPointPos].x, calibPoints[calibPointPos].y);
-		calibPointPos = (calibPointPos + 1) % calibPointNum;
+	    case 'T':
+	        if (measuring == false) {
+		    measuring = true;
+		    measureCount = 0;
+	        } 
 	    break;
 	    case 'e':
 	    case 'E': 
