@@ -31,14 +31,43 @@ This is the base overlay class. Each overlay is a layer upon the main VideoCanva
 */
 class Overlay{
 public:
-    Overlay();
+    /**
+      Constructs a new overlay with the given display state.
+    */
+    Overlay(bool display = true);
 
     ~Overlay();
+    
+    /**
+      Displays this overlay.
+    */
+    virtual void display() { displayState = true; }
+    
+    /*
+      Un-Displays this overlay
+    */
+    virtual void unDisplay() { displayState = false; }
+    
+    /**
+      Toggles this overlay's display status.
+    */
+    virtual void toggleDisplay() { displayState = ! displayState; }
 
     /*
-      The main drawing routine.
+      Wrapper for the main drawing routine.
+      
+      @see drawOverlay
     */
-    virtual void draw() { return; }; 
+    void draw(); 
+
+protected:
+    /// Indicates wether this overlay is to be displayed
+    bool displayState;
+    /*
+      Main drawing routine, to be overwritten by the child
+      classes.
+    */
+    virtual void drawOverlay() { return; }
 
 };
 

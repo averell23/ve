@@ -21,20 +21,61 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#include "statusoverlay.h"
 
-Overlay::Overlay(bool display)
+Logger StatusOverlay::logger = Logger::getInstance("Ve.StatusOverlay");
+
+StatusOverlay::StatusOverlay(bool display)
+ : Overlay(display)
 {
-    displayState = display;
+    	rightTimer = Ve::getRightSource()->getTimer();
+	leftTimer = Ve::getLeftSource()->getTimer();
+	videoTimer = Ve::getTimer();
+	text = new char[256];
+	LOG4CPLUS_DEBUG(logger, "Status overlay created");
 }
 
-
-Overlay::~Overlay()
-{
+void StatusOverlay::drawOverlay() {
+    glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
+    glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
+    glPushMatrix();				// ...push the Matrix for backup...
+    glOrtho(-1000, 1000, -1000, 1000, 0, 1);	// ...and load the Identity Matrix instead
+    glMatrixMode( GL_PROJECTION );		// ditto for the Projection Matrix
+    glPushMatrix();
+    glLoadIdentity();
+    
+    // glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+    glTranslatef(-1.0f, 0.0f, 0.0f);
+    drawOneEye();
+    glLoadIdentity();
+    drawOneEye();
+    
+    // Restore Matrices
+    glPopMatrix();
+    glMatrixMode( GL_MODELVIEW );		
+    glPopMatrix();
 }
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
+void StatusOverlay::drawOneEye() {
+    font = FontManager::getFont();
+    if (font == NULL) return; // Sanity check
+    
+    sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), videoTimer->getFramerate());
+    glTranslatef(0.05f, 0.9f, 0.0f);
+    font->Render(text);
+    glTranslatef(0.0f, -1.8f, 0.0f);
+    font->Render("Status Display active");
+}
+
+void StatusOverlay::recieveEvent(VeEvent &e) {
+    if ((e.getType() == VeEvent::KEYBOARD_EVENT) && (e.getCode() == 32)) {
+	toggleDisplay();
+	LOG4CPLUS_DEBUG(logger, "Recieved keyboard event, toggling display");
     }
 }
+
+StatusOverlay::~StatusOverlay()
+{
+}
+
+

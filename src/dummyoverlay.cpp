@@ -23,7 +23,7 @@
  ***************************************************************************/
 #include "dummyoverlay.h"
 
-DummyOverlay::DummyOverlay() : Overlay()
+DummyOverlay::DummyOverlay(bool display) : Overlay(display)
 {
 }
 
@@ -32,7 +32,7 @@ DummyOverlay::~DummyOverlay()
 {
 }
 
-void DummyOverlay::draw() {
+void DummyOverlay::drawOverlay() {
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...

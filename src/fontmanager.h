@@ -21,20 +21,59 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#ifndef FONTMANAGER_H
+#define FONTMANAGER_H
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
-}
+#include <FTGLTextureFont.h>
+#include <log4cplus/logger.h>
 
+#define DEFAULT_FONT "../fonts/obliviousfont.ttf"
 
-Overlay::~Overlay()
-{
-}
+using namespace log4cplus;
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+/**
+Simple Font Manager Class for FTGL fon#include <FTGLTextureFont.h>ts. Currently, only a single
+font is supported.
+
+@author Daniel Hahn,,,
+*/
+class FontManager{
+public:
+    
+    ~FontManager();
+    
+    /**
+      Returns the single instance of the managed font. 
+      
+      At the moment the
+      font has a default size, and the face size should NOT be changed
+      outside this class. This is because FaceSize() is an expensive 
+      operation and should not be done for every frame. 
+      
+      To get around this future implementatios may contain multiple 
+      Font objects, one for each font size.
+      
+      @return The font object, or NULL if it could not be created.
+    */
+    static FTGLTextureFont* getFont();
+    
+private:
+    /**
+      Private for singleton class.
+    */
+    FontManager();
+    
+    /**
+      This actually creates the font object.
+    */
+    static void createFont();
+    
+    /// The font managed by this class
+    static FTGLTextureFont* font;
+    
+    /// Logger for this class
+    static Logger logger;
+
+};
+
+#endif

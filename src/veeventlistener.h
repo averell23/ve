@@ -21,20 +21,20 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#ifndef VEEVENTLISTENER_H
+#define VEEVENTLISTENER_H
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
-}
+#include "veevent.h"
 
+/**
+Use to allow child classes to listen for VeEvents.
 
-Overlay::~Overlay()
-{
-}
+@author Daniel Hahn,,,
+*/
+class VeEventListener{
+public:
+    /// Called when recieving an event.
+    virtual void recieveEvent(VeEvent &e) = 0;
+};
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+#endif

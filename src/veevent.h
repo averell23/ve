@@ -21,20 +21,42 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#ifndef VEEVENT_H
+#define VEEVENT_H
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
-}
+/**
+Simple Event class for Ve's internal event handling.
 
+@author Daniel Hahn,,,
+*/
+class VeEvent{
+public:
+    /**
+      Creates an event with the given event code.
+    */
+    VeEvent(int type, long code);
 
-Overlay::~Overlay()
-{
-}
+    ~VeEvent();
+    
+    /**
+      Returns the event code.
+    */
+    long getCode();
+    
+    /**
+      Returns the event type.
+    */
+    int getType();
+    
+    /// Pre-defined event types
+    static const int MISC_EVENT = 0;
+    static const int KEYBOARD_EVENT = 1;
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+private:
+    /// An arbitrary event code
+    long code;
+    /// Determines the event type
+    int type;
+};
+
+#endif

@@ -23,10 +23,12 @@
  ***************************************************************************/
 #include "videocanvas.h"
 
+Logger VideoCanvas::logger = Logger::getInstance("Ve.VideoCanvas");
+
 VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 {
     if (left == NULL || right == NULL) {
-	cout << "Missing video source: Could not create canvas." << endl;
+	LOG4CPLUS_ERROR(logger, "Missing video source: Could not create canvas.");
 	return;
     }
     leftEye = left;
@@ -34,50 +36,52 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
     imageHeight = leftEye->getHeight();
     imageWidth = leftEye->getWidth();
     if ((leftEye->getHeight() != rightEye->getHeight()) || (leftEye->getWidth() != rightEye->getWidth())) {
-	std::cerr << "Error: Image formats for left and right eye do not match. This may be fatal." << std::endl;
+	LOG4CPLUS_ERROR(logger, "Error: Image formats for left and right eye do not match. This may be fatal.");
     } else {
 	GLint maxTexSize;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTexSize);
-	printf("Found max tex size: %d\n", maxTexSize);
+	LOG4CPLUS_INFO(logger, "Found max tex size: " << maxTexSize);
 	int vidSize = (imageWidth > imageHeight)?imageWidth:imageHeight;
-	printf("Video input size: %d\n", vidSize);
+	LOG4CPLUS_INFO(logger, "Video input size: " << vidSize);
 	
 	bool accomodated = false;
 	textureSize = 2;
 	while (textureSize <= maxTexSize && (!accomodated)) {
 	    textureSize = textureSize * 2;
 	    if (textureSize >= vidSize) accomodated = true;
-	    printf("Tex size set %d\n", textureSize);
+	    LOG4CPLUS_DEBUG(logger, "Tex size set to " << textureSize);
 	}
 
-	printf("Assigning Texture of size %d\n", textureSize);
+	LOG4CPLUS_INFO( logger, "Assigning Texture of size " << textureSize);
 	glGenTextures(2, textures);   /* create the texture names */
 
 	glBindTexture(GL_TEXTURE_2D, textures[0]); /* Bind texture[0] ??? */
-	printf("Binding tex image...");
+	LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
 		     GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	printf("done\n");
+	LOG4CPLUS_DEBUG(logger, "Texture image bound.");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Linear filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	printf("Binding Tex image...");
+	LOG4CPLUS_DEBUG(logger, "Binding NULL texture image...");
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureSize, textureSize, 0,
 		     GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	printf("done\n");
+	LOG4CPLUS_DEBUG(logger, "Texture image bound");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	printf("Texture bind successful\n");
+	LOG4CPLUS_DEBUG(logger, "Texture bind successful");
 	
 	// Calculate the size factors
 	widthFactor = 1.0f - ((double) imageWidth / (double) textureSize);
 	heightFactor = 1.0f - ((double) imageHeight / (double) textureSize);
-	printf("widthFactor = 1.0 - (%d / %d) = %f\n", imageWidth, textureSize, widthFactor);
-	printf("heightFactor = 1.0 - (%d / %d) = %f\n", imageHeight, textureSize, heightFactor);
+	LOG4CPLUS_DEBUG(logger, "widthFactor = 1.0 - (" << imageWidth << " / " 
+			<< textureSize << " ) = " << widthFactor);
+	LOG4CPLUS_DEBUG(logger, "heightFactor = 1.0 - (" << imageHeight << " / " 
+			<< textureSize << ") = " << heightFactor);
     }
      
-    std::cerr << "Video Canvas created." << std::endl;
+    LOG4CPLUS_INFO(logger, "Video Canvas created.");
 }
 
 
@@ -104,7 +108,9 @@ void VideoCanvas::draw() {
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 			GL_RGB, GL_UNSIGNED_BYTE, leftImage->imageData);
 		delete leftImage->imageData;
-	} // else cout << "Warning, got empty image for left eye" << endl; // FIXME: Warn handling
+	    } else {
+		LOG4CPLUS_TRACE(logger, "Got empty image for left eye"); 
+	    }
 	cvReleaseImageHeader(&leftImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
@@ -124,7 +130,9 @@ void VideoCanvas::draw() {
 		 glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
 		    GL_RGB, GL_UNSIGNED_BYTE, rightImage->imageData);
 		delete rightImage->imageData;
-	} // else cout << "Warning, got empty image for right eye" << endl; // FIXME: Warn handling
+	    } else {
+		LOG4CPLUS_TRACE(logger, "Got empty image for right eye"); 
+	    }
 	cvReleaseImageHeader(&rightImage);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);

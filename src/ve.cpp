@@ -13,12 +13,14 @@ VideoSource* Ve::leftEye;
 /// The overlays that will be displayed
 vector<Overlay*> Ve::overlays;
 
+Logger Ve::logger = Logger::getInstance("Ve.Ve");
+VeEventSource Ve::eventSource;
+
 void Ve::init(VideoSource* left, VideoSource* right) {
-    cout << "OpenGL Init complete." << endl;
     Ve::rightEye = right;
     Ve::leftEye = left;
     Ve::mainVideo = new VideoCanvas(left, right);
-    cout << "Main video canvas created." << endl;
+    LOG4CPLUS_INFO(logger, "Main video canvas created.");
     Ve::timer = new Stopwatch();
   
     glutDisplayFunc     ( Ve::glDraw );
@@ -63,13 +65,17 @@ void Ve::shutdown() {
     }
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) { 
-		cout << "Some openGL error has occured." << endl;
+		LOG4CPLUS_WARN(logger, "Some openGL error has occured during runtime." );
     }
 	timer->stop();
     delete mainVideo;
     for (int i=0 ; i < overlays.size() ; i++) {
 		delete overlays[i];
     }
+}
+
+void Ve::addListener(VeEventListener* listener) {
+    eventSource.addListener(listener);
 }
 
 void Ve::glDraw(void) {
@@ -102,10 +108,9 @@ void Ve::keyboard ( unsigned char key, int x, int y )  // Create Keyboard Functi
 		shutdown();
 		exit ( EXIT_SUCCESS );   // Exit The Program
 		break;        // Ready For Next Case
-	case 32:
-		cout << "Spaced" << endl;
-		break;
-	default:        // Now Wrap It Up
+	default:        // Default: Post a keyboard event to all listeners
+		VeEvent e(VeEvent::KEYBOARD_EVENT, key);
+		eventSource.postEvent(e);
 		break;
 	}
 }
@@ -142,4 +147,5 @@ void Ve::initGL( int argc, char** argv ) {
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glFlush();
+    LOG4CPLUS_INFO(logger, "GLUT/OpenGL initialization complete");
 }

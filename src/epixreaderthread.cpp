@@ -1,5 +1,7 @@
 #include "epixreaderthread.h"
 
+Logger EpixReaderThread::logger = Logger::getInstance("Ve.EpixReaderThread");
+
 EpixReaderThread::EpixReaderThread(int unit) : Thread(50) {
     bufsize = 0;
     tMutex = new Mutex();
@@ -27,7 +29,7 @@ void EpixReaderThread::run() {
     buffer = new uchar[bufsize];
     tmpBuffer = new uchar[bufsize];
     
-    cout << "Starting reader thread on unit " << unit << endl;
+    LOG4CPLUS_INFO(logger, "Starting reader thread on unit " << unit);
     
     running = true;
     while (running) { 
@@ -43,7 +45,7 @@ void EpixReaderThread::run() {
 			tMutex->leaveMutex();
 			stale = false;
 		} else {
-			cout << "Buffer read error: " << pxd_mesgErrorCode(readResult) << endl;
+			LOG4CPLUS_WARN(logger, "Buffer read error: " << pxd_mesgErrorCode(readResult));
 		} 
     }
 }

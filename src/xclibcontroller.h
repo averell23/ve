@@ -31,9 +31,11 @@ extern "C" {
     #include "xcliball.h"
 }
 #include <cc++/thread.h>
+#include <log4cplus/logger.h>
 
 using namespace std;
 using namespace ost;
+using namespace log4cplus;
 
 /**
   Controls the behavior of the XCLIB library. This encapsulates the global
@@ -109,6 +111,7 @@ private:
     /// Constructor is private for singleton class.
     XCLIBController();
     static bool openState;
+    static Logger logger;
 
 };
 

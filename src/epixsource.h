@@ -29,8 +29,10 @@
 #include "epixreaderthread.h"
 #include "stopwatch.h"
 #include <iostream>
+#include <log4cplus/logger.h>
 
 using namespace std;
+using namespace log4cplus;
 
 /**
 @author Daniel Hahn,,,
@@ -71,6 +73,8 @@ private:
 		Setup routines for the various camera models..
 	*/
 	void cameraSetup(); 
+	/// Logger for this class
+	static Logger logger;
     
 };
 

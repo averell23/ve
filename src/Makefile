@@ -65,7 +65,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = -lccgnu2 -lGL -lglut -lopencv -lm -lfreetype -lftgl /usr/local/xclib/xclibi86.a
+LDFLAGS = -lccgnu2 -lGL -lglut -llog4cplus -lopencv -lm -lfreetype -lftgl  /usr/local/xclib/xclibi86.a
 LIBOBJS = 
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -124,7 +124,7 @@ sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
 target_alias = 
 bin_PROGRAMS = ve
-ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp
+ve_SOURCES = ve.cpp videocanvas.h videocanvas.cpp videosource.h videosource.cpp dummysource.h dummysource.cpp stopwatch.h stopwatch.cpp dummyoverlay.h dummyoverlay.cpp cameracalibration.h cameracalibration.cpp epixsource.h epixsource.cpp xclibcontroller.h xclibcontroller.cpp epixreaderthread.h epixreaderthread.cpp fonttesteroverlay.h fonttesteroverlay.cpp overlay.h overlay.cpp ve.h main.cpp fontmanager.h fontmanager.cpp statusoverlay.h statusoverlay.cpp commandlineparser.h commandlineparser.cpp veevent.h veevent.cpp veeventlistener.h veeventsource.h veeventsource.cpp
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
@@ -144,7 +144,9 @@ am_ve_OBJECTS = ve.$(OBJEXT) videocanvas.$(OBJEXT) videosource.$(OBJEXT) \
 	dummyoverlay.$(OBJEXT) cameracalibration.$(OBJEXT) \
 	epixsource.$(OBJEXT) xclibcontroller.$(OBJEXT) \
 	epixreaderthread.$(OBJEXT) fonttesteroverlay.$(OBJEXT) \
-	overlay.$(OBJEXT) main.$(OBJEXT)
+	overlay.$(OBJEXT) main.$(OBJEXT) fontmanager.$(OBJEXT) \
+	statusoverlay.$(OBJEXT) commandlineparser.$(OBJEXT) \
+	veevent.$(OBJEXT) veeventsource.$(OBJEXT)
 ve_OBJECTS = $(am_ve_OBJECTS)
 ve_LDADD = $(LDADD)
 ve_DEPENDENCIES =
@@ -153,13 +155,17 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 DEP_FILES = ./$(DEPDIR)/cameracalibration.Po \
+	./$(DEPDIR)/commandlineparser.Po \
 	./$(DEPDIR)/dummyoverlay.Po \
 	./$(DEPDIR)/dummysource.Po \
 	./$(DEPDIR)/epixreaderthread.Po \
 	./$(DEPDIR)/epixsource.Po \
+	./$(DEPDIR)/fontmanager.Po \
 	./$(DEPDIR)/fonttesteroverlay.Po \
 	./$(DEPDIR)/main.Po ./$(DEPDIR)/overlay.Po \
+	./$(DEPDIR)/statusoverlay.Po \
 	./$(DEPDIR)/stopwatch.Po ./$(DEPDIR)/ve.Po \
+	./$(DEPDIR)/veevent.Po ./$(DEPDIR)/veeventsource.Po \
 	./$(DEPDIR)/videocanvas.Po \
 	./$(DEPDIR)/videosource.Po \
 	./$(DEPDIR)/xclibcontroller.Po
@@ -231,15 +237,20 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/cameracalibration.Po
+include ./$(DEPDIR)/commandlineparser.Po
 include ./$(DEPDIR)/dummyoverlay.Po
 include ./$(DEPDIR)/dummysource.Po
 include ./$(DEPDIR)/epixreaderthread.Po
 include ./$(DEPDIR)/epixsource.Po
+include ./$(DEPDIR)/fontmanager.Po
 include ./$(DEPDIR)/fonttesteroverlay.Po
 include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/overlay.Po
+include ./$(DEPDIR)/statusoverlay.Po
 include ./$(DEPDIR)/stopwatch.Po
 include ./$(DEPDIR)/ve.Po
+include ./$(DEPDIR)/veevent.Po
+include ./$(DEPDIR)/veeventsource.Po
 include ./$(DEPDIR)/videocanvas.Po
 include ./$(DEPDIR)/videosource.Po
 include ./$(DEPDIR)/xclibcontroller.Po

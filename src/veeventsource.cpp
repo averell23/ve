@@ -21,20 +21,23 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#include "veeventsource.h"
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
+Logger VeEventSource::logger = Logger::getInstance("Ve.VeEventSource");
+
+VeEventSource::VeEventSource() {
+}
+
+void VeEventSource::addListener(VeEventListener *listener) {
+    listeners.push_back(listener);
+    LOG4CPLUS_TRACE(logger, "Added new event listener to source");
 }
 
 
-Overlay::~Overlay()
-{
-}
-
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
+void VeEventSource::postEvent(VeEvent &e) {
+    LOG4CPLUS_DEBUG(logger, "Posting event");
+    for (int i = 0 ; i < listeners.size() ; i++) {
+	listeners[i]->recieveEvent(e);
+	LOG4CPLUS_TRACE(logger, "Event posted to listener");
     }
 }

@@ -33,14 +33,18 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <vector>
+#include <log4cplus/logger.h>
 #include "stopwatch.h"
 #include "videocanvas.h"
 #include "videosource.h"
 #include "overlay.h"
+#include "veeventsource.h"
+#include "veeventlistener.h"
+
+using namespace log4cplus;
 
 /** 
-  This is the program's main class that includes all the "global" methods,
-  as well as the global program logic.
+  This is the program's main class that includes the basic application framework.
 */
 class Ve {
 public:
@@ -78,6 +82,11 @@ public:
 		Get the main timer.
 	 */
 	static Stopwatch* getTimer() { return timer; }
+	
+    /**
+      Registers an event listner with the main event source.
+    */
+    static void addListener(VeEventListener* listener);
 
     /** OpenGL initilization */
     static void initGL( int argc, char** argv );
@@ -103,6 +112,12 @@ public:
     static VideoSource *leftEye;
     /// The overlays that will be displayed
     static vector<Overlay*> overlays;
+    
+    /// Event source used for events from the main framework
+    static VeEventSource eventSource;
+    
+    // Logger for this class
+    static Logger logger;
 };
 
 #endif

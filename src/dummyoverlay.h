@@ -36,12 +36,12 @@
 */
 class DummyOverlay : public Overlay {
 public:
-    DummyOverlay();
+    DummyOverlay(bool display = true);
 
     ~DummyOverlay();
     
     /** Call the OpenGL commands that draw the overlay */
-    void draw();
+    void drawOverlay();
 
     double rotation;
 };

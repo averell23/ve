@@ -12,10 +12,12 @@ extern "C" {
 #include "xcliball.h"
 #endif
 #include <cc++/thread.h>
+#include <log4cplus/logger.h>
 #include "stopwatch.h"
 
 using namespace std;
 using namespace ost;
+using namespace log4cplus;
 
 /**
 Does the actual reading/copy operations for the EPIX card, to keep them out of the main update cycle.
@@ -59,8 +61,10 @@ private:
     int bufsize;
     /// indicates whether the thread is inside the main loop
     bool running;
-    // indicates wether the current buffer is stale
+    /// indicates wether the current buffer is stale
     bool stale;
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

@@ -23,10 +23,10 @@
  ***************************************************************************/
 #include "fonttesteroverlay.h"
 
-FontTesterOverlay::FontTesterOverlay()
+FontTesterOverlay::FontTesterOverlay(bool display) : Overlay(display)
 {
     cout << "Creating font" << endl;
-    font = new FTGLTextureFont( "C:/WINDOWS/Fonts/Arial.ttf"); // FIXME: Font path
+    font = new FTGLTextureFont("../fonts/obliviousfont.ttf"); // FIXME: Font path
     cout << "Yup." << font << endl;
     if (font->Error()) {
 		cout << "Duh!" << endl;
@@ -47,7 +47,7 @@ FontTesterOverlay::~FontTesterOverlay()
 {
 }
 
-void FontTesterOverlay::draw() {
+void FontTesterOverlay::drawOverlay() {
 	if (font == NULL) return; // Sanity check
 
 	sprintf(text, "%f/%f/%f", rightTimer->getFramerate(), leftTimer->getFramerate(), gTimer->getFramerate());

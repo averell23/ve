@@ -21,20 +21,34 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#include "fontmanager.h"
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
+FTGLTextureFont* FontManager::font = NULL;
+Logger FontManager::logger = Logger::getInstance("Ve.FontManager");
+
+FTGLTextureFont* FontManager::getFont() {
+    if (font == NULL) createFont();
+    return font;
 }
 
-
-Overlay::~Overlay()
-{
-}
-
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
+void FontManager::createFont() {
+    font = new FTGLTextureFont(DEFAULT_FONT);
+    if (font->Error()) {
+	LOG4CPLUS_ERROR(logger, "Font could not be created.");
+	font = NULL;
+    } else {
+	font->FaceSize(40);
+	LOG4CPLUS_DEBUG(logger, "Font successfully created.");
     }
 }
+
+FontManager::FontManager()
+{
+}
+
+
+FontManager::~FontManager()
+{
+}
+
+

@@ -27,25 +27,99 @@
 #include "epixsource.h"
 #include "dummysource.h"
 #include "dummyoverlay.h"
-#include "fonttesteroverlay.h"
+#include "statusoverlay.h"
+#include "commandlineparser.h"
+#include <log4cplus/logger.h>
+#include <log4cplus/configurator.h>
+
+using namespace log4cplus;
+
+
 
 int main(int argc, char *argv[])
 {
+    cout << "Ve Augmented Reality toolbox. (c) 2003 ISAS, author: Daniel Hahn" << endl;
+    
+    BasicConfigurator config;
+    config.configure();
+    
+    CommandLineParser parser("ve");
+    parser.setupOption("help", "Show usage information");
+    parser.setupParameter("debug", false, "Force debug level: (trace|debug|info|warn|error|fatal)");
+    parser.setupParameter("source", true, "Video source (dummy|epix)");
+    bool result = parser.parseCommandLine(argc, argv);
+    if (!result) {
+	cout << endl;
+	parser.printUsage();
+	exit(1);
+    }
+    
+    bool option = parser.getOptionValue("help");
+    if (option) {
+	cout << endl;
+	parser.printUsage();
+	exit(0);
+    }
+    
+    string param = parser.getParamValue("debug");
+    if (param !=  "") {
+	Logger rootLogger = Logger::getInstance("Ve");
+	if (param == "trace") {
+	    rootLogger.setLogLevel(TRACE_LOG_LEVEL);
+	    cout << "Log level set to TRACE" << endl;
+	} else if (param == "debug") {
+	    rootLogger.setLogLevel(DEBUG_LOG_LEVEL);
+	    cout << "Log level set to DEBUG" << endl;
+	} else if (param == "info") {
+	    rootLogger.setLogLevel(INFO_LOG_LEVEL);
+	    cout << "Log level set to INFO" << endl;
+	} else if (param == "warn") {
+	    rootLogger.setLogLevel(WARN_LOG_LEVEL);
+	    cout << "Log level set to WARN" << endl;
+	} else if (param == "error") {
+	    rootLogger.setLogLevel(ERROR_LOG_LEVEL);
+	    cout << "Log level set to ERROR" << endl;
+	} else if (param == "fatal") {
+	    rootLogger.setLogLevel(FATAL_LOG_LEVEL);
+	    cout << "Log level set to FATAL" << endl;
+	} else {
+	    cout << "Unknown log level: " << param << ", could not set." << endl;
+	}
+    }
+    
+    Logger logger = Logger::getInstance("Ve.main");
+    LOG4CPLUS_DEBUG(logger, "Logging initialized");
     
   Ve::initGL(argc, argv);  
+  VideoSource *left,*right;
   
-  VideoSource* right = new EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
-  cout << "Right source created" << endl;
-  VideoSource* left = new EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
-  cout << "Left source created" << endl;
+  param = parser.getParamValue("source");
+  if (param == "dummy") {
+      LOG4CPLUS_INFO(logger, "Using dummy video source");
+      right = new DummySource(); // EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
+      LOG4CPLUS_DEBUG(logger, "Right video source created");
+      left = new DummySource(); // EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
+      LOG4CPLUS_DEBUG(logger, "Left video source created");
+  } else if (param == "epix") {
+      LOG4CPLUS_INFO(logger, "Using epix video source");
+      right = new EpixSource(1, EpixSource::CAMERA_1280F, "cam3.fmt");
+      LOG4CPLUS_DEBUG(logger, "Right video source created");
+      left = new EpixSource(0, EpixSource::CAMERA_1280F, "cam3.fmt");
+      LOG4CPLUS_DEBUG(logger, "Left video source created");
+  } else {
+      cout << "Unknown video source: " << param << endl;
+      exit(1);
+  }
+  
   Ve::init(left, right);
   
-  cout << "Adding overlays" << endl;
+  LOG4CPLUS_DEBUG(logger, "Adding overlays");
   // Create overlays
   // Ve::addOverlay(new DummyOverlay()); 
-  // cout << "one" << endl;
-  Ve::addOverlay(new FontTesterOverlay());
-  cout << "two" << endl;
+  StatusOverlay* status = new StatusOverlay(true);
+  Ve::addOverlay(status);
+  Ve::addListener(status);
+  LOG4CPLUS_DEBUG(logger, "Overlays added.");
   
   Ve::start();
 

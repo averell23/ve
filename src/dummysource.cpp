@@ -23,6 +23,8 @@
  ***************************************************************************/
 #include "dummysource.h"
 
+Logger DummySource::logger = Logger::getInstance("Ve.DummySource");
+
 DummySource::DummySource()
  : VideoSource()
 {
@@ -33,12 +35,12 @@ DummySource::DummySource()
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
 	sprintf(filename, "images/img%04d.ppm.bmp", 1000 + i);
 	if (!loadBMP(filename, &images[i])) { status = false; }
-	if (images[i] == NULL) { cout << "FATAL" << endl; }
+	if (images[i] == NULL) { LOG4CPLUS_ERROR(logger, "Could not load image " << filename); }
     }
 
     
     if ( !status ) {
-	std::cerr << "Error: Could not load images. This may be fatal." << std::endl;
+	LOG4CPLUS_ERROR(logger, "Could not load images. This may be fatal.");
     } else {
 	width = images[0]->width;
 	height = images[0]->height;
@@ -53,7 +55,7 @@ DummySource::~DummySource()
 	free(images[i]->imageData);
 	cvReleaseImageHeader(&images[i]);
     }
-    cout << "Data structures freed." << endl;
+    LOG4CPLUS_DEBUG(logger, "Data structures freed.");
 }
 
 IplImage* DummySource::getImage() {
@@ -86,18 +88,18 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 	/* make sure the file is there and open it read-only (binary) */
 	if ((file = fopen(filename, "rb")) == NULL)
 	{
-		printf("File not found : %s\n", filename);
+		LOG4CPLUS_ERROR(logger, "File not found : " <<filename);
 		return 0;
 	}
 	if(!fread(&bfType, sizeof(short int), 1, file))
 	{
-		printf("Error reading file!\n");
+		LOG4CPLUS_ERROR(logger, "Error reading file!");
 		return 0;
 	}
 	/* check if file is a bitmap */
 	if (bfType != 19778)
 	{
-		printf("Not a Bitmap-File!\n");
+		LOG4CPLUS_ERROR(logger, "Not a Bitmap-File!");
 		return 0;
 	}        
 	/* get the file size */
@@ -106,48 +108,46 @@ int DummySource::loadBMP(char *filename, IplImage **image)
 	/* get the position of the actual bitmap data */
 	if (!fread(&bfOffBits, sizeof(long int), 1, file))
 	{
-		printf("Error reading file!\n");
+		LOG4CPLUS_ERROR(logger, "Error reading file!");
 		return 0;
 	}
-	printf("Data at Offset: %ld\n", bfOffBits);
+	LOG4CPLUS_DEBUG(logger, "Data at Offset: " << bfOffBits);
 	/* skip size of bitmap info header */
 	fseek(file, 4, SEEK_CUR);
 	/* get the width of the bitmap */
 	fread(&width, sizeof(int), 1, file);
-	printf("Width of Bitmap: %d\n", width);
+	LOG4CPLUS_DEBUG(logger, "Width of Bitmap: " << width);
 	/* get the height of the bitmap */
 	fread(&height, sizeof(int), 1, file);
-	printf("Height of Bitmap: %d\n", height);
+	LOG4CPLUS_DEBUG(logger, "Height of Bitmap: " << height);
 	/* get the number of planes (must be set to 1) */
 	fread(&biPlanes, sizeof(short int), 1, file);
 	if (biPlanes != 1)
 	{
-		printf("Error: number of Planes not 1!\n");
+		LOG4CPLUS_ERROR(logger, "Error: number of Planes not 1!");
 		return 0;
 	}
 	/* get the number of bits per pixel */
 	if (!fread(&biBitCount, sizeof(short int), 1, file))
-	{	CvSize size;
-	size.height = height;
-	size.width = width;
-		printf("Error reading file!\n");
+	{	
+		LOG4CPLUS_ERROR(logger,"Error reading file!");
 		return 0;
 	}
-	printf("Bits per Pixel: %d\n", biBitCount);
+	LOG4CPLUS_DEBUG(logger, "Bits per Pixel: " << biBitCount);
 	if (biBitCount != 24)
 	{
-		printf("Bits per Pixel not 24\n");
+		LOG4CPLUS_ERROR(logger, "Bits per Pixel not 24");
 		return 0;
 	}
 	/* calculate the size of the image in bytes */
 	biSizeImage = width * height * 3;
-	printf("Size of the image data: %ld\n", biSizeImage);
+	LOG4CPLUS_DEBUG(logger, "Size of the image data: " << biSizeImage);
 	data = (char*) malloc(biSizeImage);
 	/* seek to the actual data */
 	fseek(file, bfOffBits, SEEK_SET);
 	if (!fread(data, biSizeImage, 1, file))
 	{
-		printf("Error loading file!\n");
+		LOG4CPLUS_ERROR(logger, "Error loading file!");
 		return 0;
 	}
 	/* swap red and blue (bgr -> rgb) */

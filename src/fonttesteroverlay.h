@@ -38,11 +38,11 @@ using namespace std;
 */
 class FontTesterOverlay : public Overlay {
 public:
-    FontTesterOverlay();
+    FontTesterOverlay(bool display = true);
 
     ~FontTesterOverlay();
     
-    void draw();
+    void drawOverlay();
 
 private:
     

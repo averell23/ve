@@ -35,6 +35,7 @@
 #include <GL/glut.h>		// GLUT headers
 #include <stdio.h>		// STD input/output headers
 #include <iostream>
+#include <log4cplus/logger.h>
 
 using namespace std;
 
@@ -68,6 +69,9 @@ protected:
     GLuint textures[2];
     /** Size Factors to scale the image to screen */
     double widthFactor, heightFactor;
+    /// Logger for this class
+    static Logger logger;
+    
 };
 
 #endif

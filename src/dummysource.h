@@ -28,10 +28,12 @@
 #include <stdlib.h>
 #include <iostream>
 #include <cv.hpp>
+#include <log4cplus/logger.h>
 
 #define NUM_IMAGES 50
 
 using namespace std;
+using namespace log4cplus;
 
 /* Texture Image */
 typedef struct {
@@ -62,6 +64,8 @@ public:
 private:
     IplImage* images[NUM_IMAGES];
     int position;
+    /// Logger for this class
+    static Logger logger;
 };
 
 #endif

@@ -21,20 +21,24 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#include "veevent.h"
 
-Overlay::Overlay(bool display)
+VeEvent::VeEvent(int type, long code)
 {
-    displayState = display;
+    VeEvent::code = code;
+    VeEvent::type = type;
 }
 
+long VeEvent::getCode() {
+    return code;
+}
 
-Overlay::~Overlay()
+int VeEvent::getType() {
+    return type;
+}
+
+VeEvent::~VeEvent()
 {
 }
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+

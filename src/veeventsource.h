@@ -21,20 +21,45 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "overlay.h"
+#ifndef VEEVENTSOURCE_H
+#define VEEVENTSOURCE_H
 
-Overlay::Overlay(bool display)
-{
-    displayState = display;
-}
+#include <cstdlib>
+#include <log4cplus/logger.h>
+#include "veeventlistener.h"
 
+using namespace std;
+using namespace log4cplus;
 
-Overlay::~Overlay()
-{
-}
+/**
+Convenience class that can be used to post VeEvents to listeners.
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+@author Daniel Hahn,,,
+*/
+class VeEventSource{
+public:
+    /** 
+      Creates a new VeEventSource.
+    */
+    VeEventSource();
+    
+    /**
+      Registers an event listener with this source. Each listener will 
+      be notified of events from this source.
+    */
+    void addListener(VeEventListener *listener);
+    
+    /**
+      Posts an event to all registerd listeners.
+    */
+    void postEvent(VeEvent &e);
+    
+private:
+    /// List of registered listeners.
+    vector<VeEventListener*> listeners;
+    /// Logger for this class
+    static Logger logger;
+    
+};
+
+#endif

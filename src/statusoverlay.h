@@ -21,20 +21,47 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
+#ifndef STATUSOVERLAY_H
+#define STATUSOVERLAY_H
+
 #include "overlay.h"
+#include "stopwatch.h"
+#include "fontmanager.h"
+#include "ve.h"
+#include "veeventlistener.h"
+#include <log4cplus/logger.h>
 
-Overlay::Overlay(bool display)
+using namespace log4cplus;
+
+/**
+Overlay to display system status information.
+
+@author Daniel Hahn,,,
+*/
+class StatusOverlay : public Overlay, public VeEventListener
 {
-    displayState = display;
-}
+public:
+    StatusOverlay(bool display);
 
+    ~StatusOverlay();
+    
+    void drawOverlay();
+    
+private:
+    /// Various timers
+    Stopwatch *rightTimer, *leftTimer, *videoTimer;
+    /// Logger for this class
+    static Logger logger;
+    /// The font used for status display
+    FTGLTextureFont* font;
+    /// Text buffer
+    char* text;
+    /// Contains the drawing code for a single eye.
+    void drawOneEye();
+    
+    /// Recieves events 
+    void recieveEvent(VeEvent &e);
 
-Overlay::~Overlay()
-{
-}
+};
 
-void Overlay::draw() {
-    if (displayState) {
-	drawOverlay();
-    }
-}
+#endif
