@@ -26,9 +26,12 @@
 
 #include <videosource.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
+#include <cv.hpp>
 
 #define NUM_IMAGES 50
+
+using namespace std;
 
 /* Texture Image */
 typedef struct {
@@ -50,12 +53,12 @@ public:
 
     ~DummySource();
     
-    int loadBMP(char *filename, textureImage *texture);
+    int loadBMP(char *filename, IplImage **image);
     
-    unsigned char *getImage();
+    IplImage* getImage();
 
 private:
-    textureImage images[NUM_IMAGES];
+    IplImage* images[NUM_IMAGES];
     int position;
 };
 

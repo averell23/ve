@@ -21,25 +21,15 @@
  *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR *
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
-#include "videosource.h"
+#include "cameracalibration.h"
 
-VideoSource::VideoSource()
+CameraCalibration::CameraCalibration(VideoSource *input, string filename)
 {
 }
 
 
-VideoSource::~VideoSource()
+CameraCalibration::~CameraCalibration()
 {
 }
 
-int VideoSource::getWidth() {
-    return width;
-}
 
-int VideoSource::getHeight() {
-    return height;
-}
-
-IplImage* VideoSource::getImage() {
-    return NULL;
-}

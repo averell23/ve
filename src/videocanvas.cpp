@@ -77,6 +77,7 @@ VideoCanvas::VideoCanvas(VideoSource *left, VideoSource *right)
 
 
 void VideoCanvas::draw() {
+    
     glColor3f(1.0f, 1.0f, 1.0f);		/* Set normal color */
     glMatrixMode( GL_MODELVIEW );		// Select the ModelView Matrix...
     glPushMatrix();				// ...push the Matrix for backup...
@@ -87,8 +88,10 @@ void VideoCanvas::draw() {
     
     // Left Quad
     glBindTexture(GL_TEXTURE_2D, textures[0]);
+    
+    
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, leftEye->getImage());
+		    GL_RGB, GL_UNSIGNED_BYTE, leftEye->getImage()->imageData);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);	/* Bottom left */
 	glVertex3i(-1, -1, 1);
@@ -103,7 +106,7 @@ void VideoCanvas::draw() {
     // Right Quad
     glBindTexture(GL_TEXTURE_2D, textures[1]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageWidth, imageHeight, 
-		    GL_RGB, GL_UNSIGNED_BYTE, rightEye->getImage());
+		    GL_RGB, GL_UNSIGNED_BYTE, rightEye->getImage()->imageData);
     glBegin(GL_QUADS);
 	glTexCoord2d(0.0f, 0.0f);
 	glVertex3i(0, -1, 1);

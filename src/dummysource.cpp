@@ -33,35 +33,35 @@ DummySource::DummySource()
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
 	sprintf(filename, "images/img%04d.ppm.bmp", 1000 + i);
 	if (!loadBMP(filename, &images[i])) { status = false; }
+	if (images[i] == NULL) { cout << "FATAL" << endl; }
     }
 
+    
     if ( !status ) {
 	std::cerr << "Error: Could not load images. This may be fatal." << std::endl;
     } else {
-	width = images[0].width;
-	height = images[0].height;
+	width = images[0]->width;
+	height = images[0]->height;
     }
     
     position = 0;
 }
 
-
-
-
 DummySource::~DummySource()
 {
     for ( int i = 0 ; i < NUM_IMAGES ; i++ ) {
-	free(images[i].data);
+	free(images[i]->imageData);
+	free(images[i]);
     }
 }
 
-unsigned char* DummySource::getImage() {
+IplImage* DummySource::getImage() {
     position = ++position % NUM_IMAGES;
-    return images[position].data;
+    return images[position];
 }
 
 /* simple loader for 24bit bitmaps (data is in rgb-format) */
-int DummySource::loadBMP(char *filename, textureImage *texture)
+int DummySource::loadBMP(char *filename, IplImage **image)
 {
 	FILE *file;
 	unsigned short int bfType;
@@ -71,6 +71,9 @@ int DummySource::loadBMP(char *filename, textureImage *texture)
 	long int biSizeImage;
 	int i;
 	unsigned char temp;
+	int width, height;
+	char* data;
+	
 	/* make sure the file is there and open it read-only (binary) */
 	if ((file = fopen(filename, "rb")) == NULL)
 	{
@@ -101,11 +104,11 @@ int DummySource::loadBMP(char *filename, textureImage *texture)
 	/* skip size of bitmap info header */
 	fseek(file, 4, SEEK_CUR);
 	/* get the width of the bitmap */
-	fread(&texture->width, sizeof(int), 1, file);
-	printf("Width of Bitmap: %d\n", texture->width);
+	fread(&width, sizeof(int), 1, file);
+	printf("Width of Bitmap: %d\n", width);
 	/* get the height of the bitmap */
-	fread(&texture->height, sizeof(int), 1, file);
-	printf("Height of Bitmap: %d\n", texture->height);
+	fread(&height, sizeof(int), 1, file);
+	printf("Height of Bitmap: %d\n", height);
 	/* get the number of planes (must be set to 1) */
 	fread(&biPlanes, sizeof(short int), 1, file);
 	if (biPlanes != 1)
@@ -115,7 +118,9 @@ int DummySource::loadBMP(char *filename, textureImage *texture)
 	}
 	/* get the number of bits per pixel */
 	if (!fread(&biBitCount, sizeof(short int), 1, file))
-	{
+	{	CvSize size;
+	size.height = height;
+	size.width = width;
 		printf("Error reading file!\n");
 		return 0;
 	}
@@ -126,12 +131,12 @@ int DummySource::loadBMP(char *filename, textureImage *texture)
 		return 0;
 	}
 	/* calculate the size of the image in bytes */
-	biSizeImage = texture->width * texture->height * 3;
+	biSizeImage = width * height * 3;
 	printf("Size of the image data: %ld\n", biSizeImage);
-	texture->data = (unsigned char*) malloc(biSizeImage);
+	data = (char*) malloc(biSizeImage);
 	/* seek to the actual data */
 	fseek(file, bfOffBits, SEEK_SET);
-	if (!fread(texture->data, biSizeImage, 1, file))
+	if (!fread(data, biSizeImage, 1, file))
 	{
 		printf("Error loading file!\n");
 		return 0;
@@ -139,10 +144,18 @@ int DummySource::loadBMP(char *filename, textureImage *texture)
 	/* swap red and blue (bgr -> rgb) */
 	for (i = 0; i < biSizeImage; i += 3)
 	{
-		temp = texture->data[i];
-		texture->data[i] = texture->data[i + 2];
-		texture->data[i + 2] = temp;
+		temp = data[i];
+		data[i] = data[i + 2];
+		data[i + 2] = temp;
 	}
+	
+	CvSize size;
+	size.height = height;
+	size.width = width;
+	
+	*image = cvCreateImageHeader(size, IPL_DEPTH_8U, 3);
+	(*image)->imageData = data;
+
 	return 1;
 }
 

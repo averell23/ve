@@ -44,20 +44,20 @@
         <cxxflags>-O0 -g3</cxxflags>
       </debug>
       <default>
-        <configargs/>
-        <builddir/>
-        <topsourcedir/>
-        <cppflags/>
-        <ldflags>-lGL -lglut</ldflags>
+        <configargs></configargs>
+        <builddir></builddir>
+        <topsourcedir></topsourcedir>
+        <cppflags></cppflags>
+        <ldflags>-lGL -lglut -lopencv</ldflags>
         <ccompiler>GccOptions</ccompiler>
         <cxxcompiler>GppOptions</cxxcompiler>
         <f77compiler>G77Options</f77compiler>
-        <ccompilerbinary/>
-        <cxxcompilerbinary/>
-        <f77compilerbinary/>
-        <cflags/>
-        <cxxflags/>
-        <f77flags/>
+        <ccompilerbinary></ccompilerbinary>
+        <cxxcompilerbinary></cxxcompilerbinary>
+        <f77compilerbinary></f77compilerbinary>
+        <cflags></cflags>
+        <cxxflags>-I/usr/local/include/opencv</cxxflags>
+        <f77flags></f77flags>
       </default>
     </configurations>
     <make>

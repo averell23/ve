@@ -11,6 +11,7 @@
 #include "stopwatch.h"
 #include "dummyoverlay.h"
 
+
 using namespace std;
 
 
@@ -18,13 +19,14 @@ Stopwatch *timer;
 VideoCanvas *mainVideo;
 DummyOverlay *overlay;
 
-
 int main(int argc, char *argv[])
 {
   initGL(argc, argv);
+  cout << "Init complete." << endl;
   DummySource *right = new DummySource();
+  cout << "Right source created" << endl;
   DummySource *left = new DummySource();
-  std::cout << "Drawing cycle" << std::endl;
+  cout << "Left source created" << endl;
   mainVideo = new VideoCanvas(left, right);
   overlay = new DummyOverlay();
   timer = new Stopwatch();
@@ -51,6 +53,10 @@ void shutdown() {
 	<< " millis with " << timer->getCount() << " frames. "
 	<< " Framerate: " << timer->getFramerate() 
 	<< endl;
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR) { 
+	cout << "Some openGL error has occured." << endl;
+    }
 }
 
 void glDraw(void) {

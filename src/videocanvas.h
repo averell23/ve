@@ -28,7 +28,7 @@
 #include <GL/gl.h>		// OpenGL headers
 #include <GL/glut.h>		// GLUT headers
 #include <stdio.h>		// STD input/output headers
-#include <iostream.h>
+#include <iostream>
 
 /**
 A canvas for displaying a stereo video feed. This retrieves a picture for the

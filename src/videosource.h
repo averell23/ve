@@ -25,6 +25,7 @@
 #define VIDEOSOURCE_H
 
 #include <stdio.h>
+#include <cv.hpp>
 
 /**
 Wrapper class for a source of video images. 
@@ -34,7 +35,7 @@ Wrapper class for a source of video images.
 class VideoSource{
 public:
     /** Retrieve the next image for this video source. */
-    virtual unsigned char *getImage();
+    virtual IplImage *getImage();
     /** Gets the image width for this video source */
     int getWidth();
     /** Gets the image height for this video source */
