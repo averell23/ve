@@ -121,6 +121,10 @@ void ARRegistration::reRegister() {
     gsl_matrix_memcpy(&T_sub_vw.matrix, &T_vec_vw.matrix);
     // calculate the final transformation matrix
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, c, T, 0.0, Trans);
+    if (logger.isEnabledFor(TRACE_LOG_LEVEL)) {
+	cout << "Calibration matrix is now: " << endl;
+	printMatrix(Trans);
+    }
     // Clean up
     gsl_matrix_free(c);
     gsl_matrix_free(c_1);
