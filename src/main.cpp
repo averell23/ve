@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 {
     cout << "Ve Augmented Reality toolbox. (c) 2003 ISAS, author: Daniel Hahn" << endl;
     
-	PropertyConfigurator::doConfigure("../src/logger.properties");
+	PropertyConfigurator::doConfigure("../config/logger.properties");
     
     CommandLineParser parser("ve");
     parser.setupOption("help", "Show usage information");
