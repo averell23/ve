@@ -18,7 +18,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="D:\sources\ARToolkit\include;&quot;D:\sources\gsl-1.0\include&quot;;&quot;D:\sources\omniORB-4.0.2\include&quot;;D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
+				AdditionalIncludeDirectories="&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\include&quot;;D:\sources\ARToolkit\include;&quot;D:\sources\gsl-1.0\include&quot;;&quot;D:\sources\omniORB-4.0.2\include&quot;;D:\sources\glew\include;&quot;D:\sources\log4cplus-1.0\include&quot;;&quot;D:\sources\freetype-2.0.9\include&quot;;D:\sources\FTGL\include;&quot;D:\sources\commoncpp2-1.0.13\include&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\cv\include"
 				PreprocessorDefinitions="WIN32;__WIN32__;__x86__;_WIN32_WINNT=0x0400"
 				RuntimeLibrary="2"
 				SuppressStartupBanner="FALSE"
@@ -27,8 +27,8 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="WS2_32.LIB omnithread.lib omniORB4.lib msvcstub.lib cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib log4cplusd.lib glew32.lib libgsl.lib libgslcblas.lib AR32.lib"
-				AdditionalLibraryDirectories="D:\sources\ARToolkit\lib;&quot;D:\sources\gsl-1.0\lib&quot;;&quot;D:\sources\omniORB-4.0.2\lib\x86_win32&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"
+				AdditionalDependencies="xerces-c_2.lib WS2_32.LIB omnithread.lib omniORB4.lib msvcstub.lib cv.lib XCLIBWNT.lib ccgnu2.lib ftgl_static_MT_d.lib freetype206MT.lib log4cplusd.lib glew32.lib libgsl.lib libgslcblas.lib AR32.lib"
+				AdditionalLibraryDirectories="&quot;D:\sources\xerces-c_2_5_0-windows_nt-msvc_60\lib&quot;;D:\sources\ARToolkit\lib;&quot;D:\sources\gsl-1.0\lib&quot;;&quot;D:\sources\omniORB-4.0.2\lib\x86_win32&quot;;D:\sources\glew\lib;&quot;D:\sources\log4cplus-1.0\msvc6\Debug&quot;;&quot;D:\sources\freetype-2.0.9\objs&quot;;D:\sources\FTGL\win32_vcpp\build;&quot;D:\sources\commoncpp2-1.0.13\win32\Release&quot;;C:\Programme\XCLIB;C:\Programme\OpenCV\lib"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -200,6 +200,9 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath=".\src\arregistration.h">
+			</File>
 			<File
 				RelativePath=".\src\buffersource.h">
 			</File>

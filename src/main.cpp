@@ -130,11 +130,11 @@ int main(int argc, char *argv[]) {
         LOG4CPLUS_INFO(logger, "Using epix video source");
         if (param == "")
            LOG4CPLUS_DEBUG(logger, "No epix config file given");
-	EpixSource epixLeft(1, EpixSource::CAMERA_1280F, param, init2);
-	    left = &epixLeft;
+	// EpixSource epixLeft(1, EpixSource::CAMERA_1280F, param, init2);
+	    left = new EpixSource(1, EpixSource::CAMERA_1280F, param, init2); // FIXME: Try to create on stack.
         LOG4CPLUS_DEBUG(logger, "Left video source created");
-	EpixSource epixRight(0, EpixSource::CAMERA_1280F, param, init1);
-        right = &epixRight;
+	// EpixSource epixRight(0, EpixSource::CAMERA_1280F, param, init1);
+        right = new EpixSource(0, EpixSource::CAMERA_1280F, param, init1);
         LOG4CPLUS_DEBUG(logger, "Right video source created");
     } else {
         cout << "Unknown video source: " << param << endl;
@@ -175,13 +175,13 @@ int main(int argc, char *argv[]) {
     Ve::addOverlay(&offset);
     Ve::addListener(&offset);
     // Ve::addOverlay(new DummyOverlay(true));
-    MarkerPositionTracker leftTrack(left, 1);
+    /* MarkerPositionTracker leftTrack(left, 1);
     MarkerPositionTracker rightTrack(right, 2);
     TrackerOverlay tracker(1,2);
     leftTrack.addListener(&tracker);
     rightTrack.addListener(&tracker);
     Ve::addOverlay(&tracker);
-    Ve::addListener(&tracker);
+    Ve::addListener(&tracker);  */
     StatusOverlay status(true);			// FIXME: proper deletion of overlays?
     Ve::addOverlay(&status);
     Ve::addListener(&status);
@@ -196,6 +196,8 @@ int main(int argc, char *argv[]) {
     LOG4CPLUS_DEBUG(logger, "Overlays added.");
 
     Ve::start();
+
+	LOG4CPLUS_INFO(logger, "Shutting down ve.");
 
     return EXIT_SUCCESS;
 }

@@ -36,6 +36,7 @@
 #include <gsl/gsl_poly.h>
 #include <xercesc/parsers/XercesDOMParser.hpp>  // Xerces related files
 #include <xercesc/dom/DOM.hpp> 
+#include <xercesc/dom/DOMDocument.hpp> 
 #include <xercesc/sax/HandlerBase.hpp> 
 #include <xercesc/util/XMLString.hpp> 
 #include <xercesc/util/PlatformUtils.hpp> 
@@ -44,8 +45,8 @@
 
 using namespace std;
 using namespace log4cplus;
-#ifdef XERCES_HAS_CPP_NAMESPACE
-using namespace xercesc;
+#ifndef XERCES_HAS_CPP_NAMESPACE
+#error "Xerces must have cpp namespace support for ve to compile."
 #endif
 
 // Forward declaration
@@ -232,10 +233,10 @@ private:
     CvPoint2D32f* guessCorners(IplImage* image);
     
     /// Helper method to read in the calibration Matrix from DOM
-    bool readCalibrationMatrix(DOMNodeList* nodelist);
+	bool readCalibrationMatrix(xercesc::DOMNodeList* nodelist);
     
     /// Helper method to read in the distortion vector from DOM
-    bool readDistortionVec(DOMNodeList* nodeList);
+	bool readDistortionVec(xercesc::DOMNodeList* nodeList);
     
     /**
        Helper method to read text child from a node.
@@ -244,7 +245,7 @@ private:
                node has no text children. Does not combine multiple
 	       text children.
     */
-    const XMLCh* getTextChild(DOMNode* node);
+	const XMLCh* getTextChild(xercesc::DOMNode* node);
     
     /**
       Helper method to get an attribute by name from a node.
@@ -252,7 +253,7 @@ private:
       @return The contents of the attribute, or null if the attribute
               does not exist.
     */
-    const XMLCh* getAttributeByName(DOMNode* node, XMLCh* name);
+	const XMLCh* getAttributeByName(xercesc::DOMNode* node, XMLCh* name);
     
     /// Logger for this class
     static Logger logger;

@@ -86,8 +86,6 @@ private:
     int measureCount;
     /// Indicates calibration mode (LEFT_EYE or RIGHT_EYE)
     int mode;
-    /// Mutex to protect measurent updates
-    Mutex mutex;
     /// The registration object used by this overlay
     ARRegistration* registration;
     /// Calibration points
